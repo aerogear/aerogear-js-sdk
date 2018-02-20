@@ -15,10 +15,16 @@ jobs:
       - run:
           name: install-dependencies
           command: npm install
+      - run:
+          name: install-package-dependencies
+          command: npm run bootstrap
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
+      - run:
+          name: install-package-dependencies-after-cache
+          command: npm run bootstrap
       - run:
           name: test
           command: npm test
