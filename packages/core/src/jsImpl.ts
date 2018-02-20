@@ -8,7 +8,7 @@ var ConfigLib = function(config){
 }
 
 ConfigLib.prototype.getKeycloakConfig = function(){
-      return this.serviceConfig.filter(config => config.type = 'keycloak');
+  return this.serviceConfig.filter(function (config) { return config.type = key; });
 }
 
 module.exports = ConfigLib
