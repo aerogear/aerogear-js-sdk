@@ -1,7 +1,7 @@
 {
-	"name": "raincatcher",
+	"name": "AeroGearServicesWeb",
 	"version": "1.0.0",
-	"description": "Feedhenry Raincatcher Core Repository",
+	"description": "AeroGear Services Web SDK package",
 	"main": "index.js",
 	"scripts": {
 		"test": "lerna run test",
@@ -24,7 +24,7 @@
 		"npm-check-updates": "2.13.0",
 		"npm-run-all": "4.1.2",
 		"opn-cli": "3.1.0",
-    "tslint": "5.8.0",
-    "typescript": "2.7.2"
+		"tslint": "5.8.0",
+		"typescript": "2.7.2"
 	}
 }
