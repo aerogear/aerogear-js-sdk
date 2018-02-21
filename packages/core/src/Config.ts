@@ -1,7 +1,7 @@
 /**
  * Service configuration model
  */
-export interface IServiceConfig {
+export interface ServiceConfig {
   id: string;
   name: string;
   type: string;
@@ -12,11 +12,11 @@ export interface IServiceConfig {
 /**
  * Represents top level mobile configuration
  */
-export interface IAeroGearConfig {
+export interface AeroGearConfig {
   version: number;
   clusterName: string;
   namespace: string;
-  services?: IServiceConfig[];
+  services?: ServiceConfig[];
 }
 
 /**
@@ -24,22 +24,22 @@ export interface IAeroGearConfig {
  * Class abstracts from where configuration will come from and expect
  */
 export class ConfigService {
-  private serviceConfig: IServiceConfig[] = [];
+  private serviceConfig: ServiceConfig[] = [];
 
   /**
    * @param config - any type of configuration that will be send from server.
    */
-   constructor(config: IAeroGearConfig) {
+   constructor(config: AeroGearConfig) {
      if (config && config.services) {
        this.serviceConfig = config.services;
      }
    }
 
-   public getKeycloakConfig(): IServiceConfig {
+   public getKeycloakConfig(): ServiceConfig {
      return this.configByKey('keycloak');
    }
 
-   public getMetricsConfig(): IServiceConfig {
+   public getMetricsConfig(): ServiceConfig {
      return this.configByKey('metrics');
    }
 
@@ -48,5 +48,3 @@ export class ConfigService {
      return array.pop();
    }
  }
-
-export default ConfigService;
