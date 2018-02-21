@@ -23,6 +23,7 @@ jobs:
           paths:
             - ./node_modules
       - run:
+          # Hoisting will cache some of the packages, but rest needs to be installed separtely
           name: install-package-dependencies-after-cache
           command: npm run bootstrap
       - run:
