@@ -9,8 +9,7 @@
     "module": "es6",
     "target": "es5",
     "jsx": "react",
-    "declaration": true,
-    "declarationDir": "./types"
+    "declaration": true
   },
   "exclude": [
     "node_modules"
