@@ -1,15 +1,15 @@
 {
-  "name": "@aerogearservices/core",
+  "name": "@aerogearservices/metrics",
   "version": "1.0.0",
-  "description": "Core SDK for AeroGear services",
+  "description": "AeroGear Services Device Metrics",
   "main": "dist/index.js",
+  "browser": "dist/bundle.js",
   "types": "types/index.d.ts",
   "author": "Aerogear <aerogear@googlegroups.com>",
   "license": "Apache-2.0",
   "scripts": {
     "clean": "del coverage src/**/*.js src/**/*.map test/**/*.js test/**/*.map",
     "build": "tsc",
-    "watch": "tsc --watch",
     "test": "nyc mocha"
   },
   "publishConfig": {
@@ -49,8 +49,10 @@
     "nyc": "11.4.1",
     "sinon": "4.3.0",
     "source-map-support": "0.5.3",
-    "typescript": "2.7.2"
+    "typescript": "2.7.2",
+    "webpack": "^3.11.0"
   },
   "dependencies": {
+    "axios": "^0.18.0"
   }
 }
