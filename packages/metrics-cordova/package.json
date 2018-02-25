@@ -49,12 +49,10 @@
     "nyc": "11.4.1",
     "sinon": "4.3.0",
     "source-map-support": "0.5.3",
-    "ts-node": "4.1.0",
     "typescript": "2.7.2",
     "webpack": "^3.11.0"
   },
   "dependencies": {
-    "@aerogearservices/metrics":"1.0.0",
-    "axios": "^0.18.0"
+    "@aerogearservices/metrics":"1.0.0"
   }
 }

@@ -49,11 +49,9 @@
     "nyc": "11.4.1",
     "sinon": "4.3.0",
     "source-map-support": "0.5.3",
-    "ts-node": "4.1.0",
     "typescript": "2.7.2",
     "webpack": "^3.11.0"
   },
   "dependencies": {
-    "axios": "^0.18.0"
   }
 }
