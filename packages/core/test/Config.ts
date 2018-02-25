@@ -1,5 +1,4 @@
 import * as  chai from 'chai';
-import * as sinon from 'sinon';
 import { ConfigService } from '../src/Config';
 
 /// <reference types="node" />

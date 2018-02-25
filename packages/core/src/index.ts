@@ -3,3 +3,4 @@
  */
 
 export * from './Config';
+export * from './metrics/MetricsService';
