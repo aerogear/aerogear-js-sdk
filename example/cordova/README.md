@@ -16,14 +16,16 @@ $ cordova build android
 
 ## Running on emulator
 
-Run running platform emulator
+Run on platform emulator
 
 ```
 $ npm run browserify
 $ cordova run android
 ```
 
-## Development in browser
+## Development
+
+Running using browser
 
 ```
 ## Watch for changes
