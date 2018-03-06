@@ -14,13 +14,24 @@ $ cordova platform add android
 $ cordova build android
 ```
 
-## Running
+## Running on emulator
 
-Run running platform emulator
+Run on platform emulator
 
 ```
 $ npm run browserify
 $ cordova run android
+```
+
+## Development
+
+Running using browser
+
+```
+## Watch for changes
+$ npm run watchify
+## In separate terminal
+$ cordova run browser
 ```
 
 ## More info
