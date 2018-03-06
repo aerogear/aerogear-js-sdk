@@ -4,7 +4,7 @@ import {MetricsPublisher} from './MetricsPublisher';
  * Interface used for mobile metrics management
  * Allows other SDK and implementations to manage (add) metrics
  */
-export interface MetricsPublishable {
+export interface MetricsInterface {
 
   /**
    * Allows to override default metrics publisher
@@ -28,7 +28,7 @@ export interface MetricsPublishable {
 }
 
 /**
- * Interface used for for classes that will colect metrics
+ * Interface used for for classes that will collect metrics
  */
 export interface Metrics {
   /**
