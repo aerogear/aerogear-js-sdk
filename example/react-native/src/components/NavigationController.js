@@ -2,21 +2,11 @@ import { StackNavigator, DrawerNavigator } from "react-navigation";
 import { HomeScreen, HttpScreen } from "./screens";
 
 /**
- * Main navigation controller, it wraps the DrawerNavigator controller
- * and provides the screens with a native header
+ * Main navigation controller contains all children screen components
  */
-const NavigationController = StackNavigator({
-  screen: {
-    screen: DrawerNavigator({
-      Home: { screen: HomeScreen },
-      Http: { screen: HttpScreen },
-    })
-  }
+const NavigationController = DrawerNavigator({
+  Home: StackNavigator({ screen: HomeScreen }),
+  Http: StackNavigator({ screen: HttpScreen }),
 });
-
-/**
- * Navigation controller that provides the app with a lateral drawer.
- */
-
 
 export default NavigationController;
