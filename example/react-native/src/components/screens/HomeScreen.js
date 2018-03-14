@@ -4,13 +4,14 @@ import {
   Text,
   TouchableWithoutFeedback
 } from "react-native";
-import Toolbar from "./common/Toolbar";
 // import { ConfigService } from "@aerogearservices/core";
 // import mobileServicesJson from "../mobile-services.json";
 
 class HomeScreen extends Component {
 
-  static WELCOME_TEXT = "AeroGear SDK Demo";
+  static navigationOptions = {
+    title: "Home"
+  };
 
   openDrawer() {
     this.props.navigation.navigate("DrawerOpen");
@@ -21,12 +22,11 @@ class HomeScreen extends Component {
     // const keycloakConfig = config.getKeycloakConfig();
 
     return (
-      <View>
-        <Toolbar />
+      <View style={styles.containerStyle}>
         <TouchableWithoutFeedback onPress={this.openDrawer.bind(this)}>
-          <View style={styles.containerStyle}>
+          <View>
             <Text style={styles.welcomeStyle}>
-              {this.WELCOME_TEXT}
+              HOME
             </Text>
             <Text style={styles.smallStyle}>
               {"Tap to extend drawer\n"}
@@ -57,4 +57,4 @@ const styles = {
   }
 };
 
-export default HomeScreen;
+export { HomeScreen };
