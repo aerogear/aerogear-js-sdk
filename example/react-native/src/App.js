@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import MainScreen from "./components/MainScreen";
+import NavigationController from "./components/NavigationController";
 
 class App extends Component {
   render() {
     return (
-      <MainScreen />
+      <NavigationController />
     );
   }
 }
