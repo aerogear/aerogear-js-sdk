@@ -4,13 +4,15 @@ import {
   Text,
   TouchableWithoutFeedback
 } from "react-native";
+import { NavDrawerButton } from "../common";
 // import { ConfigService } from "@aerogearservices/core";
 // import mobileServicesJson from "../mobile-services.json";
 
 class HomeScreen extends Component {
 
   static navigationOptions = {
-    title: "Home"
+    title: "Home",
+    headerLeft: <NavDrawerButton />
   };
 
   openDrawer() {
@@ -45,7 +47,7 @@ const styles = {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5FCFF",
+    backgroundColor: "#F5FCFF"
   },
   welcomeStyle: {
     fontSize: 20,
