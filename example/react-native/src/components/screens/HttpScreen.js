@@ -22,7 +22,7 @@ class HttpScreen extends Component {
 
     return (
       <View style={styles.containerStyle}>
-        <StatusBar barStyle="light-content" />
+        <StatusBar barStyle="light-content" backgroundColor={Colors.primaryDark} />
         <View>
           <Text style={styles.welcomeStyle}>
             HTTP
