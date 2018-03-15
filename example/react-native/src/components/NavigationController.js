@@ -7,6 +7,8 @@ import { HomeScreen, HttpScreen } from "./screens";
 const NavigationController = DrawerNavigator({
   Home: StackNavigator({ screen: HomeScreen }),
   Http: StackNavigator({ screen: HttpScreen }),
-});
+}, {
+    initialRouteName: "Home"
+  });
 
 export default NavigationController;
