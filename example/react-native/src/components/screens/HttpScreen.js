@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { View, Text } from "react-native";
+import { View, Text, StatusBar } from "react-native";
 import { NavDrawerButton } from "../common";
+import { Colors } from "../../assets";
 // import { ConfigService } from "@aerogearservices/core";
 // import mobileServicesJson from "../mobile-services.json";
 
@@ -8,6 +9,10 @@ class HttpScreen extends Component {
 
   static navigationOptions = ({ navigation }) => ({
     title: "Http",
+    headerStyle: {
+      backgroundColor: Colors.primary
+    },
+    headerTintColor: Colors.white,
     headerLeft: <NavDrawerButton onPress={() => navigation.navigate("DrawerOpen")} />
   });
 
@@ -17,6 +22,7 @@ class HttpScreen extends Component {
 
     return (
       <View style={styles.containerStyle}>
+        <StatusBar barStyle="light-content" />
         <View>
           <Text style={styles.welcomeStyle}>
             HTTP
