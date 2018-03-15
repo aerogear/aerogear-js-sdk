@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@aerogearservices/core": "file:../../packages/core",
+    "@assets": "file:./src/assets",
     "react": "^16.2.0",
     "react-native": "0.53.3",
     "react-native-navbar": "^2.1.0",

@@ -1,15 +1,15 @@
 import React, { Component } from "react";
-import { View, Text, TouchableWithoutFeedback } from "react-native";
+import { View, Text } from "react-native";
+import { NavDrawerButton } from "../common";
+// import { ConfigService } from "@aerogearservices/core";
+// import mobileServicesJson from "../mobile-services.json";
 
 class HttpScreen extends Component {
 
-  static navigationOptions = {
-    title: "Http"
-  };
-
-  openDrawer() {
-    this.props.navigation.navigate("DrawerOpen");
-  }
+  static navigationOptions = ({ navigation }) => ({
+    title: "Http",
+    headerLeft: <NavDrawerButton onPress={() => navigation.navigate("DrawerOpen")} />
+  });
 
   render() {
     // const config = new ConfigService(mobileServicesJson);
@@ -17,18 +17,15 @@ class HttpScreen extends Component {
 
     return (
       <View style={styles.containerStyle}>
-        <TouchableWithoutFeedback onPress={this.openDrawer.bind(this)}>
-          <View>
-            <Text style={styles.welcomeStyle}>
-              HTTP
+        <View>
+          <Text style={styles.welcomeStyle}>
+            HTTP
           </Text>
-            <Text style={styles.smallStyle}>
-              {"Tap to extend drawer\n"}
-              {/* keycloakConfig = {JSON.stringify(keycloakConfig)} */}
-              keycloakConfig
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
+          <Text style={styles.smallStyle}>
+            {/* keycloakConfig = {JSON.stringify(keycloakConfig)} */}
+            {/* keycloakConfig */}
+          </Text>
+        </View>
       </View>
     );
   }
