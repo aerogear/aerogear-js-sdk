@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import { View, Text, StatusBar } from "react-native";
+import { MobileCore } from "aerogear-react-native-core";
 import { NavDrawerButton } from "../common";
 import { Colors } from "../../assets";
-// import { ConfigService } from "@aerogearservices/core";
-// import mobileServicesJson from "../mobile-services.json";
 
 class HomeScreen extends Component {
 
@@ -16,21 +15,35 @@ class HomeScreen extends Component {
     headerLeft: <NavDrawerButton onPress={() => navigation.navigate("DrawerOpen")} />
   });
 
+  state = {
+    deviceMetrics: {
+      platform: "",
+      platformVersion: ""
+    }
+  };
+
+  componentWillMount() {
+    MobileCore.getDeviceMetrics()
+      .then(deviceMetrics => {
+        this.setState({ deviceMetrics });
+      });
+  }
+
   render() {
-    // const config = new ConfigService(mobileServicesJson);
-    // const keycloakConfig = config.getKeycloakConfig();
+    const { containerStyle, welcomeStyle, smallStyle } = styles;
+    const { platform, platformVersion } = this.state.deviceMetrics;
 
     return (
-      <View style={styles.containerStyle}>
+      <View style={containerStyle}>
         <StatusBar barStyle="light-content" backgroundColor={Colors.primaryDark} />
         <View>
-          <Text style={styles.welcomeStyle}>
+          <Text style={welcomeStyle}>
             HOME
           </Text>
-          <Text style={styles.smallStyle}>
-            {/* keycloakConfig = {JSON.stringify(keycloakConfig)} */}
-            {/* keycloakConfig */}
-          </Text>
+          <View>
+            <Text style={smallStyle}>Platform: {platform}</Text>
+            <Text style={smallStyle}>Version: {platformVersion}</Text>
+          </View>
         </View>
       </View>
     );
