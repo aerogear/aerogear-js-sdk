@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import { View, Text, StatusBar } from "react-native";
 import { NavDrawerButton } from "../common";
 import { Colors } from "../../assets";
-// import { ConfigService } from "@aerogearservices/core";
-// import mobileServicesJson from "../mobile-services.json";
 
 class HttpScreen extends Component {
 
@@ -17,19 +15,12 @@ class HttpScreen extends Component {
   });
 
   render() {
-    // const config = new ConfigService(mobileServicesJson);
-    // const keycloakConfig = config.getKeycloakConfig();
-
     return (
       <View style={styles.containerStyle}>
         <StatusBar barStyle="light-content" backgroundColor={Colors.primaryDark} />
         <View>
           <Text style={styles.welcomeStyle}>
             HTTP
-          </Text>
-          <Text style={styles.smallStyle}>
-            {/* keycloakConfig = {JSON.stringify(keycloakConfig)} */}
-            {/* keycloakConfig */}
           </Text>
         </View>
       </View>
