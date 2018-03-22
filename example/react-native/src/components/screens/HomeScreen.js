@@ -18,7 +18,8 @@ class HomeScreen extends Component {
   state = {
     deviceMetrics: {
       platform: "",
-      platformVersion: ""
+      platformVersion: "",
+      device: ""
     }
   };
 
@@ -31,7 +32,7 @@ class HomeScreen extends Component {
 
   render() {
     const { containerStyle, welcomeStyle, smallStyle } = styles;
-    const { platform, platformVersion } = this.state.deviceMetrics;
+    const { platform, platformVersion, device } = this.state.deviceMetrics;
 
     return (
       <View style={containerStyle}>
@@ -40,10 +41,9 @@ class HomeScreen extends Component {
           <Text style={welcomeStyle}>
             HOME
           </Text>
-          <View>
-            <Text style={smallStyle}>Platform: {platform}</Text>
-            <Text style={smallStyle}>Version: {platformVersion}</Text>
-          </View>
+          <Text style={smallStyle}>Platform: {platform}</Text>
+          <Text style={smallStyle}>Version: {platformVersion}</Text>
+          <Text style={smallStyle}>Device: {device}</Text>
         </View>
       </View>
     );
