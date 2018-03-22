@@ -7,7 +7,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@aerogearservices/core": "file:../../packages/core",
     "aerogear-react-native-core": "file:../../../aerogear-react-native-sdk/",
     "react": "^16.2.0",
     "react-native": "0.53.3",
