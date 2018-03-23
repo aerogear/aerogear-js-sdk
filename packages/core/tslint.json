@@ -4,6 +4,13 @@
     "interface-name": [
       true,
       "never-prefix"
+    ],
+    "trailing-comma": [
+      true,
+      {
+        "multiline": "never",
+        "singleline": "never"
+      }
     ]
   }
 }

@@ -2,4 +2,8 @@
  * @module @aerogearservices/core
  */
 
-export * from "./metrics/MetricsService";
+import MetricsService from "./metrics/MetricsService";
+
+export {
+  MetricsService
+};

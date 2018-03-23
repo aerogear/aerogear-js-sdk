@@ -16,27 +16,23 @@ class HomeScreen extends Component {
   });
 
   state = {
-    deviceMetrics: {
-      platform: "",
-      platformVersion: "",
-      device: ""
-    }
+    res: "",
+    err: ""
   };
 
   componentWillMount() {
     const configuration = {
-      url: "https://aerogear-app-metrics-test.192.168.37.1.nip.io/metrics"
+      url: "http://aerogear-app-metrics-test.192.168.37.1.nip.io/metrics"
     };
     const metricsService = new RNMetricsService(configuration);
 
     metricsService.sendAppAndDeviceMetrics()
-      .then(res => console.log(res))
-      .catch(err => console.log(err));
+      .then(res => { console.log(res); this.setState({ res, err: "" }); })
+      .catch(err => { console.log(err); this.setState({ res: "", err }); });
   }
 
   render() {
     const { containerStyle, welcomeStyle, smallStyle } = styles;
-    const { platform, platformVersion, device } = this.state.deviceMetrics;
 
     return (
       <View style={containerStyle}>
@@ -45,9 +41,9 @@ class HomeScreen extends Component {
           <Text style={welcomeStyle}>
             HOME
           </Text>
-          <Text style={smallStyle}>Platform: {platform}</Text>
-          <Text style={smallStyle}>Version: {platformVersion}</Text>
-          <Text style={smallStyle}>Device: {device}</Text>
+          <Text style={smallStyle}>Sending device metrics...</Text>
+          <Text style={smallStyle}>{this.state.res}</Text>
+          <Text style={smallStyle}>{this.state.err.message}</Text>
         </View>
       </View>
     );

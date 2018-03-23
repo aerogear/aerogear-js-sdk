@@ -7,14 +7,14 @@ class MetricsService implements ServiceModule {
 
   public readonly type: string = "metrics";
 
-  private readonly url: URL;
+  private readonly url: string;
 
   constructor(configuration: ServiceConfiguration) {
-    this.url = new URL(configuration.url);
+    this.url = configuration.url;
   }
 
   public sendAppAndDeviceMetrics(metrics: Metrics): Promise<any> {
-    return axios.post(this.url.toString(), metrics);
+    return axios.post(this.url, metrics);
   }
 }
 
