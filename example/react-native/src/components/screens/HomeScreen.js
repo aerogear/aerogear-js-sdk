@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { View, Text, StatusBar } from "react-native";
-import { MobileCore } from "aerogear-react-native-core";
+import { RNMetricsService } from "aerogear-react-native-core";
 import { NavDrawerButton } from "../common";
 import { Colors } from "../../assets";
 
@@ -24,10 +24,14 @@ class HomeScreen extends Component {
   };
 
   componentWillMount() {
-    MobileCore.getDeviceMetrics()
-      .then(deviceMetrics => {
-        this.setState({ deviceMetrics });
-      });
+    const configuration = {
+      url: "https://aerogear-app-metrics-test.192.168.37.1.nip.io/metrics"
+    };
+    const metricsService = new RNMetricsService(configuration);
+
+    metricsService.sendAppAndDeviceMetrics()
+      .then(res => console.log(res))
+      .catch(err => console.log(err));
   }
 
   render() {
