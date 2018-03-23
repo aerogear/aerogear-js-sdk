@@ -1,10 +1,10 @@
 interface ServiceConfiguration {
 
-  id: string;
-  name: string;
-  type: string;
-  url: string;
-  config: Map<string, string>;
+  readonly id: string;
+  readonly name: string;
+  readonly type: string;
+  readonly url: string;
+  readonly config: Map<string, string>;
 
 }
 

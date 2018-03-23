@@ -1,7 +1,10 @@
+import MetricsData from "./MetricsData";
+
 interface Metrics {
 
   clientId: string;
-  data: any;
+  timestamp?: number;
+  data: MetricsData;
 
 }
 

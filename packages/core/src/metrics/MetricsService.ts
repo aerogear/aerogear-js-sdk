@@ -1,19 +1,21 @@
+import axios from "axios";
+import ServiceConfiguration from "../configuration/ServiceConfiguration";
 import ServiceModule from "../ServiceModule";
+import Metrics from "./Metrics";
 
 class MetricsService implements ServiceModule {
 
   public readonly type: string = "metrics";
 
-  public getAppAndDeviceMetrics(): any {
-    // TODO: gather app and device metrics
-    const metrics = {};
+  private readonly url: URL;
 
-    // TODO: send metrics to app metrics server
-
-    return undefined;
+  constructor(configuration: ServiceConfiguration) {
+    this.url = new URL(configuration.url);
   }
 
-  // TODO: sendAppAndDeviceMetrics()
+  public sendAppAndDeviceMetrics(metrics: Metrics): Promise<any> {
+    return axios.post(this.url.toString(), metrics);
+  }
 }
 
 export default MetricsService;

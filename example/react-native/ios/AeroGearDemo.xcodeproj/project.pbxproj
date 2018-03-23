@@ -267,6 +267,7 @@
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
 		3848780BCCB44AB790DB44B0 /* RNReactNativeLibrary.xcodeproj */ = {isa = PBXFileReference; name = "RNReactNativeLibrary.xcodeproj"; path = "../node_modules/aerogear-react-native-core/ios/RNReactNativeLibrary.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		F65851FFC65349FDA415774A /* libMobileCore.a */ = {isa = PBXFileReference; name = "libMobileCore.a"; path = "libMobileCore.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		84437AE08E454BAF9A2FDD3F /* MobileCore.xcodeproj */ = {isa = PBXFileReference; name = "MobileCore.xcodeproj"; path = "../node_modules/aerogear-react-native-core/ios/MobileCore.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -452,6 +453,7 @@
 				00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */,
 				139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */,
 				3848780BCCB44AB790DB44B0 /* RNReactNativeLibrary.xcodeproj */,
+				84437AE08E454BAF9A2FDD3F /* MobileCore.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -927,6 +929,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/aerogear-react-native-core/ios",
+					"$(SRCROOT)/../node_modules/aerogear-react-native-core/ios",
 				);
 			};
 			name = Debug;
@@ -952,6 +955,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/aerogear-react-native-core/ios",
+					"$(SRCROOT)/../node_modules/aerogear-react-native-core/ios",
 				);
 			};
 			name = Release;
@@ -975,6 +979,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/aerogear-react-native-core/ios",
+					"$(SRCROOT)/../node_modules/aerogear-react-native-core/ios",
 				);
 			};
 			name = Debug;
@@ -996,6 +1001,7 @@
 				VERSIONING_SYSTEM = "apple-generic";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/../node_modules/aerogear-react-native-core/ios",
 					"$(SRCROOT)/../node_modules/aerogear-react-native-core/ios",
 				);
 			};

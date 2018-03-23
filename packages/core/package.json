@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Core SDK for AeroGear services",
   "main": "dist/index.js",
-  "types": "types/index.d.ts",
+  "types": "./types/main.d.ts",
   "author": "Aerogear <aerogear@googlegroups.com>",
   "license": "Apache-2.0",
   "scripts": {
@@ -53,6 +53,7 @@
   },
   "dependencies": {
     "@types/lodash": "4.14.104",
+    "axios": "^0.18.0",
     "lodash": "4.17.5"
   }
 }
