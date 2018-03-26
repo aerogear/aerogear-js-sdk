@@ -13,8 +13,12 @@ class MetricsService implements ServiceModule {
     this.url = configuration.url;
   }
 
-  public sendAppAndDeviceMetrics(metrics: Metrics): Promise<any> {
+  protected sendAppAndDeviceMetrics(metrics: Metrics): Promise<any> {
     return axios.post(this.url, metrics);
+  }
+
+  protected getClientId(): string {
+    return "453de743207a0232a339a23e5d64b289";
   }
 }
 

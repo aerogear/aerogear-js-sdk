@@ -27,8 +27,8 @@ class HomeScreen extends Component {
     const metricsService = new RNMetricsService(configuration);
 
     metricsService.sendAppAndDeviceMetrics()
-      .then(res => { console.log(res); this.setState({ res, err: "" }); })
-      .catch(err => { console.log(err); this.setState({ res: "", err }); });
+      .then(() => this.setState({ res: "Done!" }))
+      .catch(err => console.log(err));
   }
 
   render() {
