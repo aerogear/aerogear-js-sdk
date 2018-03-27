@@ -265,9 +265,9 @@
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
-		3848780BCCB44AB790DB44B0 /* RNReactNativeLibrary.xcodeproj */ = {isa = PBXFileReference; name = "RNReactNativeLibrary.xcodeproj"; path = "../node_modules/aerogear-react-native-core/ios/RNReactNativeLibrary.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		3848780BCCB44AB790DB44B0 /* RNReactNativeLibrary.xcodeproj */ = {isa = PBXFileReference; name = "RNReactNativeLibrary.xcodeproj"; path = "../node_modules/aerogear-react-native-sdk/ios/RNReactNativeLibrary.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		F65851FFC65349FDA415774A /* libMobileCore.a */ = {isa = PBXFileReference; name = "libMobileCore.a"; path = "libMobileCore.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
-		84437AE08E454BAF9A2FDD3F /* MobileCore.xcodeproj */ = {isa = PBXFileReference; name = "MobileCore.xcodeproj"; path = "../node_modules/aerogear-react-native-core/ios/MobileCore.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		84437AE08E454BAF9A2FDD3F /* MobileCore.xcodeproj */ = {isa = PBXFileReference; name = "MobileCore.xcodeproj"; path = "../node_modules/aerogear-react-native-sdk/ios/MobileCore.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -928,8 +928,8 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../node_modules/aerogear-react-native-core/ios",
-					"$(SRCROOT)/../node_modules/aerogear-react-native-core/ios",
+					"$(SRCROOT)/../node_modules/aerogear-react-native-sdk/ios",
+					"$(SRCROOT)/../node_modules/aerogear-react-native-sdk/ios",
 				);
 			};
 			name = Debug;
@@ -954,8 +954,8 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../node_modules/aerogear-react-native-core/ios",
-					"$(SRCROOT)/../node_modules/aerogear-react-native-core/ios",
+					"$(SRCROOT)/../node_modules/aerogear-react-native-sdk/ios",
+					"$(SRCROOT)/../node_modules/aerogear-react-native-sdk/ios",
 				);
 			};
 			name = Release;
@@ -978,8 +978,8 @@
 				VERSIONING_SYSTEM = "apple-generic";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../node_modules/aerogear-react-native-core/ios",
-					"$(SRCROOT)/../node_modules/aerogear-react-native-core/ios",
+					"$(SRCROOT)/../node_modules/aerogear-react-native-sdk/ios",
+					"$(SRCROOT)/../node_modules/aerogear-react-native-sdk/ios",
 				);
 			};
 			name = Debug;
@@ -1001,8 +1001,8 @@
 				VERSIONING_SYSTEM = "apple-generic";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../node_modules/aerogear-react-native-core/ios",
-					"$(SRCROOT)/../node_modules/aerogear-react-native-core/ios",
+					"$(SRCROOT)/../node_modules/aerogear-react-native-sdk/ios",
+					"$(SRCROOT)/../node_modules/aerogear-react-native-sdk/ios",
 				);
 			};
 			name = Release;

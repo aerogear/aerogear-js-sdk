@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { View, Text, StatusBar } from "react-native";
 import { NavDrawerButton } from "../common";
 import { Colors } from "../../assets";
-// import { ConfigService } from "@aerogearservices/core";
+// import { ConfigService } from "aerogear-core";
 // import mobileServicesJson from "../mobile-services.json";
 
 class HttpScreen extends Component {

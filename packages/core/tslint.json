@@ -1,16 +1,33 @@
 {
   "extends": "tslint:recommended",
   "rules": {
-    "interface-name": [
-      true,
-      "never-prefix"
-    ],
     "trailing-comma": [
       true,
       {
         "multiline": "never",
-        "singleline": "never"
+        "singleLine": "never"
       }
+    ],
+    "ordered-imports": false,
+    "newline-before-return": true,
+    "await-promise": true,
+    "no-inferrable-types": true,
+    "typedef": [
+      true,
+      "call-signature",
+      "arrow-call-signature",
+      "parameter",
+      "arrow-parameter",
+      "property-declaration",
+      "variable-declaration",
+      "member-variable-declaration",
+      "object-destructuring",
+      "array-destructuring"
+    ],
+    "object-literal-sort-keys": false,
+    "interface-name": [
+      true,
+      "never-prefix"
     ]
   }
 }

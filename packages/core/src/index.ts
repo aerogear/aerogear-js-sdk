@@ -1,5 +1,5 @@
 /**
- * @module @aerogearservices/core
+ * @module aerogear-core
  */
 
 import MetricsService from "./metrics/MetricsService";

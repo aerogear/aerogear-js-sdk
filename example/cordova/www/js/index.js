@@ -1,4 +1,4 @@
-const ConfigService = require('@aerogearservices/core').ConfigService;
+const ConfigService = require('aerogear-core').ConfigService;
 
 document.addEventListener("deviceready", onDeviceReady, false);
 // Cordova is loaded and it is now safe to make calls Cordova methods
