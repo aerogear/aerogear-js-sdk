@@ -6,15 +6,14 @@ import Metrics from "./Metrics";
 class MetricsService implements ServiceModule {
 
   public readonly type: string = "metrics";
-
-  private readonly url: string;
+  public readonly configuration: ServiceConfiguration;
 
   constructor(configuration: ServiceConfiguration) {
-    this.url = configuration.url;
+    this.configuration = configuration;
   }
 
-  protected sendAppAndDeviceMetrics(metrics: Metrics): Promise<any> {
-    return axios.post(this.url, metrics);
+  protected sendMetrics(metrics: Metrics): Promise<any> {
+    return axios.post(this.configuration.url, metrics);
   }
 
   protected getClientId(): string {

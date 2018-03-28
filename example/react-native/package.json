@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "aerogear-react-native-sdk": "file:../../../aerogear-react-native-sdk/",
+    "lodash.find": "^4.6.0",
     "react": "^16.2.0",
     "react-native": "0.53.3",
     "react-native-navbar": "^2.1.0",

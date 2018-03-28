@@ -40,12 +40,13 @@ export interface SecurityMetric {
 
 export declare class MetricsService implements ServiceModule {
   public readonly type: string;
-  private readonly url: string;
-  constructor(configuration: ServiceConfiguration);
-  protected sendAppAndDeviceMetrics(metrics: Metrics): Promise<any>;
+  public readonly configuration: ServiceConfiguration;
+  constructor();
+  protected sendMetrics(metrics: Metrics): Promise<any>;
   protected getClientId(): string;
 }
 
 export interface ServiceModule {
   readonly type: string;
+  readonly configuration: ServiceConfiguration;
 }
