@@ -13,7 +13,7 @@
   "author": "Apache Cordova Team",
   "license": "Apache-2.0",
   "dependencies": {
-    "aerogear-core": "file:../../packages/core",
+    "@aerogearservices/core": "file:../../packages/core",
     "browserify": "^16.1.0",
     "cordova-android": "^7.1.0",
     "cordova-browser": "^5.0.3",

@@ -7,7 +7,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "aerogear-react-native-sdk": "file:../../../aerogear-react-native-sdk/",
+    "@aerogearservices/core-rn": "file:../../packages/core-rn",
     "lodash.find": "^4.6.0",
     "react": "^16.2.0",
     "react-native": "0.53.3",

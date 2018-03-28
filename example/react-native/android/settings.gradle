@@ -1,5 +1,5 @@
 rootProject.name = 'AeroGearDemo'
-include ':aerogear-react-native-sdk'
-project(':aerogear-react-native-sdk').projectDir = new File(rootProject.projectDir, '../node_modules/aerogear-react-native-sdk/android')
+include ':@aerogearservices/core-rn'
+project(':@aerogearservices/core-rn').projectDir = new File(rootProject.projectDir, '../node_modules/@aerogearservices/core-rn/android')
 
 include ':app'

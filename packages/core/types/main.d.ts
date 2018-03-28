@@ -1,5 +1,5 @@
 /**
- * @module aerogear-core
+ * @module @aerogearservices/core
  */
 export interface ServiceConfiguration {
   readonly id: string;

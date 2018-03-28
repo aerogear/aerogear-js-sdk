@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { View, Text, StatusBar } from "react-native";
-import { MetricsService } from "aerogear-react-native-sdk";
+import { MetricsService } from "@aerogearservices/core-rn";
 import find from "lodash.find";
 import { NavDrawerButton } from "../common";
 import { Colors } from "../../assets";

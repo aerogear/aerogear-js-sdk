@@ -27,14 +27,14 @@ npm run lint
 ----
   cd packages/core
   npm link .
-  npm link aerogear-core
+  npm link @aerogearservices/core
 ----
 
 2. Use core in your application
 [source,javascript]
 ----
 var config = require('./mobile-config.json')
-var ConfigService = require('aerogear-core').ConfigService;
+var ConfigService = require('@aerogearservices/core').ConfigService;
 
 var config = new ConfigService(config);
 ----
