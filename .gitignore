@@ -72,7 +72,6 @@ package-lock.json
 
 ## Dist folders
 dist
-types
 
 # Module compiled output
 packages/core/src/*.js*

@@ -1,0 +1,10 @@
+# Android/IntelliJ
+#
+build/
+.idea
+.gradle
+local.properties
+*.iml
+gradlew
+gradlew.bat
+gradle
