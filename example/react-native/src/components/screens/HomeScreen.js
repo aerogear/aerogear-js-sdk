@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { View, Text, StatusBar } from "react-native";
-import { RNMetricsService } from "aerogear-react-native-sdk";
+import { MetricsService } from "aerogear-react-native-sdk";
 import find from "lodash.find";
 import { NavDrawerButton } from "../common";
 import { Colors } from "../../assets";
@@ -24,7 +24,8 @@ class HomeScreen extends Component {
 
   componentWillMount() {
     const configuration = find(mobileServicesJson.services, { type: "metrics" });
-    const metricsService = new RNMetricsService(configuration);
+    const metricsService = new MetricsService(configuration);
+    console.log(metricsService);
 
     metricsService.sendAppAndDeviceMetrics()
       .then(() => this.setState({ res: "Done!" }))
