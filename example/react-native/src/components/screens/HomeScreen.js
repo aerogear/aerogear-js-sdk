@@ -25,7 +25,6 @@ class HomeScreen extends Component {
   componentWillMount() {
     const configuration = find(mobileServicesJson.services, { type: "metrics" });
     const metricsService = new MetricsService(configuration);
-    console.log(metricsService);
 
     metricsService.sendAppAndDeviceMetrics()
       .then(() => this.setState({ res: "Done!" }))
