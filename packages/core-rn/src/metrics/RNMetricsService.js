@@ -1,5 +1,6 @@
 import { NativeModules } from "react-native";
 import { MetricsService } from "@aerogearservices/core";
+import packageJson from "../../package.json";
 
 const RNMobileCore = NativeModules.MobileCore;
 
@@ -9,10 +10,7 @@ class RNMetricsService extends MetricsService {
     const deviceMetrics = await RNMobileCore.getDeviceMetrics();
     const appMetrics = await RNMobileCore.getAppMetrics();
 
-    // What platform? Android/iOS or RN-Android, RN-iOS, Cordova-Android...
-
-    // What SDK? Core or Cordova/RN-Core?
-    appMetrics.sdkVersion = "0.0.1";
+    appMetrics.sdkVersion = packageJson.version + "-rn";
 
     const metrics = {
       clientId: super.getClientId(),
