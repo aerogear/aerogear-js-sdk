@@ -18,7 +18,7 @@
     <platform name="android">
         <allow-intent href="market:*" />
         <preference name="android-minSdkVersion" value="21" />
-        <edit-config file="AndroidManifest.xml" target="/manifest/uses-sdk" mode="merge">
+        <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/uses-sdk">
         </edit-config>
     </platform>
     <platform name="ios">

@@ -8,6 +8,6 @@ allprojects {
 }
 
 dependencies {
-    implementation 'org.aerogear:auth:0.1.0-2018-09'
+    // implementation 'org.aerogear:auth:0.1.0-2018-09'
     implementation 'org.aerogear:core:0.1.0-2018-09'
 }
