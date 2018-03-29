@@ -1,0 +1,14 @@
+{
+  "name": "cordova-plugin-aerogear-metrics",
+  "version": "1.0.0",
+  "description": "",
+  "cordova": {
+    "id": "cordova-plugin-aerogear-metrics",
+    "platforms": []
+  },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "author": "",
+  "license": "Apache 2.0"
+}

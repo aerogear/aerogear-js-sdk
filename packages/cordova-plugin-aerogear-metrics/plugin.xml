@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="cordova-plugin-aerogear-metrics" version="1.0.0" 
+  xmlns="http://apache.org/cordova/ns/plugins/1.0" 
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  
+  <name>cordova-plugin-aerogear-metrics</name>
+  
+  <js-module name="cordova-plugin-aerogear-metrics" src="www/cordova-plugin-aerogear-metrics.js">
+    <clobbers target="cordova.plugins.cordova-plugin-aerogear-metrics" />
+  </js-module>
+
+  <platform name="android">
+    <framework custom="true" src="src/android/build.gradle" type="gradleReference" />
+
+    <config-file parent="/*" target="res/xml/config.xml">
+      <feature name="CordovaPluginAeroGearMetrics">
+        <param name="android-package" value="aerogear.metrics.CordovaPluginAeroGearMetrics" />
+      </feature>
+    </config-file>
+
+    <config-file parent="/*" target="AndroidManifest.xml"></config-file>
+    <source-file src="src/android/CordovaPluginAeroGearMetrics.java" target-dir="src/cordova-plugin-aerogear-metrics/cordova-plugin-aerogear-metrics" />
+  </platform>
+
+</plugin>

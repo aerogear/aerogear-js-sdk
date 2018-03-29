@@ -8,10 +8,10 @@
     "postinstall": "npm run browserify && npm run copy-f7",
     "browserify": "browserify www/js/index.js -o www/js/bundle.js",
     "copy-f7": "cpy node_modules/framework7/dist/js/*.* www/framework7/js && cpy node_modules/framework7/dist/css/*.* www/framework7/css && cpy node_modules/framework7-icons/fonts/*.* www/fonts && cpy node_modules/framework7-icons/css/framework7-icons.css www/css && cpy node_modules/material-design-icons/iconfont/*.{eot,ttf,woff,woff2} www/fonts && cpy node_modules/material-design-icons/iconfont/material-icons.css www/fonts",
-    "add-platform-android": "cordova platform add android",
-    "add-platform-ios": "cordova platform add ios",
-    "run-android": "cordova run android",
-    "run-ios": "cordova run ios"
+    "platform-add-android": "cordova platform add android",
+    "platform-add-ios": "cordova platform add ios",
+    "android": "cordova run android",
+    "ios": "cordova run ios"
   },
   "author": "Apache Cordova Team",
   "license": "Apache-2.0",
