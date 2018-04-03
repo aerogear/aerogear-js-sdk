@@ -17,6 +17,9 @@
     <allow-intent href="geo:*" />
     <platform name="android">
         <allow-intent href="market:*" />
+        <preference name="android-minSdkVersion" value="21" />
+        <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/uses-sdk">
+        </edit-config>
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />
