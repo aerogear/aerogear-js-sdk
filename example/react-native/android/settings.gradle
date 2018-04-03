@@ -1,5 +1,0 @@
-rootProject.name = 'AeroGearDemo'
-include ':@aerogearservices/core-rn'
-project(':@aerogearservices/core-rn').projectDir = new File(rootProject.projectDir, '../node_modules/@aerogearservices/core-rn/android')
-
-include ':app'
