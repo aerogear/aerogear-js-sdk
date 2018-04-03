@@ -27,6 +27,7 @@
     "interface-name": [
       true,
       "never-prefix"
-    ]
+    ],
+    "no-unused-expression": false
   }
 }
