@@ -2,22 +2,24 @@ package org.aerogear.mobile.core;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
-
-import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MobileCoreModule extends CordovaPlugin {
 
-  public MobileCoreModule() {}
+  public MobileCoreModule() {
+  }
 
-  public MobileCoreModule(Context context) {}
+  public MobileCoreModule(Context context) {
+  }
 
   @Override
   public void initialize(CordovaInterface cordova, CordovaWebView webView) {
@@ -26,9 +28,14 @@ public class MobileCoreModule extends CordovaPlugin {
   }
 
   @Override
-  public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+  public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
     if (action.equals("getMetrics")) {
-      getDeviceMetrics(callbackContext);
+      try {
+        callbackContext.success(getMetrics());
+      } catch (Exception e) {
+        callbackContext.error(e.getMessage());
+      }
+
       return true;
     }
 
@@ -40,33 +47,32 @@ public class MobileCoreModule extends CordovaPlugin {
     return "MobileCore";
   }
 
-  public void getDeviceMetrics(CallbackContext callbackContext) {
-    // try {
-    //   final WritableMap deviceMetrics = Arguments.createMap();
-    //   deviceMetrics.putString("platform", "android");
-    //   deviceMetrics.putString("platformVersion", String.valueOf(Build.VERSION.SDK_INT));
-    //   promise.resolve(deviceMetrics);
+  public JSONObject getMetrics() throws NameNotFoundException, JSONException {
+    JSONObject metrics = new JSONObject();
 
-    // } catch (Exception e) {
-    //   promise.reject("GetDeviceMetricsError", e.getMessage());
-    // }
-    callbackContext.success("Device metrics");
+    metrics.put("app", getAppMetrics());
+    metrics.put("device", getDeviceMetrics());
+
+    return metrics;
   }
 
-  public void getAppMetrics(CallbackContext callbackContext) {
-    // try {
-    //   String packageName = reactContext.getPackageName();
-    //   PackageInfo packageInfo = reactContext.getPackageManager()
-    //     .getPackageInfo(packageName, 0);
+  public JSONObject getDeviceMetrics() throws JSONException {
+    final JSONObject deviceMetrics = new JSONObject();
+    deviceMetrics.put("platform", "android");
+    deviceMetrics.put("platformVersion", String.valueOf(Build.VERSION.SDK_INT));
 
-    //   final WritableMap appMetrics = Arguments.createMap();
-    //   appMetrics.putString("appId", packageName);
-    //   appMetrics.putString("appVersion", packageInfo.versionName);
-    //   promise.resolve(appMetrics);
+    return deviceMetrics;
+  }
 
-    // } catch (Exception e) {
-    //   promise.reject("GetAppMetricsError", e.getMessage());
-    // }
-    callbackContext.success("App metrics");
+  public JSONObject getAppMetrics() throws JSONException, NameNotFoundException {
+    String packageName = this.cordova.getActivity().getPackageName();
+    PackageInfo packageInfo = this.cordova.getActivity().getPackageManager()
+      .getPackageInfo(packageName, 0);
+
+    final JSONObject appMetrics = new JSONObject();
+    appMetrics.put("appId", packageName);
+    appMetrics.put("appVersion", packageInfo.versionName);
+
+    return appMetrics;
   }
 }

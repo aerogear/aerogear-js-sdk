@@ -47,7 +47,9 @@
       var self = this;
       self.$("#metrics-info").html("No metrics");
       window.MobileCore.MetricsService.getMetrics(
-        function (metrics) { self.$("#metrics-info").html(metrics); },
+        function (metrics) {
+          self.$("#metrics-info").html(JSON.stringify(metrics));
+        },
         function (error) { self.$("#metrics-info").html(error); }
       );
     },
