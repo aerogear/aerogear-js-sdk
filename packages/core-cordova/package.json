@@ -11,7 +11,7 @@
     ]
   },
   "dependencies": {
-    "@aerogearservices/core": "file:../core/"
+    "@aerogearservices/core": "1.0.0"
   },
   "keywords": [
     "cordova",
