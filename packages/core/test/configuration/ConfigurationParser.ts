@@ -11,14 +11,22 @@ describe("ConfigurationParser", () => {
     testSubject = new ConfigurationParser(testAerogearConfig);
   });
 
-  it("should be able to get keycloak config", () => {
-    const keycloakConfig = testSubject.getKeycloakConfig();
-    expect(keycloakConfig.name).to.equal("keycloak");
   });
 
-  it("should be able to get metrics config", () => {
-    const metricsConfig = testSubject.getMetricsConfig();
-    expect(metricsConfig.name).to.equal("metrics");
+  describe("#getService", () => {
+
+    it("should be able to get keycloak config", () => {
+      const keycloakConfig = parser.getConfig("keycloak");
+
+      assert.equal(keycloakConfig.name, "keycloak");
+    });
+
+    it("should be able to get metrics config", () => {
+      const metricsConfig = parser.getConfig("metrics");
+
+      assert.equal(metricsConfig.name, "metrics");
+    });
+
   });
 
 });

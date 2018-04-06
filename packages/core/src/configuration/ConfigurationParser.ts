@@ -2,12 +2,17 @@ import find from "lodash.find";
 import { AeroGearConfiguration, ServiceConfiguration } from "./";
 
 /**
+ * List of types of all supported services.
+ */
+export type ServiceType = "metrics" | "keycloak";
+
+/**
  * Represents a configuration parser.
  * Class abstracts from where configuration will come from and expect
  */
 export class ConfigurationParser {
 
-  private readonly configurations: ServiceConfiguration[];
+  protected readonly configurations: ServiceConfiguration[];
 
   /**
    * @param config - top level configuration that will be send from server.
@@ -16,15 +21,7 @@ export class ConfigurationParser {
     this.configurations = config.services || [];
   }
 
-  public getKeycloakConfig(): ServiceConfiguration {
-    return this.configByKey("keycloak");
-  }
-
-  public getMetricsConfig(): ServiceConfiguration {
-    return this.configByKey("metrics");
-  }
-
-  public configByKey(key: string): any {
-    return find(this.configurations, service => service.type === key);
+  public getConfig(type: ServiceType): ServiceConfiguration | undefined {
+    return find(this.configurations, service => service.type === type);
   }
 }
