@@ -3,9 +3,13 @@ import mocha from "mocha";
 import sinon from "sinon";
 import uuid from "uuid/v1";
 import { ConfigurationParser, ServiceConfiguration } from "../../src/configuration";
-import { MetricsService } from "../../src/metrics/MetricsService";
-import { Metrics, MetricsPayload } from "../../src/metrics/model";
-import { MetricsNetworkPublisher, MetricsPublisher } from "../../src/metrics/publisher";
+import {
+  Metrics,
+  MetricsPayload,
+  MetricsPublisher,
+  MetricsService,
+  NetworkMetricsPublisher
+} from "../../src/metrics";
 import testAerogearConfig from "../mobile-config.json";
 
 describe("MetricsService", () => {
@@ -23,12 +27,12 @@ describe("MetricsService", () => {
   it("should have a NetworkMetricsPublisher by default", () => {
     const defaultPublisher = metricsService.metricsPublisher;
 
-    expect(defaultPublisher).to.be.instanceOf(MetricsNetworkPublisher);
+    expect(defaultPublisher).to.be.instanceOf(NetworkMetricsPublisher);
   });
 
   it("should instantiate NetworkMetricsPublisher with configuration url", () => {
     const { url } = metricsConfig;
-    const publisher = metricsService.metricsPublisher as MetricsNetworkPublisher;
+    const publisher = metricsService.metricsPublisher as NetworkMetricsPublisher;
 
     assert.equal(url, publisher.url);
   });
