@@ -1,10 +1,7 @@
-import chai, { expect } from "chai";
-import { find } from "lodash";
+import { expect } from "chai";
 import mocha from "mocha";
-import sinon from "sinon";
-import { ConfigurationParser } from "../../src/configuration/ConfigurationParser";
-import { ServiceConfiguration } from "../../src/configuration/ServiceConfiguration";
-import testAerogearConfig from "./mobile-config.json";
+import { ConfigurationParser, ServiceConfiguration } from "../../src/configuration";
+import testAerogearConfig from "../mobile-config.json";
 
 describe("ConfigurationParser", () => {
 
