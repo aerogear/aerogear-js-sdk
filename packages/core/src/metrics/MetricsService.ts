@@ -48,10 +48,10 @@ export abstract class MetricsService {
     }
 
     /**
-     * Generates or gets mobile client id
+     * Generates a new ID for the device or returns an existing one if stored in the device
      */
     public getClientId(): string {
-        let clientId: string = this.getSavedClientId();
+        let clientId = this.getSavedClientId();
 
         if (!clientId) {
             clientId = uuid();
@@ -61,6 +61,14 @@ export abstract class MetricsService {
         return clientId;
     }
 
-    protected abstract getSavedClientId(): string;
+    /**
+     * Returns an existing client id if stored in the device, otherwise returns undefined
+     */
+    protected abstract getSavedClientId(): string | undefined;
+
+    /**
+     * Save in the persistent storage the id for this device
+     * @param id the client id to save
+     */
     protected abstract saveClientId(id: string): void;
 }
