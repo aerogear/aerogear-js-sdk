@@ -71,6 +71,8 @@ public class MobileCoreModule extends CordovaPlugin {
 
     final JSONObject appMetrics = new JSONObject();
     appMetrics.put("appId", packageName);
+    // sdkVersion is included in package.json, hence must be added by JS
+    appMetrics.put("sdkVersion", "");
     appMetrics.put("appVersion", packageInfo.versionName);
 
     return appMetrics;
