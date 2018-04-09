@@ -10,6 +10,14 @@
       "android"
     ]
   },
+  "scripts": {
+    "build": "node_modules/.bin/tsc",
+    "clean": "rm -rf node_modules src/*.js src/*.map types",
+    "clean:build": "npm run clean && npm install && npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^2.8.1"
+  },
   "dependencies": {
     "@aerogearservices/core": "1.0.0"
   },
