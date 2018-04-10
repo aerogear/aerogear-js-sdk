@@ -11,14 +11,14 @@
     ]
   },
   "scripts": {
-    "build": "node_modules/.bin/tsc",
-    "clean": "rm -rf node_modules src/*.js src/*.map types",
+    "bundle": "node_modules/.bin/browserify dist/MobileCore.js -o dist/core-cordova.js",
+    "build": "node_modules/.bin/tsc && npm run bundle",
+    "clean": "rm -rf dist node_modules src/*.js src/*.map types",
     "clean:build": "npm run clean && npm install && npm run build"
   },
   "devDependencies": {
-    "typescript": "^2.8.1"
-  },
-  "dependencies": {
+    "@types/node": "^9.6.2",
+    "typescript": "^2.8.1",
     "@aerogearservices/core": "1.0.0"
   },
   "keywords": [
