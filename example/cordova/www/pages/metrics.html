@@ -44,14 +44,15 @@
 <script>
   return {
     beforeCreate() {
-      var self = this;
-      self.$("#metrics-info").html("No metrics");
-      window.MobileCore.MetricsService.getMetrics(
-        function (metrics) {
-          self.$("#metrics-info").html(JSON.stringify(metrics));
-        },
-        function (error) { self.$("#metrics-info").html(error); }
-      );
+      // var self = this;
+      // self.$("#metrics-info").html("No metrics");
+      console.log("Plugin:", window.cordova.aerogear.core);
+      // window.cordova.aerogear.MobileCore.MetricsService.getMetrics(
+      //   function (metrics) {
+      //     self.$("#metrics-info").html(JSON.stringify(metrics));
+      //   },
+      //   function (error) { self.$("#metrics-info").html(error); }
+      // );
     },
     data: function () {
       return {}
@@ -59,6 +60,7 @@
     methods: {
       sendMetrics: function (success, error) {
         // TODO: import library and call sendAppAndDeviceMetrics
+        console.log("sending metrics...");
       },
     }
   };
