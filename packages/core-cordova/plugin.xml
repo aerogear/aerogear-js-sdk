@@ -9,15 +9,15 @@
     <license>Apache 2.0</license>
     <keywords>cordova,aerogear,mobile</keywords>
 
-    <js-module src="dist/core-cordova.js" name="core-cordova">
-        <clobbers target="cordova.aerogear.core" />
+     <js-module src="dist/MobileCore.js" name="core-cordova">
+        <!-- <clobbers target="aerogear_core" /> -->
     </js-module>
 
     <platform name="android">
-        <config-file target="res/xml/config.xml" parent="/*"> 
+        <config-file target="res/xml/config.xml" parent="/*">
             <feature name="MobileCoreModule" >
                 <param
-                    name="android-package" 
+                    name="android-package"
                     value="org.aerogear.mobile.core.MobileCoreModule"
                 />
             </feature>
@@ -27,9 +27,9 @@
             <!-- Add permissions here -->
         </config-file>
 
-        <source-file 
-            src="src/android/MobileCoreModule.java" 
-            target-dir="src/org/aerogear/mobile/core/MobileCoreModule" 
+        <source-file
+            src="src/android/MobileCoreModule.java"
+            target-dir="src/org/aerogear/mobile/core/MobileCoreModule"
         />
     </platform>
 
