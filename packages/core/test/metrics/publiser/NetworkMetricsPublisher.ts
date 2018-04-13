@@ -14,8 +14,9 @@ import testAerogearConfig from "../../mobile-config.json";
 
 describe("NetworkMetricsPublisher", () => {
 
-  const validMetrics = {
+  const validMetrics: MetricsPayload = {
     clientId: "123",
+    type: "init",
     data: {}
   };
 
