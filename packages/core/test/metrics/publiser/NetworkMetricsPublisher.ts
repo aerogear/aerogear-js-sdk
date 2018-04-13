@@ -35,7 +35,7 @@ describe("NetworkMetricsPublisher", () => {
 
   describe("#publish", () => {
 
-    it("should return 204 is metrics are published", async () => {
+    it("should return 204 if metrics are published", async () => {
       const res = await publisher.publish(validMetrics);
 
       assert.equal(res.status, 204);
