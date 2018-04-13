@@ -20,7 +20,7 @@ describe("NetworkMetricsPublisher", () => {
   };
 
   const mockServer = mockttp.getLocal();
-  let publisher;
+  let publisher: NetworkMetricsPublisher;
 
   before(async () => {
     await mockServer.start();
