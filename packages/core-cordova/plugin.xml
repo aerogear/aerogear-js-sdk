@@ -34,5 +34,19 @@
             target-dir="src/org/aerogear/mobile/core/MobileCoreModule"
         />
     </platform>
+    
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="MobileCoreModule">
+                <param
+                    name="ios-package"
+                    value="AgsCore"
+                />
+            </feature>
+        </config-file>
+
+        <source-file src="src/ios/MobileCoreModule.m" />
+        <header-file src="src/ios/MobileCoreModule.h" />
+    </platform>
 
 </plugin>
