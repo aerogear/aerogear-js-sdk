@@ -59,7 +59,7 @@
     "typescript": "^2.8.1"
   },
   "dependencies": {
-    "keycloak-js": "4.0.0-beta.1",
+    "keycloak-js": "3.4.3",
     "url": "^0.11.0"
   }
 }
