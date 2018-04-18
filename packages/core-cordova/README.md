@@ -7,7 +7,7 @@ TODO
 <!-- You can install this plugin with Cordova CLI, from npm:
 
 ```
-$ cordova plugin add @aerogearservices/core-cordova
+$ cordova plugin add @aerogear/core-cordova
 $ cordova prepare
 ``` -->
 

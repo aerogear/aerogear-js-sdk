@@ -1,6 +1,6 @@
-== Getting Started with AeroGear Services JavaScript SDK
+== Getting Started with AeroGear JavaScript SDK
 
-This guide provides general information for creating applications that utilize the AeroGear Services JavaScript SDK.
+This guide provides general information for creating applications that utilize the AeroGear JavaScript SDK.
 
 == Prerequisites for Apache Cordova
 
@@ -12,9 +12,9 @@ In order to develop a Cordova application utilizing the SDK you will need the fo
 
 == Installing the AeroGear JavaScript SDK
 
-The services in the SDK are available as NPM packages under the `@aerogearservices` scope suffixed with a `<module name>-<platform>`.
+The services in the SDK are available as NPM packages under the `@aerogear` scope suffixed with a `<module name>-<platform>`.
 
-The Core of the SDK along with suitable native module bindings, for example, is available as `@aerogearservices/core-cordova`.
+The Core of the SDK along with suitable native module bindings, for example, is available as `@aerogear/core-cordova`.
 
 === Including native plugins on your Cordova project
 
@@ -22,7 +22,7 @@ In order to properly install the native dependencies of the SDK in your project,
 
 [source]
 ----
-$ cordova plugin add @aerogearservices/core-cordova
+$ cordova plugin add @aerogear/core-cordova
 Installing "core-cordova" for android
 Android Studio project detected
 Adding core-cordova to package.json
@@ -39,7 +39,7 @@ After running the above command, your project's `package.json` and `config.xml` 
 {
   // ...
   "dependencies": {
-    "@aerogearservices/core-cordova": "1.0.0",
+    "@aerogear/core-cordova": "1.0.0",
     // ...
   },
   "cordova": {
@@ -64,7 +64,7 @@ After running the above command, your project's `package.json` and `config.xml` 
 
 See the link:https://cordova.apache.org/docs/en/latest/platform_plugin_versioning_ref/#plugin-versioning[Apache Cordova documentation for Plugins] for more information.
 
-== Adding the AeroGear Services Configuration file
+== Adding the AeroGear Configuration file
 
 Utilize the link:https://github.com/aerogear/mobile-cli[AeroGear Mobile CLI] to generate a `mobile-services.json` file and place it inside your project's resource directory.
 
