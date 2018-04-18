@@ -4,7 +4,7 @@ import { Metrics, MetricsPayload, MetricsType } from "./model";
 import { MetricsPublisher, NetworkMetricsPublisher } from "./publisher";
 
 /**
- * AeroGear Services metrics service
+ * AeroGear metrics service
  */
 export abstract class MetricsService {
 

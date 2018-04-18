@@ -1,7 +1,7 @@
 {
-  "name": "@aerogearservices/core",
-  "version": "1.0.0",
-  "description": "JavaScript Core SDK for AeroGear services",
+  "name": "@aerogear/core",
+  "version": "0.0.1",
+  "description": "JavaScript Core SDK for AeroGear",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
   "author": "Aerogear <aerogear@googlegroups.com>",

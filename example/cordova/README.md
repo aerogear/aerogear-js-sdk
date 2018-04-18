@@ -1,4 +1,4 @@
-# AeroGear Services Cordova Example
+# AeroGear Cordova Example
 
 Cordova Example uses HTML framework called **framework7** focused on iOS and Google Material design.
 

@@ -13,7 +13,7 @@ AeroGear SDK for Java Script, Apache Cordova and React Native.
 
 ### List of SDKs
 
-AeroGear Services SDK consist of set of separate SDKs
+AeroGear SDK consist of set of separate SDKs
 
 - [Core](./docs/core/README.adoc): Common base for all SDKs
 - [Metrics](./docs/metrics/README.adoc): Mobile application metrics SDK

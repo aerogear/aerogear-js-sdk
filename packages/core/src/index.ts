@@ -1,5 +1,5 @@
 /**
- * @module @aerogearservices/core
+ * @module @aerogear/core
  */
 
 export { MetricsService } from "./metrics/MetricsService";
