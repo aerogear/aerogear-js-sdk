@@ -74,3 +74,16 @@ package-lock.json
 dist
 types
 **/bundle.js
+
+## Gradle
+*.iml
+.gradle
+local.properties
+.idea
+.DS_Store
+build
+captures
+.externalNativeBuild
+*/.classpath
+*/.project
+*/.settings

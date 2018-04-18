@@ -15,7 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 // TODO: refactor `extends CordovaPlugin` to cordova-specific wrapper
-public class MobileCore {
+public class MobileCore extends CordovaPlugin {
 
   public final String SERVICE_NAME = "MobileCore";
 
@@ -23,6 +23,31 @@ public class MobileCore {
   }
 
   public MobileCore(Context context) {
+  }
+
+  @Override
+  public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+    super.initialize(cordova, webView);
+    // Initialization logic here
+  }
+
+  @Override
+  public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
+    if (action.equals("getAppAndDeviceMetrics")) {
+      try {
+        callbackContext.success(getAppAndDeviceMetrics());
+      } catch (Exception e) {
+        callbackContext.error(e.getMessage());
+      }
+
+      return true;
+    }
+
+    return false;
+  }
+
+  public String getServiceName() {
+    return "MobileCore";
   }
 
   public static String getSdkVersion() {
