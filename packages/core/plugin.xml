@@ -31,10 +31,13 @@
             <uses-permission android:name="android.permission.INTERNET" />
         </config-file>
 
-        <!-- TODO: change to js/core/cordova/ after wrapper -->
         <source-file
             src="android/src/main/java/org/aerogear/mobile/js/core/MobileCore.java"
-            target-dir="src/org/aerogear/mobile/js/core/MobileCore.java"
+            target-dir="src/org/aerogear/mobile/js/core"
+        />
+        <source-file
+            src="android/src/main/java/org/aerogear/mobile/js/core/cordova/Core.java"
+            target-dir="src/org/aerogear/mobile/js/core/cordova"
         />
     </platform>
 

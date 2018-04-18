@@ -1,32 +1,21 @@
-package org.aerogear.mobile.core;
+package org.aerogear.mobile.js.core;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
-import org.aerogear.android.core.BuildConfig;
 
-import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaInterface;
-import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.CordovaWebView;
-import org.json.JSONArray;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-// TODO: refactor `extends CordovaPlugin` to cordova-specific wrapper
 public class MobileCore {
 
   public final String SERVICE_NAME = "MobileCore";
-
-  public MobileCore() {
-  }
+  private Context context;
 
   public MobileCore(Context context) {
-  }
-
-  public static String getSdkVersion() {
-    return BuildConfig.VERSION_NAME;
+    this.context = context;
   }
 
   public JSONObject getAppAndDeviceMetrics() throws NameNotFoundException, JSONException {
@@ -47,9 +36,9 @@ public class MobileCore {
   }
 
   public JSONObject getAppMetrics() throws JSONException, NameNotFoundException {
-    String packageName = this.cordova.getActivity().getPackageName();
-    PackageInfo packageInfo = this.cordova.getActivity().getPackageManager()
-      .getPackageInfo(packageName, 0);
+    String packageName = this.context.getPackageName();
+    PackageInfo packageInfo = this.context.getPackageManager()
+    .getPackageInfo(packageName, 0);
 
     final JSONObject appMetrics = new JSONObject();
     appMetrics.put("appId", packageName);
