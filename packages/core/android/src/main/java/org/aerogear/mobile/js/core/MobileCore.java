@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
+import org.aerogear.android.core.BuildConfig;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -13,12 +14,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MobileCoreModule extends CordovaPlugin {
+// TODO: refactor `extends CordovaPlugin` to cordova-specific wrapper
+public class MobileCore extends CordovaPlugin {
 
-  public MobileCoreModule() {
+  public final String SERVICE_NAME = "MobileCore";
+
+  public MobileCore() {
   }
 
-  public MobileCoreModule(Context context) {
+  public MobileCore(Context context) {
   }
 
   @Override
@@ -42,9 +46,12 @@ public class MobileCoreModule extends CordovaPlugin {
     return false;
   }
 
-  @Override
   public String getServiceName() {
     return "MobileCore";
+  }
+
+  public static String getSdkVersion() {
+    return BuildConfig.VERSION_NAME;
   }
 
   public JSONObject getAppAndDeviceMetrics() throws NameNotFoundException, JSONException {

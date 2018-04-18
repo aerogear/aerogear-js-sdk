@@ -8,18 +8,10 @@ import { MetricsPublisher, NetworkMetricsPublisher } from "./publisher";
  */
 export abstract class MetricsService {
 
-    private publisher: MetricsPublisher;
+    public publisher: MetricsPublisher;
 
     constructor(private readonly configuration: ServiceConfiguration) {
         this.publisher = new NetworkMetricsPublisher(configuration.url);
-    }
-
-    set metricsPublisher(publisher: MetricsPublisher) {
-        this.publisher = publisher;
-    }
-
-    get metricsPublisher(): MetricsPublisher {
-        return this.publisher;
     }
 
     /**

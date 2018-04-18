@@ -10,7 +10,32 @@
     <keywords>cordova,aerogear,mobile</keywords>
 
     <js-module src="www/bundle.js" name="core">
-        <runs />
+        <clobbers target="aerogear.core" />
     </js-module>
+
+    <js-module src="www/metrics.js" name="core-metrics">
+        <clobbers target="aerogear.metrics" />
+    </js-module>
+
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="MobileCore" >
+                <param
+                    name="android-package"
+                    value="org.aerogear.mobile.js.core.MobileCore"
+                />
+            </feature>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.INTERNET" />
+        </config-file>
+
+        <!-- TODO: change to js/core/cordova/ after wrapper -->
+        <source-file
+            src="android/src/main/java/org/aerogear/mobile/js/core/MobileCore.java"
+            target-dir="src/org/aerogear/mobile/js/core/MobileCore.java"
+        />
+    </platform>
 
 </plugin>

@@ -1,6 +1,6 @@
-const MetricsService = cordova.require("core.core").MetricsService;
+const MetricsService = require("core.core").MetricsService;
 
-const MOBILE_CORE_CLASS = "MobileCoreModule";
+const MOBILE_CORE_CLASS = "MobileCore";
 
 /**
  * Represents a Metrics object
