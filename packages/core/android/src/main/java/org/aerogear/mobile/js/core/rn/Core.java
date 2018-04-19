@@ -10,7 +10,6 @@ import org.json.JSONObject;
 
 public class Core extends ReactContextBaseJavaModule {
 
-  public final String SERVICE_NAME = "MobileCore";
   private final MobileCore core;
   private final ReactApplicationContext context;
 
@@ -32,6 +31,6 @@ public class Core extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return SERVICE_NAME;
+    return this.core.SERVICE_NAME;
   }
 }

@@ -13,7 +13,6 @@ import org.json.JSONObject;
 
 public class Core extends CordovaPlugin {
 
-  public final String SERVICE_NAME = "MobileCore";
   private MobileCore core;
 
   @Override
@@ -38,7 +37,7 @@ public class Core extends CordovaPlugin {
 
   @Override
   public String getServiceName() {
-    return SERVICE_NAME;
+    return this.core.SERVICE_NAME;
   }
 
   public JSONObject getAppAndDeviceMetrics() throws NameNotFoundException, JSONException {
