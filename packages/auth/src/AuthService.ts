@@ -9,8 +9,8 @@ export class AuthService {
 
     private auth: KeycloakInstance;
 
-    constructor(config: KeycloakInitOptions) {
-      this.auth = Keycloak(config);
+    constructor(config: any) {
+      this.auth = new Keycloak(config);
     }
 
   /**
@@ -18,7 +18,7 @@ export class AuthService {
    * @param initOptions Initialization options.
    * @returns A promise to set functions to be invoked on success or error.
    */
-  public init(initOptions: KeycloakInitOptions): KeycloakPromise<boolean, KeycloakError> {
+   public init(initOptions: KeycloakInitOptions): KeycloakPromise<boolean, KeycloakError> {
       if (!initOptions.onLoad) {
         initOptions.onLoad = "check-sso";
       }
@@ -38,7 +38,7 @@ export class AuthService {
 		 * @param options Login options.
 		 */
     public login(): KeycloakPromise<void, void> {
-      return this.auth.login();
+      return this.auth.login.bind(this.auth)();
     }
 
     /**
