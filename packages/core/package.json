@@ -13,7 +13,7 @@
   "scripts": {
     "clean": "del coverage .nyc_output dist types",
     "build": "npm run build-cordova",
-    "build-cordova": "tsc && browserify dist/index.js --standalone 'aerogear.core' -o www/bundle.js",
+    "build-cordova": "tsc && browserify dist/cordova/index.js --standalone 'aerogear.core' -o www/bundle.js",
     "watch": "tsc --watch",
     "test": "nyc mocha"
   },
@@ -46,6 +46,7 @@
     "@types/mocha": "^5.0.0",
     "@types/node": "^9.4.6",
     "@types/proxyquire": "1.3.28",
+    "@types/react-native": "^0.55.4",
     "@types/sinon": "^4.3.1",
     "@types/uuid": "^3.4.3",
     "browserify": "^16.2.0",
@@ -64,6 +65,7 @@
     "axios": "0.18.0",
     "bluebird": "^3.5.1",
     "lodash.find": "^4.6.0",
+    "react-native": "^0.55.3",
     "uuid": "^3.2.1"
   }
 }

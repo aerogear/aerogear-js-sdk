@@ -47,7 +47,7 @@
       var self = this;
       self.$("#metrics-info").html("Fetching metrics...");
 
-      self.metricsService = new aerogear.metrics.MetricsService({ url: "http://192.168.1.6:3000/metrics" });
+      self.metricsService = new aerogear.core.MetricsService({ url: "http://192.168.1.6:3000/metrics" });
       self.metricsService.getAppAndDeviceMetrics()
         .then(metrics => {
           self.$("#metrics-info").html(JSON.stringify(metrics));

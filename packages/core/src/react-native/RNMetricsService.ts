@@ -1,10 +1,11 @@
 import Promise from "bluebird";
+import {NativeModules} from "react-native";
 import {MetricsService} from "../metrics/MetricsService";
 import {MetricsImpl} from "../metrics/model";
-declare var cordova: any;
 
 const MOBILE_CORE_CLASS = "MobileCore";
 
+const NativeCore = NativeModules[MOBILE_CORE_CLASS];
 /**
  * Class that exposes the AeroGear metrics SDK for a Cordova application.
  * It is globally available trough 'window.aerogear' or simply 'aerogear', under the name
@@ -17,7 +18,7 @@ const MOBILE_CORE_CLASS = "MobileCore";
  * metricsService.sendAppAndDeviceMetrics()
  *   .then(handleResponse)
  */
-export class CordovaMetricsService extends MetricsService {
+export class RNMetricsService extends MetricsService {
 
   /**
    * Get some metrics about the application and device
@@ -25,19 +26,7 @@ export class CordovaMetricsService extends MetricsService {
    * @return {Promise} A promise containing an object with the metrics
    */
   public getAppAndDeviceMetrics(): Promise<any> {
-    return new Promise((res, rej) => {
-      cordova.exec(
-        (metrics: any) => {
-          const plugins = cordova.require("cordova/plugin_list");
-          const sdkVersion = plugins.metadata.core;
-          metrics.app.sdkVersion = sdkVersion;
-          res(metrics);
-        },
-        rej,
-        MOBILE_CORE_CLASS,
-        "getAppAndDeviceMetrics"
-      );
-    });
+    return NativeCore.getAppAndDeviceMetrics();
   }
 
   /**
