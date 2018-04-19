@@ -25,7 +25,7 @@ public class Core extends CordovaPlugin {
   public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
     if (action.equals("getAppAndDeviceMetrics")) {
       try {
-        callbackContext.success(getAppAndDeviceMetrics());
+        callbackContext.success(this.core.getAppAndDeviceMetrics());
         return true;
       } catch (Exception e) {
         callbackContext.error(e.getMessage());
@@ -38,9 +38,5 @@ public class Core extends CordovaPlugin {
   @Override
   public String getServiceName() {
     return this.core.SERVICE_NAME;
-  }
-
-  public JSONObject getAppAndDeviceMetrics() throws NameNotFoundException, JSONException {
-    return this.core.getAppAndDeviceMetrics();
   }
 }
