@@ -1,5 +1,5 @@
 {
-  "name": "AeroGearDemo",
+  "name": "@aerogear/react-demo",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -11,7 +11,8 @@
     "react": "^16.2.0",
     "react-native": "0.53.3",
     "react-native-navbar": "^2.1.0",
-    "react-navigation": "^1.5.2"
+    "react-navigation": "^1.5.2",
+    "@aerogear/core": "0.0.1"
   },
   "devDependencies": {
     "babel-jest": "22.4.0",
