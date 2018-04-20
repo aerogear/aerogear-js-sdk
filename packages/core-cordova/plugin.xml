@@ -28,7 +28,7 @@
         </config-file>
 
         <source-file
-            src="node_modules/@aerogear/android/MobileCore.java"
+            src="node_modules/@aerogear/core/android/MobileCore.java"
             target-dir="src/org/aerogear/mobile/js/core"
         />
         <source-file
