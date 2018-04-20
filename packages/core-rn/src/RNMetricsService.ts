@@ -1,7 +1,6 @@
+import {MetricsImpl, MetricsService} from "@aerogear/core";
 import Promise from "bluebird";
 import {NativeModules} from "react-native";
-import {MetricsService} from "../metrics/MetricsService";
-import {MetricsImpl} from "../metrics/model";
 
 const MOBILE_CORE_CLASS = "MobileCore";
 

@@ -1,9 +1,8 @@
 {
-  "name": "@aerogear/core",
+  "name": "@aerogear/core-rn",
   "version": "0.0.1",
   "description": "JavaScript Core SDK for AeroGear services",
-  "main": "dist/index.js",
-  "types": "types/index.d.ts",
+  "main": "www/index.js",
   "author": "Aerogear <aerogear@googlegroups.com>",
   "keywords": [
     "aerogear",
@@ -12,7 +11,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "clean": "del coverage .nyc_output dist types",
-    "build": "tsc",
+    "build": "tsc && browserify dist/index.js --standalone 'aerogear.core' -o www/bundle.js",
     "watch": "tsc --watch",
     "test": "nyc mocha"
   },
@@ -48,6 +47,7 @@
     "@types/react-native": "^0.55.4",
     "@types/sinon": "^4.3.1",
     "@types/uuid": "^3.4.3",
+    "@aerogear/core": "0.0.1",
     "browserify": "^16.2.0",
     "chai": "4.1.2",
     "chai-as-promised": "7.1.1",

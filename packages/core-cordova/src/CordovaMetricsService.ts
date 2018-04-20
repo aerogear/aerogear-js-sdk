@@ -1,6 +1,5 @@
+import {MetricsImpl, MetricsService} from "@aerogear/core";
 import Promise from "bluebird";
-import {MetricsService} from "../metrics/MetricsService";
-import {MetricsImpl} from "../metrics/model";
 declare var cordova: any;
 
 const MOBILE_CORE_CLASS = "MobileCore";

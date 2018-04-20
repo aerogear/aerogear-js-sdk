@@ -1,0 +1,1 @@
+../../../../../../../../../node_modules/@aerogear/core/android/MobileCore.java

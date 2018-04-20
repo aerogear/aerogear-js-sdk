@@ -1,2 +1,2 @@
 export {CordovaMetricsService as MetricsService} from "./CordovaMetricsService";
-export * from "../metrics/model";
+export { AppMetrics, DeviceMetrics, Metrics } from "@aerogear/core";

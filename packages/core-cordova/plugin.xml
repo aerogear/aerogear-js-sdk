@@ -28,11 +28,11 @@
         </config-file>
 
         <source-file
-            src="android/src/main/java/org/aerogear/mobile/js/core/MobileCore.java"
+            src="node_modules/@aerogear/android/MobileCore.java"
             target-dir="src/org/aerogear/mobile/js/core"
         />
         <source-file
-            src="android/cordova/Core.java"
+            src="android/Core.java"
             target-dir="src/org/aerogear/mobile/js/core/cordova"
         />
     </platform>

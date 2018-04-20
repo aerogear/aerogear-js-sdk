@@ -1,2 +1,2 @@
 export {RNMetricsService as MetricsService} from "./RNMetricsService";
-export * from "../metrics/model";
+export { AppMetrics, DeviceMetrics, Metrics } from "@aerogear/core";
