@@ -20,7 +20,7 @@ export class ConfigurationHelper {
    * @param id string - The id of the service
    */
   public getConfig(id: string): ServiceConfiguration | undefined {
-    return find(this.configurations, service => service.id === id);
+    return find(this.configurations, service => service.id.toLowerCase() === id.toLowerCase());
   }
 
 }
