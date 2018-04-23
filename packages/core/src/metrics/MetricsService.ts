@@ -1,10 +1,10 @@
 import uuid from "uuid/v1";
-import { ServiceConfiguration } from "../configuration";
+import { AeroGearConfiguration, ConfigurationHelper, ServiceConfiguration } from "../configuration";
 import { Metrics, MetricsPayload } from "./model";
 import { CordovaAppMetrics } from "./platform/CordovaAppMetrics";
 import { CordovaDeviceMetrics } from "./platform/CordovaDeviceMetrics";
 import { isMobileCordova } from "./platform/PlatformUtils";
-import { MetricsPublisher, NetworkMetricsPublisher } from "./publisher";
+import { EmptyMetricsPublisher, MetricsPublisher, NetworkMetricsPublisher } from "./publisher";
 
 declare var window: any;
 
@@ -19,10 +19,22 @@ export class MetricsService {
 
   private publisher: MetricsPublisher;
 
+  private readonly configuration: ServiceConfiguration;
   private readonly defaultMetrics: Metrics[];
 
-  constructor(private readonly configuration: ServiceConfiguration) {
-    this.publisher = new NetworkMetricsPublisher(configuration.url);
+  constructor(appConfig: AeroGearConfiguration) {
+    const configuration = new ConfigurationHelper(appConfig).getConfig(MetricsService.ID);
+
+    if (!configuration) {
+      console.info("Metrics configuration is missing. Metrics will not work properly.");
+      this.configuration = {} as ServiceConfiguration;
+      this.publisher = new EmptyMetricsPublisher();
+
+    } else {
+      this.configuration = configuration;
+      this.publisher = new NetworkMetricsPublisher(configuration.url);
+    }
+
     this.defaultMetrics = this.buildDefaultMetrics();
   }
 
