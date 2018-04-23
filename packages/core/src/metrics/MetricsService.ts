@@ -4,7 +4,7 @@ import { Metrics, MetricsPayload } from "./model";
 import { CordovaAppMetrics } from "./platform/CordovaAppMetrics";
 import { CordovaDeviceMetrics } from "./platform/CordovaDeviceMetrics";
 import { isMobileCordova } from "./platform/PlatformUtils";
-import { EmptyMetricsPublisher, MetricsPublisher, NetworkMetricsPublisher } from "./publisher";
+import { LogMetricsPublisher, MetricsPublisher, NetworkMetricsPublisher } from "./publisher";
 
 declare var window: any;
 
@@ -26,9 +26,9 @@ export class MetricsService {
     const configuration = new ConfigurationHelper(appConfig).getConfig(MetricsService.ID);
 
     if (!configuration) {
-      console.info("Metrics configuration is missing. Metrics will not work properly.");
+      console.info("Metrics configuration is missing. Metrics will not be published to remote server.");
       this.configuration = {} as ServiceConfiguration;
-      this.publisher = new EmptyMetricsPublisher();
+      this.publisher = new LogMetricsPublisher();
 
     } else {
       this.configuration = configuration;
