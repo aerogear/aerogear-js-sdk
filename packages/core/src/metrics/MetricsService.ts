@@ -26,7 +26,7 @@ export class MetricsService {
     const configuration = new ConfigurationHelper(appConfig).getConfig(MetricsService.ID);
 
     if (!configuration) {
-      console.info("Metrics configuration is missing. Metrics will not be published to remote server.");
+      console.warn("Metrics configuration is missing. Metrics will not be published to remote server.");
       this.configuration = {} as ServiceConfiguration;
       this.publisher = new LogMetricsPublisher();
 

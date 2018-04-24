@@ -17,7 +17,7 @@ export class AuthService {
     let internalConfig;
 
     if (!configuration) {
-      console.info("Keycloak configuration is missing. Authentication will not work properly.");
+      console.warn("Keycloak configuration is missing. Authentication will not work properly.");
       internalConfig = {};
     } else {
       internalConfig = configuration.config;
