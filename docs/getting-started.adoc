@@ -22,6 +22,9 @@ In order to use any module, a AeroGear specific configuration file called `mobil
 
 For a Cordova project, it should be placed in `www/mobile-services.json`.
 
+////
 === Including native plugins on your Cordova project
 
-[TODO: to be finished when we integrate plugins in the SDK (metrics)]
+TODO: to be finished when we integrate plugins in the SDK (metrics) 
+
+////
