@@ -1,52 +1,121 @@
-= Contributing guide
+= Contributing to AeroGear JavaScript SDK
 
-== Local setup
+First, ensure you have the https://docs.npmjs.com/[latest npm] installed.
 
-1. Install required dependencies
+Then, to set everything up run in your terminal:
 [source,bash]
-----
 npm install
 npm run bootstrap
-----
-2. Compile code
+
+== Project Structure
+The SDK is made by a group of modules, each one implemented in a different NPM package and all placed under `/packages`.
+
+Each module provides an API to use a particular AeroGear service.
+
+A main package called `core` contains a shared set of interfaces, classes and other functionalities that the rest of modules depend on.
+
+== Working on modules
+
+Modules are written in https://www.typescriptlang.org/[TypeScript] and tested by https://mochajs.org/[mocha].
+
+Once the development is done, the module is built and the source code is transpiled into a `dist/` folder and published. Typings are automatically generated during this step as well.
+
+== Commands
+
+Run this commands from the repo's root directory.
+
+==== Run tests with coverage
 [source,bash]
-----
-npm run build
-----
-3. Run tests and lint
-[source,bash]
-----
 npm run test
-npm run lint
-----
 
-=== Using core in projects
-
-1. Link resources
+==== Run linter
 [source,bash]
-----
-  cd packages/core
-  npm link .
-  npm link @aerogearservices/core
-----
+npm run lint
 
-2. Use core in your application
-[source,javascript]
-----
-var config = require('./mobile-config.json')
-var ConfigService = require('@aerogearservices/core').ConfigService;
+==== Build
+[source,bash]
+npm run build
 
-var config = new ConfigService(config);
-----
-> Note: SDK requires common.js implementation like browserify or webpack to be present
+== Adding a new module
 
-3. Use core config with example SDK
-[source,javascript]
-----
-var keycloakConfig = config.getKeycloakConfig()
-var Keycloak = require('keycloak-js')
+Create a new NPM package under the packages folder with the module name: `/packages/my-module`.
 
-var keycloak = Keycloak(keycloakConfig.config);
-// Use keycloak initialized. Use keycloak according to client documentation
-----
+When creating the package.json, include the org scope to its package name: `"name": "@aerogear/my-module"`.
 
+Then add the following standard options and dependencies:
+[source.json]
+{
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "author": "AeroGear <aerogear@googlegroups.com>",
+  "keywords": [
+    "aerogear",
+    "mobile"
+  ],
+  "license": "Apache-2.0",
+  "scripts": {
+    "clean": "del coverage src/**/*.js src/**/*.map test/**/*.js test/**/*.map node_modules",
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "test": "nyc mocha"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "lines": 75,
+    "functions": 100,
+    "branches": 80
+  },
+  "devDependencies": {
+    "@types/chai": "4.1.2",
+    "@types/chai-as-promised": "7.1.0",
+    "@types/mocha": "^5.0.0",
+    "@types/node": "^9.4.6",
+    "@types/proxyquire": "1.3.28",
+    "@types/sinon": "^4.3.1",
+    "browserify": "^16.2.0",
+    "chai": "4.1.2",
+    "chai-as-promised": "7.1.1",
+    "del-cli": "1.1.0",
+    "mocha": "^5.0.5",
+    "nyc": "^11.6.0",
+    "sinon": "^4.5.0",
+    "source-map-support": "^0.5.4",
+    "ts-node": "5.0.1",
+    "typescript": "^2.8.1"
+  },
+  "dependencies": {
+    "@aerogear/core": "0.1.0"
+  }
+}
+
+Finally, add the following `tsconfig.json`:
+[source.json]
+{
+  "extends": "../../tsconfig.json",
+  "include": [
+    "src/"
+  ],
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "declarationDir": "./types"
+  }
+}
+
+== Publishing a module
+
+Please refer to the https://github.com/aerogear/aerogear-js-sdk/blob/master/docs/releng.adoc[Release Docs].
