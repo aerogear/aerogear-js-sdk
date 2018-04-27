@@ -60,7 +60,7 @@ export class MetricsService {
    * @param type type of the metrics to be published
    * @param metrics metrics instances that should be published
    */
-  public publish(type: string, metrics: Metrics[]): Promise<any> {
+  public async publish(type: string, metrics: Metrics[]): Promise<any> {
     if (!type) {
       throw new Error(`Type is invalid: ${type}`);
     }
@@ -72,13 +72,13 @@ export class MetricsService {
       data: {}
     };
 
-    metrics.forEach(m => {
-      payload.data[m.identifier] = m.collect();
-    });
+    for (const m of metrics) {
+      payload.data[m.identifier] = await m.collect();
+    }
 
-    this.defaultMetrics.forEach(m => {
-      payload.data[m.identifier] = m.collect();
-    });
+    for (const m of this.defaultMetrics) {
+      payload.data[m.identifier] = await m.collect();
+    }
 
     return this.publisher.publish(payload);
   }
