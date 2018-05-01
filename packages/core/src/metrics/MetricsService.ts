@@ -24,31 +24,34 @@ export class MetricsService {
   constructor(appConfig: AeroGearConfiguration) {
     const configuration = new ConfigurationHelper(appConfig).getConfig(MetricsService.ID);
 
-    if (!configuration) {
-      console.warn("Metrics configuration is missing. Metrics will not be published to remote server.");
-    } else {
+    if (configuration) {
       this.configuration = configuration;
       this.publisher = new NetworkMetricsPublisher(configuration.url);
       this.defaultMetrics = this.buildDefaultMetrics();
-
       // Send default metrics
       this.sendAppAndDeviceMetrics()
         .catch((error) => {
           console.error("Error when sending metrics",
-          JSON.stringify(error, Object.getOwnPropertyNames(error)));
+            JSON.stringify(error, Object.getOwnPropertyNames(error)));
         });
+    } else {
+      console.warn("Metrics configuration is missing. Metrics will not be published to remote server.");
     }
   }
 
-  set metricsPublisher(publisher: MetricsPublisher) {
+  set metricsPublisher(publisher: MetricsPublisher | undefined) {
     this.publisher = publisher;
+  }
+
+  get metricsPublisher(): MetricsPublisher | undefined {
+    return this.publisher;
   }
 
   /**
    * Collect metrics for all active metrics collectors
    * Send data using metrics publisher
    */
-  public sendAppAndDeviceMetrics(): Promise<void> {
+  public sendAppAndDeviceMetrics(): Promise<any> {
     return this.publish(MetricsService.DEFAULT_METRICS_TYPE, []);
   }
 
@@ -58,13 +61,13 @@ export class MetricsService {
    * @param type type of the metrics to be published
    * @param metrics metrics instances that should be published
    */
-  public async publish(type: string, metrics: Metrics[]): Promise<void> {
+  public publish(type: string, metrics: Metrics[]): Promise<any> {
     if (!type) {
       throw new Error(`Type is invalid: ${type}`);
     }
 
     if (!this.publisher || !this.defaultMetrics) {
-      return;
+      return Promise.resolve();
     }
 
     const payload: MetricsPayload = {
@@ -74,15 +77,16 @@ export class MetricsService {
       data: {}
     };
 
-    for (const m of metrics) {
-      payload.data[m.identifier] = await m.collect();
-    }
+    const metricsPromise = metrics.concat(this.defaultMetrics)
+      .map(m => m.collect().then(data => {
+        payload.data[m.identifier] = data;
+      }));
 
-    for (const m of this.defaultMetrics) {
-      payload.data[m.identifier] = await m.collect();
-    }
-
-    return this.publisher.publish(payload);
+    return Promise.all(metricsPromise).then(() => {
+      if (this.publisher) {
+        return this.publisher.publish(payload);
+      }
+    });
   }
 
   /**

@@ -14,10 +14,8 @@ export class NetworkMetricsPublisher implements MetricsPublisher {
   /**
    * Allows to publish metrics to external source
    */
-  public publish(payload: MetricsPayload): Promise<void> {
-    return axios.post(this.url, payload).then(() => {
-      return;
-    });
+  public publish(payload: MetricsPayload): Promise<any> {
+    return axios.post(this.url, payload);
   }
 
 }

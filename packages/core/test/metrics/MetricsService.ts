@@ -26,12 +26,6 @@ describe("MetricsService", () => {
 
   describe("#constructor", () => {
 
-    it("should have a NetworkMetricsPublisher by default", () => {
-      const defaultPublisher = metricsService.metricsPublisher;
-
-      expect(defaultPublisher).to.be.instanceOf(NetworkMetricsPublisher);
-    });
-
     it("should instantiate NetworkMetricsPublisher with configuration url", () => {
       const { url } = metricsConfig;
       const publisher = metricsService.metricsPublisher as NetworkMetricsPublisher;
@@ -62,10 +56,13 @@ describe("MetricsService", () => {
       const spy = sinon.spy(mockPublisher, "publish");
       metricsService.metricsPublisher = mockPublisher;
 
+      const data1 = Promise.resolve(123);
+      const data2 = Promise.resolve("foo");
+
       const type = "init";
       const metrics: Metrics[] = [
-        { identifier: "someNumber", collect: () => 123 },
-        { identifier: "someString", collect: () => "foo" }
+        { identifier: "someNumber", collect: () => data1 },
+        { identifier: "someString", collect: () => data2 }
       ];
       const matcher: MetricsPayload = {
         clientId: metricsService.getClientId(),
@@ -76,9 +73,9 @@ describe("MetricsService", () => {
         }
       };
 
-      metricsService.publish(type, metrics);
-
-      sinon.assert.calledWithMatch(spy, matcher);
+      metricsService.publish(type, metrics).then(() => {
+        sinon.assert.calledWithMatch(spy, matcher);
+      });
     });
 
     it("should throw an error is type is null", () => {
@@ -131,7 +128,7 @@ describe("MetricsService", () => {
   class MockMetricsService extends MetricsService {
 
     public sendAppAndDeviceMetrics(): Promise<any> {
-      return null;
+      return Promise.resolve();
     }
 
     // Mocked
@@ -149,7 +146,8 @@ describe("MetricsService", () => {
   class MockMetricsPublisher implements MetricsPublisher {
 
     public publish(metrics: MetricsPayload): Promise<any> {
-      return new Promise(resolve => resolve({ statusCode: 204 }));
+      console.error("payload sent", metrics);
+      return Promise.resolve({ statusCode: 204 });
     }
   }
 
