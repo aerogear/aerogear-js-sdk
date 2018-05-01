@@ -4,7 +4,7 @@ import { Metrics, MetricsPayload } from "./model";
 import { CordovaAppMetrics } from "./platform/CordovaAppMetrics";
 import { CordovaDeviceMetrics } from "./platform/CordovaDeviceMetrics";
 import { isMobileCordova } from "./platform/PlatformUtils";
-import { LogMetricsPublisher, MetricsPublisher, NetworkMetricsPublisher } from "./publisher";
+import { MetricsPublisher, NetworkMetricsPublisher } from "./publisher";
 
 declare var window: any;
 
@@ -27,9 +27,6 @@ export class MetricsService {
 
     if (!configuration) {
       console.warn("Metrics configuration is missing. Metrics will not be published to remote server.");
-      this.configuration = {} as ServiceConfiguration;
-      this.publisher = new LogMetricsPublisher();
-
     } else {
       this.configuration = configuration;
       this.publisher = new NetworkMetricsPublisher(configuration.url);
@@ -63,6 +60,10 @@ export class MetricsService {
   public async publish(type: string, metrics: Metrics[]): Promise<any> {
     if (!type) {
       throw new Error(`Type is invalid: ${type}`);
+    }
+
+    if (!this.publisher) {
+      return;
     }
 
     const payload: MetricsPayload = {
