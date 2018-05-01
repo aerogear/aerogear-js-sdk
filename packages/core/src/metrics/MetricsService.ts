@@ -9,7 +9,7 @@ import { MetricsPublisher, NetworkMetricsPublisher } from "./publisher";
 declare var window: any;
 
 /**
- * AeroGear Services metrics service
+ * AeroGear Services Metrics SDK
  */
 export class MetricsService {
 
@@ -17,10 +17,9 @@ export class MetricsService {
   public static readonly DEFAULT_METRICS_TYPE = "init";
   public static readonly ID = "metrics";
 
-  private publisher: MetricsPublisher;
-
-  private readonly configuration: ServiceConfiguration;
-  private readonly defaultMetrics: Metrics[];
+  private publisher: MetricsPublisher | undefined;
+  private readonly configuration: ServiceConfiguration | undefined;
+  private readonly defaultMetrics: Metrics[] | undefined;
 
   constructor(appConfig: AeroGearConfiguration) {
     const configuration = new ConfigurationHelper(appConfig).getConfig(MetricsService.ID);
@@ -30,24 +29,19 @@ export class MetricsService {
     } else {
       this.configuration = configuration;
       this.publisher = new NetworkMetricsPublisher(configuration.url);
+      this.defaultMetrics = this.buildDefaultMetrics();
     }
-
-    this.defaultMetrics = this.buildDefaultMetrics();
   }
 
   set metricsPublisher(publisher: MetricsPublisher) {
     this.publisher = publisher;
   }
 
-  get metricsPublisher(): MetricsPublisher {
-    return this.publisher;
-  }
-
   /**
    * Collect metrics for all active metrics collectors
    * Send data using metrics publisher
    */
-  public sendAppAndDeviceMetrics(): Promise<any> {
+  public sendAppAndDeviceMetrics(): Promise<void> {
     return this.publish(MetricsService.DEFAULT_METRICS_TYPE, []);
   }
 
@@ -57,12 +51,12 @@ export class MetricsService {
    * @param type type of the metrics to be published
    * @param metrics metrics instances that should be published
    */
-  public async publish(type: string, metrics: Metrics[]): Promise<any> {
+  public async publish(type: string, metrics: Metrics[]): Promise<void> {
     if (!type) {
       throw new Error(`Type is invalid: ${type}`);
     }
 
-    if (!this.publisher) {
+    if (!this.publisher || !this.defaultMetrics) {
       return;
     }
 
