@@ -30,6 +30,13 @@ export class MetricsService {
       this.configuration = configuration;
       this.publisher = new NetworkMetricsPublisher(configuration.url);
       this.defaultMetrics = this.buildDefaultMetrics();
+
+      // Send default metrics
+      this.sendAppAndDeviceMetrics()
+        .catch((error) => {
+          console.error("Error when sending metrics",
+          JSON.stringify(error, Object.getOwnPropertyNames(error)));
+        });
     }
   }
 

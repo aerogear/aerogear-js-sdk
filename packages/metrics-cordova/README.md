@@ -4,4 +4,12 @@ Wrapper for existing cordova plugins that are being used for AeroGear metrics SD
 
 ## Installation
 
+```
 cordova plugin add cordova-plugin-aerogear-metrics
+```
+
+## Using development version of plugin
+
+```
+cordova plugin add ./metrics-cordova
+```
