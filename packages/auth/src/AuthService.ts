@@ -97,4 +97,11 @@ export class AuthService {
     }
     return [];
   }
+
+  /**
+   * Return the access token
+   */
+  public getToken(): string {
+    return this.auth.token || "{}";
+  }
 }
