@@ -3,13 +3,9 @@
     id="cordova-plugin-aerogear-metrics"
     version="0.0.1"
     xmlns="http://apache.org/cordova/ns/plugins/1.0"
-    xmlns:android="http://schemas.android.com/apk/res/android"
->
-    <name>cordova-plugin-aerogear-metrics</name>
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <js-module name="metrics" src="www/metrics.js">
-        <clobbers target="aerogear" />
-    </js-module>
+    <name>cordova-plugin-aerogear-metrics</name>
 
     <dependency id="cordova-plugin-device" version="2.0.2" />
     <dependency id="cordova-plugin-app-version" version="0.1.9" />
