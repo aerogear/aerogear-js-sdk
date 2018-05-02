@@ -1,6 +1,5 @@
 import { DeviceMetrics, Metrics } from "../model";
 
-// plugin's JS interface
 declare var device: any;
 
 export class CordovaDeviceMetrics implements Metrics {
@@ -14,12 +13,10 @@ export class CordovaDeviceMetrics implements Metrics {
    * @returns {Promise<DeviceMetrics>} The device metrics
    */
   public collect(): Promise<DeviceMetrics> {
-    return new Promise(function(res, rej) {
-      res({
-        platform: device.platform,
-        platformVersion: device.version,
-        device: device.model
-      });
+    return Promise.resolve({
+      platform: device.platform,
+      platformVersion: device.version,
+      device: device.model
     });
   }
 }

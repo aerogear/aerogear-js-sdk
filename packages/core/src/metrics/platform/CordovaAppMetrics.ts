@@ -18,16 +18,15 @@ export class CordovaAppMetrics implements Metrics {
    */
   public collect(): Promise<AppMetrics> {
     const app = cordova.getAppVersion;
+
     return Promise.all([
       app.getPackageName(),
       app.getVersionNumber()
     ])
-      .then(function(results) {
-        return {
-          appId: results[0],
-          appVersion: results[1],
-          sdkVersion: version
-        };
-      });
+      .then(results => ({
+        appId: results[0],
+        appVersion: results[1],
+        sdkVersion: version
+      }));
   }
 }

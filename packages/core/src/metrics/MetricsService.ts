@@ -17,23 +17,18 @@ export class MetricsService {
   public static readonly DEFAULT_METRICS_TYPE = "init";
   public static readonly ID = "metrics";
 
-  private publisher: MetricsPublisher | undefined;
-  private readonly configuration: ServiceConfiguration | undefined;
-  private readonly defaultMetrics: Metrics[] | undefined;
+  protected publisher?: MetricsPublisher;
+  protected configuration?: ServiceConfiguration;
+  private readonly defaultMetrics: Metrics[];
 
   constructor(appConfig: AeroGearConfiguration) {
     const configuration = new ConfigurationHelper(appConfig).getConfig(MetricsService.ID);
+    this.defaultMetrics = this.buildDefaultMetrics();
 
     if (configuration) {
       this.configuration = configuration;
       this.publisher = new NetworkMetricsPublisher(configuration.url);
-      this.defaultMetrics = this.buildDefaultMetrics();
-      // Send default metrics
-      this.sendAppAndDeviceMetrics()
-        .catch((error) => {
-          console.error("Error when sending metrics",
-            JSON.stringify(error, Object.getOwnPropertyNames(error)));
-        });
+      this.sendInitialAppAndDeviceMetrics();
     } else {
       console.warn("Metrics configuration is missing. Metrics will not be published to remote server.");
     }
@@ -66,7 +61,9 @@ export class MetricsService {
       throw new Error(`Type is invalid: ${type}`);
     }
 
-    if (!this.publisher || !this.defaultMetrics) {
+    const { publisher } = this;
+
+    if (!publisher) {
       return Promise.resolve();
     }
 
@@ -83,9 +80,7 @@ export class MetricsService {
       }));
 
     return Promise.all(metricsPromise).then(() => {
-      if (this.publisher) {
-        return this.publisher.publish(payload);
-      }
+      return publisher.publish(payload);
     });
   }
 
@@ -121,5 +116,15 @@ export class MetricsService {
     } else {
       return [];
     }
+  }
+
+  /**
+   * Sends default metrics for first time
+   */
+  protected sendInitialAppAndDeviceMetrics(): void {
+    this.sendAppAndDeviceMetrics()
+      .catch((error) => {
+        console.error("Error when sending metrics", JSON.stringify(error, Object.getOwnPropertyNames(error)));
+      });
   }
 }
