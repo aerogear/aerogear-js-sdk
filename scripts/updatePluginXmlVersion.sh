@@ -7,4 +7,7 @@ fi
 
 # grab version from package.json and update plugin.xml in place
 VERSION=$(node -p 'require("./package.json").version;')
-sed -i "s/VERSION/$VERSION/" plugin.xml
+
+# matches version="x.x.x"$
+# beware that there are other version= keys in the xml, these should not finish lines
+sed -i "s/version=\"[0-9.]*\"\$/version=\"$VERSION\"/" plugin.xml
