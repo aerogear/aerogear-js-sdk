@@ -5,12 +5,14 @@
 * The main SDK, see xref:getting-started.adoc[Getting Started]
 * The native plugins for Metrics
 
-==== Metrics native plugins for Cordova
-The Metrics service is part of the Core SDK and however there are additional dependencies required to use it.
+For AeroGear to work, a core package "app" is always required. The Metrics client is included here too:
 
-Install the `cordova-plugin-aerogear-metrics` package which includes all the native plugins required.
+[source.bash]
+npm install @aerogear/app
 
-[source, bash]
+Moreover, a Cordova application will require a set of plugins that are installed through the following one:
+
+[source.bash]
 cordova plugin add @aerogear/cordova-plugin-aerogear-metrics
 
 === Deploy Metrics in Openshift
