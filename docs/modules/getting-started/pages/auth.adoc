@@ -1,15 +1,15 @@
-= AeroGear Services Auth SDK
+== AeroGear JavaScript Auth SDK
 
 Mobile authentication SDK based on link:http://www.keycloak.org/[Keycloak] using link:http://openid.net/connect/[OpenID Connect].
 
-== Usage
+=== Prerequisites
 
 To use the Auth SDK you'll first need to:
 
 * Have a Keycloak instance. See the <<Setting up Keycloak>> section.
 * A configuration file added to the app directory. See the <<Configuration File>> section.
 
-=== Setting up Keycloak
+=== Usage
 
 ==== Using OpenShift
 

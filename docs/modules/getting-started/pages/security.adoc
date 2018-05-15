@@ -1,6 +1,6 @@
-= Cordova Security - Self Defence Checks
+== AeroGear Services JavaScript Security SDK
 
-AeroGear JavaScript SDK offers a set of security features that will make sure that your application is meeting the modern OWASP recomendations. All security features are available as part of the separate `@aerogear/security`. This package offers multiple security checks that can be used to analyse the security of the device. This can be useful for developers to detect vulnerablities and react accordingly. For example, if the app detects security issue *X* then do *Y*, where *X* could be no lock screen is set and *Y* is show a system prompt to setup the lock screen.
+AeroGear JavaScript SDK offers a set of security features that will make sure that your application is meeting the modern OWASP recomendations. All security features are available as part of the separate package `@aerogear/security`. This package offers multiple security checks that can be used to analyse the security of the device. This can be useful for developers to detect vulnerablities and react accordingly. For example, if the app detects security issue *X* then do *Y*, where *X* could be no lock screen is set and *Y* is show a system prompt to setup the lock screen.
 
 This package offers:
 
