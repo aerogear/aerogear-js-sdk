@@ -3,9 +3,13 @@
 === Prerequisites
 
 * The main SDK, see xref:getting-started.adoc[Getting Started]
+* The native plugins for Metrics
 
-==== Metrics native plugins
-Install the 
+==== Metrics native plugins for Cordova
+The Metrics service is part of the Core SDK and however there are additional dependencies required to use it.
+
+Install the `cordova-plugin-aerogear-metrics` package which includes all the native plugins required.
+
 [source, bash]
 cordova plugin add @aerogear/cordova-plugin-aerogear-metrics
 
