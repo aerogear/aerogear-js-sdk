@@ -2,7 +2,7 @@
 
 # explicit declaration that this script needs a $TAG variable passed in e.g TAG=1.2.3 ./script.sh
 TAG=$TAG
-TAG_SYNTAX='[0-9]+\.[0-9]+\.[0-9]+(-.+)*$'
+TAG_SYNTAX='^[0-9]+\.[0-9]+\.[0-9]+(-.+)*$'
 
 # get version found in lerna.json. This is the source of truth
 PACKAGE_VERSION=$(cat lerna.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]')
