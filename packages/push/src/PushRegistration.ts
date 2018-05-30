@@ -77,8 +77,6 @@ export class PushRegistration {
       timeout: 5000,
       headers: { "Authorization": `Basic ${authToken}` }
     });
-    return new Promise((resolve, reject) => {
-      return instance.post(PushRegistration.API_PATH, postData).then(() => resolve()).catch(reject);
-    });
+    return instance.post(PushRegistration.API_PATH, postData);
   }
 }
