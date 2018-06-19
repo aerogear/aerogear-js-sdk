@@ -1,7 +1,20 @@
-import { INSTANCE, ServiceConfiguration } from "@aerogear/core";
-import Keycloak from "keycloak-js";
-import { KeycloakInitOptions, KeycloakInstance, KeycloakProfile } from "keycloak-js";
-import console from "loglevel";
+// @ts-ignore
+import {
+  INSTANCE,
+  ServiceConfiguration
+} from "@aerogear/core";
+import Keycloak from "keycloak-js"; 
+import {
+  KeycloakError,
+  KeycloakInitOptions,
+  KeycloakInstance,
+  KeycloakProfile,
+  KeycloakPromise
+} from "keycloak-js";
+import { readJson } from "fs-extra";
+//import console from "loglevel";
+
+declare var window: any;
 
 /**
  * AeroGear Auth SDK.
@@ -13,6 +26,12 @@ export class Auth {
 
   private auth: KeycloakInstance;
   private internalConfig: any;
+
+  private initOptions: any;
+  private loginResolve: any;
+  private loginError: any;
+  private logoutResolve: any;
+  private logoutError: any;
 
   constructor() {
     const configuration = INSTANCE.getConfigByType(Auth.TYPE);
@@ -36,12 +55,14 @@ export class Auth {
    * @param initOptions Initialization options.
    * @returns A promise to set functions to be invoked on success or error.
    */
-  public init(initOptions: KeycloakInitOptions): Promise<boolean> {
+  public init(initOptions: KeycloakInitOptions): Promise < boolean > {
     if (!initOptions.onLoad) {
       initOptions.onLoad = "check-sso";
     }
+    var self = this;
+    self.initOptions = initOptions;
     return new Promise((resolve, reject) => {
-      return this.auth.init(initOptions).error(reject).success(resolve);
+      return this.auth.init(initOptions).success(resolve).error(reject);
     });
   }
 
@@ -49,7 +70,7 @@ export class Auth {
    * Loads the user's profile.
    * @returns A promise to set functions to be invoked on success or error.
    */
-  public loadUserProfile(): Promise<KeycloakProfile> {
+  public loadUserProfile(): Promise < KeycloakProfile > {
     return new Promise((resolve, reject) => {
       return this.auth.loadUserProfile().error(reject).success(resolve);
     });
@@ -59,10 +80,18 @@ export class Auth {
    * Redirects to login form.
    * @param options Login options.
    */
-  public login(): Promise<void> {
+  public login(options: any): Promise <any>{
+    var self = this;
     return new Promise((resolve, reject) => {
-      return this.auth.login().error(reject).success(resolve);
+      self.loginResolve = resolve;
+      self.loginError = reject;
+      return this.auth.login(options);
     });
+  }
+
+  public continueLogin(url: string) {
+    window['callbackUrl'] = url;
+    this.auth.init(this.initOptions).success(this.loginResolve).error(this.loginError);
   }
 
   /**
@@ -70,10 +99,17 @@ export class Auth {
    * @param options Logout options.
    * @param options.redirectUri Specifies the uri to redirect to after logout.
    */
-  public logout(): Promise<void> {
+  public logout(options: any): Promise <any> {
+    var self = this;
     return new Promise((resolve, reject) => {
-      return this.auth.logout().error(reject).success(resolve);
+      self.logoutResolve = resolve;
+      self.logoutError = reject
+      return this.auth.logout(options);
     });
+  }
+
+  public continueLogout() {
+    this.auth.init(this.initOptions).success(this.logoutResolve).error(this.logoutError);
   }
 
   public isAuthenticated(): boolean {
