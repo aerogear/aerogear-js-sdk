@@ -68,7 +68,7 @@
   },
   "dependencies": {
     "@aerogear/core": "1.0.0-alpha.1",
-    "keycloak-js": "4.0.0-beta.1",
+    "keycloak-js": "git://github.com/StephenCoady/keycloak-js-bower.git#master",
     "loglevel": "^1.6.1",
     "url": "^0.11.0"
   }
