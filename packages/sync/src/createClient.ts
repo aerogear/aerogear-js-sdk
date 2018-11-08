@@ -9,7 +9,7 @@ import { PersistedData, PersistentStore } from "./PersistentStore";
 /**
  * Factory for creating Apollo Client
  *
- * @param options options object used to build client
+ * @param userConfig object used to build client
  */
 export const createClient = async (userConfig?: IDataSyncConfig) => {
 
