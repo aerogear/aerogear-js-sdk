@@ -1,4 +1,4 @@
-import { LinkChainBuilder } from "../links/LinksBuilder";
+import { LinkChainBuilder } from "..";
 import { PersistedData, PersistentStore } from "../PersistentStore";
 import { IDataSyncConfig } from "./DataSyncClientConfig";
 
