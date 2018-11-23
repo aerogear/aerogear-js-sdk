@@ -43,4 +43,9 @@ export interface DataSyncConfig {
    * Network Status
    */
   networkStatus: NetworkStatus;
+  
+  /**
+   * The name of the queue to store offline mutations in
+   */
+  mutationsQueueName?: string | any;
 }
