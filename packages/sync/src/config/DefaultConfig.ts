@@ -3,6 +3,8 @@ import { ConfigError } from "./ConfigError";
 import { DataSyncConfig } from "./DataSyncConfig";
 import {NetworkStatus} from "../offline/NetworkStatus";
 import {WebNetworkStatus} from "../offline/WebNetworkStatus";
+import {isMobileCordova} from "../../../core/src";
+import {CordovaNetworkStatus} from "../offline/CordovaNetworkStatus";
 
 declare var window: any;
 
@@ -19,7 +21,7 @@ export class SyncConfig implements DataSyncConfig {
   // Use browser storage by default
   public storage = window.localStorage;
 
-  public networkStatus: NetworkStatus = new WebNetworkStatus();
+  public networkStatus = (isMobileCordova()) ? new CordovaNetworkStatus() : new WebNetworkStatus();
 
   constructor() {
     // Default config can depend on parameters
