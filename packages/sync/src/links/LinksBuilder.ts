@@ -7,7 +7,7 @@ import { DataSyncConfig } from "../config/DataSyncConfig";
 import { defaultWebSocketLink } from "./WebsocketLink";
 import QueueLink from "./QueueLink";
 import { PersistentStore, PersistedData } from "../PersistentStore";
-import NetworkStatus from "../offline/NetworkStatus";
+import {WebNetworkStatus} from "../offline/WebNetworkStatus";
 
 /**
  * Function used to build apollo link
@@ -31,9 +31,10 @@ export const defaultLinkBuilder: LinkChainBuilder =
     const debounceLink = new DebounceLink();
     let links: ApolloLink[] = [queueMutationsLink, debounceLink, conflictLink(config), httpLink];
 
-    // TODO to be replaced by network interface check when ready
-    NetworkStatus.whenOnline(() => queueMutationsLink.open());
-    NetworkStatus.whenOffline(() => queueMutationsLink.close());
+    const network = new WebNetworkStatus();
+
+    network.whenOnline(() => queueMutationsLink.open());
+    network.whenOffline(() => queueMutationsLink.close());
 
     if (!config.conflictStrategy) {
       links = [queueMutationsLink, debounceLink, httpLink];
