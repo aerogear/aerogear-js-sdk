@@ -16,6 +16,7 @@ export class SyncConfig implements DataSyncConfig {
   public dataIdFromObject = "id";
   // Use browser storage by default
   public storage = window.localStorage;
+  public mutationsQueueName = "offline-mutation-store";
 
   constructor() {
     // Default config can depend on parameters
