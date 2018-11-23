@@ -1,18 +1,24 @@
+export interface NetworkInfo {
+  online: boolean;
+}
+
+export interface NetworkStatusChangeCallback {
+  onStatusChange(info: NetworkInfo): void;
+}
+
 /**
- * Responsable to handle Networks status (Online/Offline)
+ * Responsable to handle Networks status
  */
 export interface NetworkStatus {
   /**
-   * Trigger a function whenever the user switches into "Online Mode"
+   * Trigger callback whenever the network status change
    *
-   * @param fn Function to be called when got online
+   * @param callback Callback to be called when network status change
    */
-  whenOnline(fn: any): void;
+  onStatusChangeListener(callback: NetworkStatusChangeCallback): void;
 
   /**
-   * Trigger a function whenever the user switches into "Offline Mode"
-   *
-   * @param fn Function to be called when got offline
+   * Check if device is offline
    */
-  whenOffline(fn: any): void;
+  isOffline(): boolean;
 }

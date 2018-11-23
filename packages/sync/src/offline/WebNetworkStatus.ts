@@ -1,13 +1,22 @@
-import {NetworkStatus} from "./NetworkStatus";
+import {NetworkStatus, NetworkStatusChangeCallback} from "./NetworkStatus";
 
 declare var window: any;
 
+/**
+ * Cordova networks status implementation based on: Mozilla
+ * See: https://developer.mozilla.org/en-US/docs/Web/API/NavigatorOnLine/onLine
+ */
 export class WebNetworkStatus implements NetworkStatus {
-  public whenOnline(fn: any): void {
-    window.addEventListener("online", fn, false);
+  public onStatusChangeListener(callback: NetworkStatusChangeCallback): void {
+    const networkInfo = {
+      online: !this.isOffline()
+    };
+
+    window.addEventListener("online", () => callback.onStatusChange(networkInfo), false);
+    window.addEventListener("offline", () => callback.onStatusChange(networkInfo), false);
   }
 
-  public whenOffline(fn: any): void {
-    window.addEventListener("offline", fn, false);
+  public isOffline(): boolean {
+    return !window.navigator.onLine;
   }
 }

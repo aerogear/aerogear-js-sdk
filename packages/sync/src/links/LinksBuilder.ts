@@ -8,6 +8,7 @@ import { defaultWebSocketLink } from "./WebsocketLink";
 import QueueLink from "./QueueLink";
 import { PersistentStore, PersistedData } from "../PersistentStore";
 import {WebNetworkStatus} from "../offline/WebNetworkStatus";
+import {NetworkInfo} from "../offline/NetworkStatus";
 
 /**
  * Function used to build apollo link
@@ -33,8 +34,16 @@ export const defaultLinkBuilder: LinkChainBuilder =
 
     const network = new WebNetworkStatus();
 
-    network.whenOnline(() => queueMutationsLink.open());
-    network.whenOffline(() => queueMutationsLink.close());
+    network.onStatusChangeListener({
+        onStatusChange(networkInfo: NetworkInfo) {
+          if (networkInfo.online) {
+            queueMutationsLink.open();
+          } else {
+            queueMutationsLink.close();
+          }
+        }
+      }
+    );
 
     if (!config.conflictStrategy) {
       links = [queueMutationsLink, debounceLink, httpLink];

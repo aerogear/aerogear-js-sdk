@@ -1,6 +1,7 @@
 import { ConflictResolutionStrategy } from "../conflicts/strategies";
 import { LinkChainBuilder } from "../links/LinksBuilder";
 import { PersistedData, PersistentStore } from "../PersistentStore";
+import {NetworkStatus} from "../offline/NetworkStatus";
 
 /**
  * Contains all configuration options required to initialize SDK
@@ -37,4 +38,9 @@ export interface DataSyncConfig {
    * Enables providing custom Apollo Link for processing requests
    */
   customLinkBuilder?: LinkChainBuilder;
+
+  /**
+   * Network Status
+   */
+  networkStatus: NetworkStatus;
 }
