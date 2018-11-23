@@ -1,6 +1,8 @@
 import { INSTANCE, ServiceConfiguration } from "@aerogear/core";
 import { ConfigError } from "./ConfigError";
 import { DataSyncConfig } from "./DataSyncConfig";
+import {NetworkStatus} from "../offline/NetworkStatus";
+import {WebNetworkStatus} from "../offline/WebNetworkStatus";
 
 declare var window: any;
 
@@ -16,6 +18,8 @@ export class SyncConfig implements DataSyncConfig {
   public dataIdFromObject = "id";
   // Use browser storage by default
   public storage = window.localStorage;
+
+  public networkStatus: NetworkStatus = new WebNetworkStatus();
 
   constructor() {
     // Default config can depend on parameters
