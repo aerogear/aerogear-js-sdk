@@ -12,6 +12,8 @@ import { Directives } from "../config/Constants";
 import { OperationDefinitionNode, NameNode } from "graphql";
 import { DataSyncConfig } from "../config/DataSyncConfig";
 import { NetworkStatus, NetworkInfo } from "../offline/NetworkStatus";
+import ApolloClient from "apollo-client";
+import { NormalizedCacheObject } from "apollo-cache-inmemory";
 
 export interface OperationQueueEntry {
   operation: Operation;
@@ -26,18 +28,20 @@ export default class QueueLink extends ApolloLink {
   private storage: PersistentStore<PersistedData>;
   private key: string;
   private networkStatus?: NetworkStatus;
+  private offlineData: OperationQueueEntry[] = [];
 
-  constructor(config: DataSyncConfig) {
+  constructor(config: DataSyncConfig, oldClient?: ApolloClient<NormalizedCacheObject>) {
     super();
     this.storage = config.storage as PersistentStore<PersistedData>;
     this.key = config.mutationsQueueName;
     this.networkStatus = config.networkStatus;
-    this.setNetworkStateHandlers();
-    // const syncOfflineMutations = new SyncOfflineMutation(apolloClient, clientConfig.storage, clientConfig.mutationsQueueName);
-    // syncOfflineMutations.sync();
+    this.setNetworkStateHandlers(oldClient);
   }
 
-  public open() {
+  public open(oldClient?: ApolloClient<NormalizedCacheObject>) {
+    if (oldClient) {
+      this.sync(oldClient);
+    }
     this.isOpen = true;
     this.opQueue.forEach(({ operation, forward, observer }) => {
       forward(operation).subscribe(observer);
@@ -108,23 +112,77 @@ export default class QueueLink extends ApolloLink {
     return this.opQueue;
   }
 
-  private setNetworkStateHandlers(): void {
+  private setNetworkStateHandlers(oldClient?: ApolloClient<NormalizedCacheObject>): void {
     const self = this;
     if (this.networkStatus) {
       if (this.networkStatus.isOffline()) {
         this.close();
       } else {
-        this.open();
+        this.open(oldClient);
       }
       this.networkStatus.onStatusChangeListener({
         onStatusChange(networkInfo: NetworkInfo) {
           if (networkInfo.online) {
-            self.open();
+            self.open(oldClient);
           } else {
             self.close();
           }
         }
       });
     }
+  }
+
+  private sync = async (apolloClient: ApolloClient<NormalizedCacheObject>) => {
+    const stored = await this.getOfflineData();
+    if (stored) {
+      this.offlineData = JSON.parse(stored.toString());
+    } else {
+      this.offlineData = [];
+    }
+    // if there is no offline data  then just exit
+    if (!this.hasOfflineData()) { return; }
+
+    // return as promise, but in the end clear the storage
+    const uncommittedOfflineMutation: OperationQueueEntry[] = [];
+
+    await Promise.all(this.offlineData.map(async (item) => {
+      try {
+        await apolloClient.mutate({
+          variables: item.operation.variables,
+          mutation: item.operation.query,
+          context: item.operation.getContext
+        });
+      } catch (e) {
+        // set the errored mutation to the stash
+        uncommittedOfflineMutation.push(item);
+      }
+    }));
+
+    // wait before it was cleared
+    await this.clearOfflineData();
+
+    // then add again the uncommited storage
+    this.addOfflineData(uncommittedOfflineMutation);
+
+  }
+  private getOfflineData = async () => {
+    return this.storage.getItem(this.key);
+  }
+
+  private hasOfflineData() {
+    return !!(this.offlineData && this.offlineData.length > 0);
+  }
+
+  private clearOfflineData = async () => {
+    this.offlineData = [];
+    return this.storage.removeItem(this.key);
+  }
+
+  private addOfflineData = (queue: OperationQueueEntry[] = []) => {
+    // add only if there is a value
+    if (queue && queue.length > 0) {
+      this.storage.setItem(this.key, JSON.stringify(queue));
+    }
+
   }
 }

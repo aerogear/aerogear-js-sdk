@@ -5,17 +5,16 @@ import { DataSyncConfig } from "./config/DataSyncConfig";
 import { SyncConfig } from "./config/SyncConfig";
 import { defaultLinkBuilder as buildLink } from "./links/LinksBuilder";
 import { PersistedData, PersistentStore } from "./PersistentStore";
-import { SyncOfflineMutation } from "./offline/SyncOfflineMutation";
 
 /**
  * Factory for creating Apollo Client
  *
  * @param userConfig options object used to build client
  */
-export const createClient = async (userConfig?: DataSyncConfig) => {
+export const createClient = async (userConfig?: DataSyncConfig, oldClient?: ApolloClient<NormalizedCacheObject>) => {
   const clientConfig = extractConfig(userConfig);
   const { cache } = await buildCachePersistence(clientConfig);
-  const link = buildLink(clientConfig);
+  const link = buildLink(clientConfig, oldClient);
   const apolloClient = new ApolloClient<NormalizedCacheObject>({
     link,
     cache
