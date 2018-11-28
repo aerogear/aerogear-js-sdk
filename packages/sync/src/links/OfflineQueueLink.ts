@@ -9,9 +9,9 @@ import { hasDirectives } from "apollo-utilities";
 import { Observer } from "zen-observable-ts";
 import { PersistedData, PersistentStore } from "../PersistentStore";
 import { Directives } from "../config/Constants";
-import { OperationDefinitionNode, NameNode } from "graphql";
 import { NetworkStatus, NetworkInfo } from "../offline/NetworkStatus";
 import { DataSyncConfig } from "../config/DataSyncConfig";
+import { squashOperations } from "../offline/squashOperations";
 
 export interface OperationQueueEntry {
   operation: Operation;
@@ -69,9 +69,17 @@ export class OfflineQueueLink extends ApolloLink {
 
   public request(operation: Operation, forward: NextLink) {
     // TODO split this conditional and add a handler to notify of online only cases
-    if (this.isOpen || hasDirectives([Directives.ONLINE_ONLY, Directives.NO_SQUASH], operation.query)) {
+    if (this.isOpen) {
       return forward(operation);
     }
+    if (hasDirectives([Directives.ONLINE_ONLY], operation.query)) {
+      return forward(operation);
+    }
+
+    if (this.shouldSkipOperation(operation, this.operationFilter)) {
+      return forward(operation);
+    }
+
     return new Observable(observer => {
       const operationEntry = { operation, forward, observer };
       this.enqueue(operationEntry);
@@ -85,10 +93,7 @@ export class OfflineQueueLink extends ApolloLink {
   }
 
   private enqueue(entry: OperationQueueEntry) {
-    if (!this.shouldSkipOperation(entry.operation, this.operationFilter)) {
-      return;
-    }
-    this.squashOperations(entry);
+    this.opQueue = squashOperations(entry, this.opQueue);
     this.storage.setItem(this.key, JSON.stringify(this.opQueue));
   }
 
@@ -100,7 +105,6 @@ export class OfflineQueueLink extends ApolloLink {
       return (e as any).operation === filter;
     }).length === 0;
   }
-
 
   /**
    * Turns on queue to react to network state changes.
