@@ -9,9 +9,9 @@ import { hasDirectives } from "apollo-utilities";
 import { Observer } from "zen-observable-ts";
 import { PersistedData, PersistentStore } from "../PersistentStore";
 import { Directives } from "../config/Constants";
-import { DataSyncConfig } from "../config/DataSyncConfig";
+import { OperationDefinitionNode, NameNode } from "graphql";
 import { NetworkStatus, NetworkInfo } from "../offline/NetworkStatus";
-import { squashOperations } from "../offline/squashOperations";
+import { DataSyncConfig } from "../config/DataSyncConfig";
 
 export interface OperationQueueEntry {
   operation: Operation;
@@ -20,19 +20,39 @@ export interface OperationQueueEntry {
   subscription?: { unsubscribe: () => void };
 }
 
-export default class QueueLink extends ApolloLink {
+/**
+ * Type used for filtering
+ */
+export type TYPE_MUTATION = "mutation" | "query";
+
+/**
+ * Apollo link implementation used to queue graphql requests.
+ * When queue is open all requests are passing without any operation performed.
+ * Closed queue will hold of requests until they are processed and persisting
+ * them in supplied storage interface. Queue could open/close
+ * depending on network state.
+ *
+ * @see OfflineQueueLink.openQueueOnNetworkStateUpdates
+ */
+export class OfflineQueueLink extends ApolloLink {
   private opQueue: OperationQueueEntry[] = [];
   private isOpen: boolean = true;
   private storage: PersistentStore<PersistedData>;
   private key: string;
   private networkStatus?: NetworkStatus;
+  private operationFilter?: TYPE_MUTATION;
 
-  constructor(config: DataSyncConfig) {
+  /**
+   *
+   * @param config configuration for queue
+   * @param filter
+   */
+  constructor(config: DataSyncConfig, filter?: TYPE_MUTATION) {
     super();
     this.storage = config.storage as PersistentStore<PersistedData>;
     this.key = config.mutationsQueueName;
     this.networkStatus = config.networkStatus;
-    this.setNetworkStateHandlers();
+    this.operationFilter = filter;
   }
 
   public open() {
@@ -65,11 +85,29 @@ export default class QueueLink extends ApolloLink {
   }
 
   private enqueue(entry: OperationQueueEntry) {
-    this.opQueue = squashOperations(entry, this.opQueue);
+    if (!this.shouldSkipOperation(entry.operation, this.operationFilter)) {
+      return;
+    }
+    this.squashOperations(entry);
     this.storage.setItem(this.key, JSON.stringify(this.opQueue));
   }
 
-  private setNetworkStateHandlers(): void {
+  private shouldSkipOperation(operation: Operation, filter?: string) {
+    if (!filter) {
+      return false;
+    }
+    return operation.query.definitions.filter((e) => {
+      return (e as any).operation === filter;
+    }).length === 0;
+  }
+
+
+  /**
+   * Turns on queue to react to network state changes.
+   * Requires network state implementation to be supplied in the configuration.
+   */
+  // tslint:disable-next-line:member-ordering
+  public openQueueOnNetworkStateUpdates(): void {
     const self = this;
     if (this.networkStatus) {
       if (this.networkStatus.isOffline()) {
