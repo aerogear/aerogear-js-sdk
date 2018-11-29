@@ -1,10 +1,11 @@
 import { INSTANCE, ServiceConfiguration } from "@aerogear/core";
+import { isMobileCordova } from "@aerogear/core";
+import { CordovaNetworkStatus } from "../offline/CordovaNetworkStatus";
+import { WebNetworkStatus } from "../offline/WebNetworkStatus";
 import { PersistedData, PersistentStore } from "../PersistentStore";
 import { ConfigError } from "./ConfigError";
 import { DataSyncConfig } from "./DataSyncConfig";
-import { WebNetworkStatus } from "../offline/WebNetworkStatus";
-import { isMobileCordova } from "@aerogear/core";
-import { CordovaNetworkStatus } from "../offline/CordovaNetworkStatus";
+import { IdGetter } from "apollo-cache-inmemory";
 
 declare var window: any;
 
@@ -17,7 +18,7 @@ const TYPE: string = "sync";
  */
 export class SyncConfig implements DataSyncConfig {
   // Explicitly use id as id field
-  public dataIdFromObject = "id";
+  public dataIdFromObject: IdGetter;
   public storage?: PersistentStore<PersistedData>;
   public mutationsQueueName = "offline-mutation-store";
 
@@ -27,6 +28,7 @@ export class SyncConfig implements DataSyncConfig {
     if (window) {
       this.storage = window.localStorage;
     }
+    this.dataIdFromObject = ({ __typename, id }) => __typename as string + id as string;
   }
 
   /**

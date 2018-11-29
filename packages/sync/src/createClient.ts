@@ -4,8 +4,8 @@ import { ApolloClient, ApolloClientOptions } from "apollo-client";
 import { DataSyncConfig } from "./config/DataSyncConfig";
 import { SyncConfig } from "./config/SyncConfig";
 import { defaultLinkBuilder as buildLink } from "./links/LinksBuilder";
-import { PersistedData, PersistentStore } from "./PersistentStore";
 import { OfflineRestoreHandler } from "./offline/OfflineRestoreHandler";
+import { PersistedData, PersistentStore } from "./PersistentStore";
 
 /**
  * Factory for creating Apollo Client
@@ -14,8 +14,8 @@ import { OfflineRestoreHandler } from "./offline/OfflineRestoreHandler";
  */
 export const createClient = async (userConfig?: DataSyncConfig) => {
   const clientConfig = extractConfig(userConfig);
-  const { cache } = await buildCachePersistence(clientConfig);
-  const link = buildLink(clientConfig);
+  const cache = await buildCachePersistence(clientConfig);
+  const link = buildLink(clientConfig, cache);
   const apolloClient = new ApolloClient<NormalizedCacheObject>({
     link,
     cache
@@ -45,10 +45,10 @@ function extractConfig(userConfig: DataSyncConfig | undefined) {
  * @param clientConfig
  */
 async function buildCachePersistence(clientConfig: DataSyncConfig) {
-  const cache = new InMemoryCache();
+  const cache = new InMemoryCache({ dataIdFromObject: clientConfig.dataIdFromObject });
   await persistCache({
     cache,
     storage: clientConfig.storage as PersistentStore<PersistedData>
   });
-  return { cache };
+  return cache;
 }

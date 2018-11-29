@@ -5,11 +5,15 @@ import { DataSyncConfig } from "../config/DataSyncConfig";
 import { defaultWebSocketLink } from "./WebsocketLink";
 import { OfflineQueueLink } from "./OfflineQueueLink";
 import { isSubscription } from "../utils/helpers";
+import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
+import { DeleteCacheHandlerLink } from "./DeleteCacheLink";
+import { ApolloCache } from "apollo-cache";
 
 /**
  * Function used to build Apollo link
  */
-export type LinkChainBuilder = (config: DataSyncConfig) => ApolloLink;
+export type LinkChainBuilder = (config: DataSyncConfig,
+                                cache: ApolloCache<NormalizedCacheObject>) => ApolloLink;
 
 /**
  * Default Apollo Link builder
@@ -21,20 +25,23 @@ export type LinkChainBuilder = (config: DataSyncConfig) => ApolloLink;
  * - Error handling
  */
 export const defaultLinkBuilder: LinkChainBuilder =
-  (config: DataSyncConfig): ApolloLink => {
+  (config: DataSyncConfig, cache: ApolloCache<NormalizedCacheObject>): ApolloLink => {
     if (config.customLinkBuilder) {
-      return config.customLinkBuilder(config);
+      return config.customLinkBuilder(config, cache);
     }
     const httpLink = new HttpLink({ uri: config.httpUrl });
     const queueMutationsLink = new OfflineQueueLink(config, "mutation");
     // Enable network based queuing
     queueMutationsLink.openQueueOnNetworkStateUpdates();
 
-    let links: ApolloLink[] = [queueMutationsLink, conflictLink(config), httpLink];
+    const links: ApolloLink[] = [queueMutationsLink];
 
-    if (!config.conflictStrategy) {
-      links = [queueMutationsLink, httpLink];
+    if (config.conflictStrategy) {
+      links.push(conflictLink(config));
     }
+    const deleteCacheLink = new DeleteCacheHandlerLink(cache);
+    links.push(deleteCacheLink);
+    links.push(httpLink);
 
     let compositeLink = ApolloLink.from(links);
     if (config.wsUrl) {

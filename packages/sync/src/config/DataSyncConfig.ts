@@ -2,6 +2,7 @@ import { ConflictResolutionStrategy } from "../conflicts/strategies";
 import { LinkChainBuilder } from "../links/LinksBuilder";
 import { PersistedData, PersistentStore } from "../PersistentStore";
 import { NetworkStatus } from "../offline/NetworkStatus";
+import { IdGetter } from "apollo-cache-inmemory";
 
 /**
  * Contains all configuration options required to initialize SDK
@@ -22,7 +23,7 @@ export interface DataSyncConfig {
   /**
    * Describes name of the field used as ID
    */
-  dataIdFromObject?: string | any;
+  dataIdFromObject?: string | IdGetter | any;
 
   /**
    * Storage solution
