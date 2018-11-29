@@ -6,6 +6,7 @@ import { SyncConfig } from "./config/SyncConfig";
 import { defaultLinkBuilder as buildLink } from "./links/LinksBuilder";
 import { PersistedData, PersistentStore } from "./PersistentStore";
 import { OfflineRestoreHandler } from "./offline/OfflineRestoreHandler";
+import {NetworkStatus} from "./offline";
 
 /**
  * Factory for creating Apollo Client
@@ -21,7 +22,9 @@ export const createClient = async (userConfig?: DataSyncConfig) => {
     cache
   });
   const storage = clientConfig.storage as PersistentStore<PersistedData>;
-  const offlineMutationHandler = new OfflineRestoreHandler(apolloClient,
+  const offlineMutationHandler = new OfflineRestoreHandler(
+    apolloClient,
+    clientConfig.networkStatus as NetworkStatus,
     storage,
     clientConfig.mutationsQueueName);
   offlineMutationHandler.replayOfflineMutations();

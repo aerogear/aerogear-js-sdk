@@ -2,6 +2,7 @@ import ApolloClient from "apollo-client";
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
 import { PersistentStore, PersistedData } from "../PersistentStore";
 import { OperationQueueEntry } from "../links/OfflineQueueLink";
+import {NetworkStatus} from "./NetworkStatus";
 
 /**
  * Class used to restore offline queue after page/application restarts.
@@ -11,14 +12,17 @@ import { OperationQueueEntry } from "../links/OfflineQueueLink";
 export class OfflineRestoreHandler {
 
   private apolloClient: ApolloClient<NormalizedCacheObject>;
+  private networkStatus: NetworkStatus;
   private storage: PersistentStore<PersistedData>;
   private storageKey: string;
   private offlineData: OperationQueueEntry[] = [];
 
   constructor(apolloClient: ApolloClient<NormalizedCacheObject>,
+              networkStatus: NetworkStatus,
               storage: PersistentStore<PersistedData>,
               storageKey: string) {
     this.apolloClient = apolloClient;
+    this.networkStatus = networkStatus;
     this.storage = storage;
     this.storageKey = storageKey;
   }
@@ -28,6 +32,10 @@ export class OfflineRestoreHandler {
    * after page refresh/app restart
    */
   public replayOfflineMutations = async () => {
+    if (this.networkStatus.isOffline()) {
+      return;
+    }
+
     const stored = await this.getOfflineData();
     if (stored) {
       this.offlineData = JSON.parse(stored.toString());
