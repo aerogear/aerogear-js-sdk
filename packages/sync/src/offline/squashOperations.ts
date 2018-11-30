@@ -28,11 +28,8 @@ export function squashOperations(entry: OperationQueueEntry, opQueue: OperationQ
   if (opQueue.length > 0 && objectID) {
     // find the index of the operation in the array matching the incoming one
     const index = opQueue.findIndex(queueEntry => {
-      if (queueEntry.operation.operationName === operationName.value &&
-        queueEntry.operation.variables.id === objectID) {
-        return true;
-      }
-      return false;
+      return !!(queueEntry.operation.operationName === operationName.value &&
+        queueEntry.operation.variables.id === objectID);
     });
     // if not found, add new operation directly
     if (index === -1) {
