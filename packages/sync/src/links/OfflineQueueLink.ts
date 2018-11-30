@@ -9,8 +9,8 @@ import { hasDirectives } from "apollo-utilities";
 import { Observer } from "zen-observable-ts";
 import { PersistedData, PersistentStore } from "../PersistentStore";
 import { Directives, MUTATION_QUEUE_LOGGER } from "../config/Constants";
-import { NetworkStatus, NetworkInfo } from "../offline/NetworkStatus";
-import { DataSyncConfig } from "../config/DataSyncConfig";
+import { NetworkStatus, NetworkInfo } from "../offline";
+import { DataSyncConfig } from "../config";
 import { squashOperations } from "../offline/squashOperations";
 import debug from "debug";
 
