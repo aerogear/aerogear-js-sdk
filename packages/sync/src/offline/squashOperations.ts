@@ -37,8 +37,8 @@ export function squashOperations(entry: OperationQueueEntry, opQueue: OperationQ
     } else {
       logger("Squashing operation with existing item");
       // else if found, merge the variables
-      const newOperationVariables = Object.assign(opQueue[index].operation.variables, variables);
-      opQueue[index].operation.variables = newOperationVariables;
+      opQueue[index].operation.variables = Object.assign(
+        opQueue[index].operation.variables, variables);
     }
   } else {
     opQueue.push(entry);
