@@ -41,9 +41,9 @@ export class OfflineQueueLink extends ApolloLink {
   private opQueue: OperationQueueEntry[] = [];
   private isOpen: boolean = true;
   private storage: PersistentStore<PersistedData>;
-  private key: string;
-  private networkStatus?: NetworkStatus;
-  private operationFilter?: TYPE_MUTATION;
+  private readonly key: string;
+  private readonly networkStatus?: NetworkStatus;
+  private readonly operationFilter?: TYPE_MUTATION;
 
   /**
    *
