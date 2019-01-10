@@ -7,7 +7,7 @@ RELEASE_SYNTAX='^[0-9]+\.[0-9]+\.[0-9]+$'
 PRERELEASE_SYNTAX='^[0-9]+\.[0-9]+\.[0-9]+(-.+)+$'
 
 if [ ! "$CI" = true ]; then
-  echo "Warning: this script should not be run in CI"
+  echo "Warning: this script should not be run outside of the CI"
   echo "If you really need to run this script, you can use"
   echo "CI=true ./scripts/publishRelease.sh"
   exit 1
