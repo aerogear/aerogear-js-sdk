@@ -1,8 +1,10 @@
+import { FetchResult, Operation } from "apollo-link";
 import ApolloClient from "apollo-client";
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
 import { PersistentStore, PersistedData } from "../PersistentStore";
 import { OperationQueueEntry } from "../links/OfflineQueueLink";
 import { MUTATION_QUEUE_LOGGER } from "../config/Constants";
+import { offlineQueueUpdateIds } from "../utils/helpers";
 import * as debug from "debug";
 
 export const logger = debug.default(MUTATION_QUEUE_LOGGER);
@@ -45,18 +47,20 @@ export class OfflineRestoreHandler {
     // return as promise, but in the end clear the storage
     const uncommittedOfflineMutation: OperationQueueEntry[] = [];
 
-    await Promise.all(this.offlineData.map(async (item) => {
+    for (const item of this.offlineData) {
+      let result;
       try {
-        await this.apolloClient.mutate({
+        result = await this.apolloClient.mutate({
           variables: item.operation.variables,
           mutation: item.operation.query,
           context: item.operation.getContext
         });
+        offlineQueueUpdateIds(this.offlineData, item, result);
       } catch (e) {
         // set the errored mutation to the stash
         uncommittedOfflineMutation.push(item);
       }
-    }));
+    }
 
     // wait before it was cleared
     await this.clearOfflineData();

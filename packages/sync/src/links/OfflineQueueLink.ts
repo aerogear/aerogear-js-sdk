@@ -14,6 +14,7 @@ import { DataSyncConfig } from "../config";
 import { squashOperations } from "../offline/squashOperations";
 import * as debug from "debug";
 import { OfflineQueueListener } from "../offline";
+import { offlineQueueUpdateIds } from "../utils/helpers";
 
 export const logger = debug.default(MUTATION_QUEUE_LOGGER);
 
@@ -21,6 +22,7 @@ export interface OperationQueueEntry {
   operation: Operation;
   forward: NextLink;
   observer: Observer<FetchResult>;
+  optimisticResponse: any;
   subscription?: { unsubscribe: () => void };
 }
 
@@ -62,12 +64,29 @@ export class OfflineQueueLink extends ApolloLink {
     this.operationFilter = filter;
   }
 
-  public open() {
+  public async open() {
     logger("MutationQueue is open", this.opQueue);
     this.isOpen = true;
-    this.opQueue.forEach(({ operation, forward, observer }) => {
-      forward(operation).subscribe(observer);
-    });
+    for (const opEntry of this.opQueue) {
+      const { operation, forward, observer } = opEntry;
+      await new Promise(resolve => {
+        forward(operation).subscribe({
+          next: result => {
+            offlineQueueUpdateIds(this.opQueue, opEntry, result);
+            this.storage.setItem(this.key, JSON.stringify(this.opQueue));
+            if (observer.next) { observer.next(result); }
+          },
+          error: error => {
+            if (observer.error) { observer.error(error); }
+            resolve();
+          },
+          complete: () => {
+            if (observer.complete) { observer.complete(); }
+            resolve();
+          }
+        });
+      });
+    }
     this.opQueue = [];
     if (this.listener && this.listener.queueCleared) {
       this.listener.queueCleared();
@@ -93,7 +112,8 @@ export class OfflineQueueLink extends ApolloLink {
     }
 
     return new Observable(observer => {
-      const operationEntry = { operation, forward, observer };
+      const optimisticResponse = operation.getContext().optimisticResponse;
+      const operationEntry = { operation, forward, observer, optimisticResponse };
       this.enqueue(operationEntry);
       return () => this.cancelOperation(operationEntry);
     });

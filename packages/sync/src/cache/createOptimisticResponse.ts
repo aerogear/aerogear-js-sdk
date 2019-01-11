@@ -48,6 +48,7 @@ export const createOptimisticResponse =
     };
     if (addId) {
       optimisticResponse[operation][idField] = generateId();
+      optimisticResponse[operation].optimisticId = true;
     }
 
     return optimisticResponse;

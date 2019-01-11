@@ -47,7 +47,8 @@ describe("OnOffLink", () => {
   const queueEntryWithDirective: OperationQueueEntry = {
     operation: opWithSquashDirective,
     forward: {} as any,
-    observer: {} as any
+    observer: {} as any,
+    optimisticResponse: undefined
   };
 
   const config = { mutationsQueueName: "test", storage: localStorage };

@@ -6,13 +6,15 @@ import { op, opWithDifferentQuery, opWithSquashDirective } from "./operations";
 const queueEntry: OperationQueueEntry = {
   operation: op,
   forward: {} as any,
-  observer: {} as any
+  observer: {} as any,
+  optimisticResponse: undefined
 };
 
 const queueEntryWithDirective: OperationQueueEntry = {
   operation: opWithSquashDirective,
   forward: {} as any,
-  observer: {} as any
+  observer: {} as any,
+  optimisticResponse: undefined
 };
 
 const queueEntryDifferentID: OperationQueueEntry = {
@@ -26,7 +28,8 @@ const queueEntryDifferentID: OperationQueueEntry = {
     }
   },
   forward: {} as any,
-  observer: {} as any
+  observer: {} as any,
+  optimisticResponse: undefined
 };
 
 const queueEntryNewVars: OperationQueueEntry = {
@@ -40,13 +43,15 @@ const queueEntryNewVars: OperationQueueEntry = {
     }
   },
   forward: {} as any,
-  observer: {} as any
+  observer: {} as any,
+  optimisticResponse: undefined
 };
 
 const queueEntryDifferentQuery: OperationQueueEntry = {
   operation: opWithDifferentQuery,
   forward: {} as any,
-  observer: {} as any
+  observer: {} as any,
+  optimisticResponse: undefined
 };
 
 describe("SquashOperations", () => {
