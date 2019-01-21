@@ -124,7 +124,7 @@ describe('AeroGear Apollo GraphQL Voyager client', function() {
 
     const variables = { ...updatedTask, id: task.id, version: task.version };
 
-    client.mutate({
+    await client.mutate({
       mutation: UPDATE_TASK,
       variables
     });
@@ -163,7 +163,7 @@ describe('AeroGear Apollo GraphQL Voyager client', function() {
 
     const variables = { ...updatedTask, id: task.id, version: task.version };
 
-    client.mutate({
+    await client.mutate({
       mutation: UPDATE_TASK,
       variables
     });
