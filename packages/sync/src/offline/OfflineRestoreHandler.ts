@@ -1,10 +1,8 @@
-import { FetchResult, Operation } from "apollo-link";
 import ApolloClient from "apollo-client";
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
 import { PersistentStore, PersistedData } from "../PersistentStore";
 import { OperationQueueEntry } from "../links/OfflineQueueLink";
 import { MUTATION_QUEUE_LOGGER } from "../config/Constants";
-import { offlineQueueUpdateIds } from "../utils/helpers";
 import * as debug from "debug";
 
 export const logger = debug.default(MUTATION_QUEUE_LOGGER);
@@ -44,29 +42,17 @@ export class OfflineRestoreHandler {
     if (!this.hasOfflineData()) { return; }
 
     logger("Replying offline mutations after application restart");
-    // return as promise, but in the end clear the storage
-    const uncommittedOfflineMutation: OperationQueueEntry[] = [];
 
-    for (const item of this.offlineData) {
-      let result;
-      try {
-        result = await this.apolloClient.mutate({
-          variables: item.operation.variables,
-          mutation: item.operation.query,
-          context: item.operation.getContext
-        });
-        offlineQueueUpdateIds(this.offlineData, item, result);
-      } catch (e) {
-        // set the errored mutation to the stash
-        uncommittedOfflineMutation.push(item);
-      }
-    }
+    this.offlineData.forEach(item =>
+      this.apolloClient.mutate({
+        variables: { ...item.operation.variables, __replayOfflineMutation: true },
+        mutation: item.operation.query,
+        optimisticResponse: item.optimisticResponse
+      })
+    );
 
     // wait before it was cleared
     await this.clearOfflineData();
-
-    // then add again the uncommited storage
-    this.addOfflineData(uncommittedOfflineMutation);
   }
 
   private getOfflineData = async () => {
@@ -79,13 +65,6 @@ export class OfflineRestoreHandler {
 
   private clearOfflineData = async () => {
     this.offlineData = [];
-    return this.storage.removeItem(this.storageKey);
-  }
-
-  private addOfflineData = (queue: OperationQueueEntry[] = []) => {
-    // add only if there is a value
-    if (queue && queue.length > 0) {
-      this.storage.setItem(this.storageKey, JSON.stringify(queue));
-    }
+    return this.storage.setItem(this.storageKey, JSON.stringify(this.offlineData));
   }
 }

@@ -34,7 +34,8 @@ customLinkBuilder | Enables providing custom Apollo Link for processing requests
 networkStatus | Implementation of `NetworkStatus` Interface | See `WebNetworkStatus` and `CordovaNetworkStatus`
 mutationsQueueName | The name to store requests under in your offline queue | "offline-mutation-store"
 mergeOfflineMutations | Whether or not you wish to squash mutations in your queue | true
-offlineQueueListener| listener that can be configured to receive events from offline queue | undefined
+offlineQueueListener | listener that can be configured to receive events from offline queue | undefined
+proxyUpdate | Function that takes mutation name and returns corresponding cache update function (see [Replaying mutations section](#replaying-mutations)) | N/A
 
 ## Creating a Client
 ```javascript
@@ -163,6 +164,10 @@ exampleMutation(...) @noSquash {
   ...
 }
 ```
+
+### Replaying mutations
+
+When client is initialized it will try to perform mutations found in offline mutation store. By default it does not have access to update function which was provided when original `mutate` call was made. Because of that cache would not be updated with (optimistic) response. To resolve this provide `proxyUpdate` function when initializing client. It should take mutation name as a parameter and return corresponding update function. This way you don't need to pass update functions to your `mutate` calls - if not passed, update function provided by `proxyUpdate` will be used.
 
 ## Conflicts
 

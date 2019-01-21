@@ -44,11 +44,11 @@ export const createOptimisticResponse =
       __typename: typeName,
       ...data,
       version: 1,
-      optimisticResponse: true
+      __optimisticResponse: true
     };
     if (addId) {
       optimisticResponse[operation][idField] = generateId();
-      optimisticResponse[operation].optimisticId = true;
+      optimisticResponse[operation].__optimisticId = true;
     }
 
     return optimisticResponse;

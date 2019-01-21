@@ -54,6 +54,7 @@
     "apollo-link-context": "^1.0.12",
     "apollo-link-error": "^1.1.1",
     "apollo-link-http": "^1.5.5",
+    "apollo-link-retry": "^2.2.8",
     "apollo-link-ws": "^1.0.9",
     "debug": "^4.1.0",
     "graphql": "^14.0.2",

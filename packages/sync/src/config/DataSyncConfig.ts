@@ -6,6 +6,7 @@ import { OfflineQueueListener } from "../offline";
 import { HeaderProvider } from "./HeaderProvider";
 import { NextState } from "../conflicts/NextState";
 import { ConflictListener } from "../conflicts/ConflictListener";
+import ProxyUpdate from "../ProxyUpdate";
 
 /**
  * Contains all configuration options required to initialize SDK
@@ -53,6 +54,11 @@ export interface DataSyncConfig {
    * when operations were added to queue
    */
   offlineQueueListener?: OfflineQueueListener;
+
+  /**
+   * This should return update function based on mutation name.
+   */
+  proxyUpdate?: ProxyUpdate;
 
   /**
    * An implementation of HeaderProvider. If none passed, a default one will be used.
