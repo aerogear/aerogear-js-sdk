@@ -115,7 +115,7 @@ describe('AeroGear Apollo GraphQL Voyager client', function() {
   it('should be possible to create then update item while offline', async function() {
     networkStatus.setOnline(false);
 
-    client.mutate({
+    await client.mutate({
       mutation: ADD_TASK,
       variables: newTask,
       optimisticResponse: createOptimisticResponse('createTask', 'Task', newTask),
@@ -154,7 +154,7 @@ describe('AeroGear Apollo GraphQL Voyager client', function() {
 
     networkStatus.setOnline(false);
 
-    client.mutate({
+    await client.mutate({
       mutation: ADD_TASK,
       variables: newTask,
       optimisticResponse: createOptimisticResponse('createTask', 'Task', newTask),
