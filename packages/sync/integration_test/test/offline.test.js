@@ -115,7 +115,7 @@ describe('AeroGear Apollo GraphQL Voyager client', function() {
   it('should be possible to create then update item while offline', async function() {
     networkStatus.setOnline(false);
 
-    await client.mutate({
+    client.mutate({
       mutation: ADD_TASK,
       variables: newTask,
       optimisticResponse: createOptimisticResponse('createTask', 'Task', newTask),
@@ -124,14 +124,14 @@ describe('AeroGear Apollo GraphQL Voyager client', function() {
 
     const variables = { ...updatedTask, id: task.id, version: task.version };
 
-    await client.mutate({
+    client.mutate({
       mutation: UPDATE_TASK,
       variables
     });
 
     networkStatus.setOnline(true);
 
-    await waitFor(() => JSON.parse(window.localStorage[mutationsQueueName]).length === 0);
+    setTimeout(() => {console.log("timeout ended")}, 10000);
 
     const response = await client.query({
       query: GET_TASKS,
@@ -154,7 +154,7 @@ describe('AeroGear Apollo GraphQL Voyager client', function() {
 
     networkStatus.setOnline(false);
 
-    await client.mutate({
+    client.mutate({
       mutation: ADD_TASK,
       variables: newTask,
       optimisticResponse: createOptimisticResponse('createTask', 'Task', newTask),
@@ -163,7 +163,7 @@ describe('AeroGear Apollo GraphQL Voyager client', function() {
 
     const variables = { ...updatedTask, id: task.id, version: task.version };
 
-    await client.mutate({
+    client.mutate({
       mutation: UPDATE_TASK,
       variables
     });
