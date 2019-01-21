@@ -112,7 +112,7 @@ describe('AeroGear Apollo GraphQL Voyager client', function() {
     expect(response.data.allTasks.length).to.equal(0);
   });
 
-  it.skip('should be possible to create then update item while offline', async function() {
+  it('should be possible to create then update item while offline', async function() {
     networkStatus.setOnline(false);
 
     client.mutate({
@@ -146,7 +146,7 @@ describe('AeroGear Apollo GraphQL Voyager client', function() {
     expect(task.title).to.equal(updatedTask.title);
   });
 
-  it.skip('should be possible to create then update item while offline then replaying mutations', async function() {
+  it('should be possible to create then update item while offline then replaying mutations', async function() {
     await client.mutate({
       mutation: DELETE_TASK,
       variables: { id: task.id },
@@ -367,7 +367,7 @@ describe('AeroGear Apollo GraphQL Voyager client', function() {
       expect(error).to.exist;
       return;
     }
-    
+
     throw new Error('Online mutation should fail when offline');
   });
 
