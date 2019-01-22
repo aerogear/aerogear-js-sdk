@@ -241,7 +241,7 @@ describe('AeroGear Apollo GraphQL Voyager client', function() {
     expect(task.title).to.equal(variables.title);
   });
 
-  it.skip('should not squash noSquash mutations', async function() {
+   it('should not squash unsquashable mutations', async function() {
     networkStatus.setOnline(false);
 
     const a = client.mutate({
@@ -252,6 +252,31 @@ describe('AeroGear Apollo GraphQL Voyager client', function() {
     const b = client.mutate({
       mutation: NO_SQUASH,
       variables: { id: 1 }
+    });
+
+    const offlineMutationStore = JSON.parse(window.localStorage[mutationsQueueName]);
+
+    expect(offlineMutationStore.length).to.equal(2);
+
+    networkStatus.setOnline(true);
+
+    await waitFor(() => JSON.parse(window.localStorage[mutationsQueueName]).length === 0);
+
+    await a;
+    await b;
+  });
+
+  it('should not squash noSquash mutations', async function() {
+    networkStatus.setOnline(false);
+
+    const a = client.mutate({
+      mutation: NO_SQUASH,
+      variables: { id: 0 }
+    });
+
+    const b = client.mutate({
+      mutation: NO_SQUASH,
+      variables: { id: 0 }
     });
 
     const offlineMutationStore = JSON.parse(window.localStorage[mutationsQueueName]);
@@ -367,11 +392,11 @@ describe('AeroGear Apollo GraphQL Voyager client', function() {
       expect(error).to.exist;
       return;
     }
-    
+
     throw new Error('Online mutation should fail when offline');
   });
 
-  it.skip('should allow online only mutation when online', async function() {
+  it('should allow online only mutation when online', async function() {
     networkStatus.setOnline(true);
 
     await client.mutate({
