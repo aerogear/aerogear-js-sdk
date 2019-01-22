@@ -167,7 +167,7 @@ exampleMutation(...) @noSquash {
 
 ### Replaying mutations
 
-When client is initialized it will try to perform mutations found in offline mutation store. By default it does not have access to update function which was provided when original `mutate` call was made. Because of that cache would not be updated with (optimistic) response. To resolve this provide `proxyUpdate` function when initializing client. It should take mutation name as a parameter and return corresponding update function. This way you don't need to pass update functions to your `mutate` calls - if not passed, update function provided by `proxyUpdate` will be used.
+When client is initialized it will try to perform mutations found in offline mutation store. By default it does not have access to update function which was provided when original `mutate` call was made. Because of that cache would not be updated with (optimistic) response. To resolve this provide `proxyUpdate` function when initializing client. It should take mutation name as a parameter and return corresponding update function.
 
 ## Conflicts
 
