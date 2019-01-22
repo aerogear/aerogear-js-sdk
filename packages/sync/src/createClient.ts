@@ -6,7 +6,11 @@ import { SyncConfig } from "./config/SyncConfig";
 import { defaultLinkBuilder as buildLink } from "./links/LinksBuilder";
 import { PersistedData, PersistentStore } from "./PersistentStore";
 import { OfflineRestoreHandler } from "./offline/OfflineRestoreHandler";
-import { VoyagerClient } from "./VoyagerClient";
+
+/**
+ * @see ApolloClient
+ */
+export type VoyagerClient = ApolloClient<NormalizedCacheObject>;
 
 /**
  * Factory for creating Apollo Client
@@ -17,14 +21,15 @@ export const createClient = async (userConfig?: DataSyncConfig): Promise<Voyager
   const clientConfig = extractConfig(userConfig);
   const { cache } = await buildCachePersistence(clientConfig);
   const link = await buildLink(clientConfig);
-  const apolloClient = new VoyagerClient({
+  const apolloClient = new ApolloClient({
     link,
     cache
-  }, clientConfig.proxyUpdate);
+  });
   const storage = clientConfig.storage as PersistentStore<PersistedData>;
   const offlineMutationHandler = new OfflineRestoreHandler(apolloClient,
     storage,
-    clientConfig.mutationsQueueName);
+    clientConfig.mutationsQueueName,
+    clientConfig.proxyUpdate);
   await offlineMutationHandler.replayOfflineMutations();
   return apolloClient;
 };

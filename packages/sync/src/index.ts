@@ -1,4 +1,3 @@
-export * from "./VoyagerClient";
 export * from "./createClient";
 export * from "./config";
 export * from "./conflicts";

@@ -4,6 +4,8 @@ import { PersistentStore, PersistedData } from "../PersistentStore";
 import { OperationQueueEntry } from "../links/OfflineQueueLink";
 import { MUTATION_QUEUE_LOGGER } from "../config/Constants";
 import * as debug from "debug";
+import ProxyUpdate from "../ProxyUpdate";
+import { getMutationName } from "../utils/helpers";
 
 export const logger = debug.default(MUTATION_QUEUE_LOGGER);
 /**
@@ -17,13 +19,16 @@ export class OfflineRestoreHandler {
   private storage: PersistentStore<PersistedData>;
   private readonly storageKey: string;
   private offlineData: OperationQueueEntry[] = [];
+  private readonly proxyUpdate?: ProxyUpdate;
 
   constructor(apolloClient: ApolloClient<NormalizedCacheObject>,
               storage: PersistentStore<PersistedData>,
-              storageKey: string) {
+              storageKey: string,
+              proxyUpdate?: ProxyUpdate) {
     this.apolloClient = apolloClient;
     this.storage = storage;
     this.storageKey = storageKey;
+    this.proxyUpdate = proxyUpdate;
   }
 
   /**
@@ -34,7 +39,7 @@ export class OfflineRestoreHandler {
   public replayOfflineMutations = async () => {
     const stored = await this.getOfflineData();
     if (stored) {
-      this.offlineData = JSON.parse(stored.toString());
+      this.offlineData = JSON.parse(stored.toString()).slice();
     } else {
       this.offlineData = [];
     }
@@ -43,16 +48,22 @@ export class OfflineRestoreHandler {
 
     logger("Replying offline mutations after application restart");
 
-    this.offlineData.forEach(item =>
+    this.storage.setItem(this.storageKey, JSON.stringify([]));
+
+    this.offlineData.forEach(item => {
+      let updateFn;
+      const mutationName = getMutationName(item.operation.query);
+      if (this.proxyUpdate && mutationName) {
+        updateFn = this.proxyUpdate(mutationName);
+      }
+
       this.apolloClient.mutate({
         variables: { ...item.operation.variables, __replayOfflineMutation: true },
         mutation: item.operation.query,
-        optimisticResponse: item.optimisticResponse
-      })
-    );
-
-    // wait before it was cleared
-    await this.clearOfflineData();
+        optimisticResponse: item.optimisticResponse,
+        update: updateFn
+      });
+    });
   }
 
   private getOfflineData = async () => {
@@ -61,10 +72,5 @@ export class OfflineRestoreHandler {
 
   private hasOfflineData() {
     return (this.offlineData && this.offlineData.length > 0);
-  }
-
-  private clearOfflineData = async () => {
-    this.offlineData = [];
-    return this.storage.setItem(this.storageKey, JSON.stringify(this.offlineData));
   }
 }
