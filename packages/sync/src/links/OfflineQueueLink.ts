@@ -40,7 +40,7 @@ export type TYPE_MUTATION = "mutation" | "query";
  */
 export class OfflineQueueLink extends ApolloLink {
   private opQueue: OperationQueueEntry[] = [];
-  private isOpen: boolean = true;
+  private isOpen: boolean = false;
   private storage: PersistentStore<PersistedData>;
   private readonly key: string;
   private readonly networkStatus?: NetworkStatus;
@@ -131,14 +131,14 @@ export class OfflineQueueLink extends ApolloLink {
    * Requires network state implementation to be supplied in the configuration.
    */
   // tslint:disable-next-line:member-ordering
-  public openQueueOnNetworkStateUpdates(): void {
+  public async openQueueOnNetworkStateUpdates(): Promise<void> {
     const self = this;
     if (this.networkStatus) {
-      this.networkStatus.isOffline().then(offline => {
+      await this.networkStatus.isOffline().then(offline => {
         if (offline) {
-          this.close();
+          return  this.close();
         } else {
-          this.open();
+          return  this.open();
         }
       });
 
