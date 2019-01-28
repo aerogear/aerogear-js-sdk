@@ -3,7 +3,7 @@ import { persistCache } from "apollo-cache-persist";
 import { ApolloClient } from "apollo-client";
 import { DataSyncConfig } from "./config";
 import { SyncConfig } from "./config/SyncConfig";
-import { defaultLinkBuilder as buildLink } from "./links/LinksBuilder";
+import { defaultLinkBuilder as buildLink, localLink } from "./links/LinksBuilder";
 import { PersistedData, PersistentStore } from "./PersistentStore";
 import { OfflineRestoreHandler } from "./offline/OfflineRestoreHandler";
 
@@ -30,7 +30,7 @@ export const createClient = async (userConfig?: DataSyncConfig): Promise<Voyager
     storage,
     clientConfig.mutationsQueueName);
   offlineMutationHandler.replayOfflineMutations();
-   // TODO maybe with initial delay. link.applyInitialNetworkState.
+   // TODO maybe with initial delay. localLink.applyInitialNetworkState.
   return apolloClient;
 };
 

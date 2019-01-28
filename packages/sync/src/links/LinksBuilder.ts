@@ -4,17 +4,15 @@ import { conflictLink } from "../conflicts";
 import { DataSyncConfig } from "../config";
 import { defaultWebSocketLink } from "./WebsocketLink";
 import { isSubscription } from "../utils/helpers";
-import { compositeQueueLink } from "./compositeQueueLink";
+import { compositeQueueLink} from "./compositeQueueLink";
 import { createHeadersLink } from "./HeadersLink";
 import { AuditLoggingLink } from "./AuditLoggingLink";
 import { MetricsBuilder } from "@aerogear/core";
 
-/**
- * Function used to build Apollo link
- */
-export type LinkChainBuilder = (config: DataSyncConfig) => Promise<ApolloLink>;
+export let localLink: ApolloLink;
 
 /**
+ *
  * Default Apollo Link builder
  * Provides out of the box functionality for:
  *
@@ -24,12 +22,9 @@ export type LinkChainBuilder = (config: DataSyncConfig) => Promise<ApolloLink>;
  * - Error handling
  * - Audit logging
  */
-export const defaultLinkBuilder: LinkChainBuilder =
+export const defaultLinkBuilder =
   async (config: DataSyncConfig): Promise<ApolloLink> => {
-    if (config.customLinkBuilder) {
-      return config.customLinkBuilder(config);
-    }
-    const localLink: ApolloLink = compositeQueueLink(config, "mutation");
+    localLink = compositeQueueLink(config, "mutation");
     let httpLink = new HttpLink({ uri: config.httpUrl, includeExtensions: config.auditLogging }) as ApolloLink;
     if (config.headerProvider) {
       httpLink = concat(createHeadersLink(config), httpLink);
