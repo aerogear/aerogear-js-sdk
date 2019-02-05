@@ -3,7 +3,8 @@
  */
 export enum localDirectives {
   ONLINE_ONLY = "onlineOnly",
-  NO_SQUASH = "noSquash"
+  NO_SQUASH = "noSquash",
+  PARALLEL = "parallel"
 }
 
 export const localDirectivesArray = [ localDirectives.ONLINE_ONLY, localDirectives.NO_SQUASH ];
