@@ -1,12 +1,24 @@
-import { ApolloLink, concat } from "apollo-link";
+import { ApolloLink, concat, Operation } from "apollo-link";
 import { HttpLink } from "apollo-link-http";
 import { conflictLink } from "../conflicts";
 import { DataSyncConfig } from "../config";
 import { createHeadersLink } from "./HeadersLink";
 import { AuditLoggingLink } from "./AuditLoggingLink";
 import { MetricsBuilder } from "@aerogear/core";
-import { OfflineQueueLink } from "./OfflineQueueLink";
 import { LocalDirectiveFilterLink } from "./LocalDirectiveFilterLink";
+import { isMutation, isOnlineOnly, isSubscription } from "../utils/helpers";
+import { defaultWebSocketLink } from "./WebsocketLink";
+import { OfflineLink } from "./OfflineLink";
+import { RetryLink } from "./RetryLink";
+
+export const defaultLink = async (config: DataSyncConfig) => {
+  let link = await defaultHttpLinks(config);
+  if (config.wsUrl) {
+    const wsLink = defaultWebSocketLink({ uri: config.wsUrl });
+    link = ApolloLink.split(isSubscription, wsLink, link);
+  }
+  return link;
+};
 
 /**
  * Default HTTP Apollo Links
@@ -17,19 +29,35 @@ import { LocalDirectiveFilterLink } from "./LocalDirectiveFilterLink";
  * - Error handling
  * - Audit logging
  */
-export const defaultHttpLinks = async (config: DataSyncConfig): Promise<ApolloLink[]> => {
-  const offlineQueueLink = new OfflineQueueLink(config, "mutation");
-  const localDirectiveFilterLink = new LocalDirectiveFilterLink();
+export const defaultHttpLinks = async (config: DataSyncConfig): Promise<ApolloLink> => {
+  let links: ApolloLink[] = [];
+  if (config.networkStatus) {
+    const offlineLink = new OfflineLink({
+      storage: config.storage,
+      storageKey: config.mutationsQueueName,
+      squashOperations: config.mergeOfflineMutations,
+      listener: config.offlineQueueListener,
+      networkStatus: config.networkStatus
+    });
+    const localDirectiveFilterLink = new LocalDirectiveFilterLink();
+    let offlineLinks = ApolloLink.from([offlineLink, localDirectiveFilterLink]);
+
+    offlineLinks = ApolloLink.split((op: Operation) => isMutation(op) && !isOnlineOnly(op), offlineLinks);
+    links = [offlineLinks];
+  }
+
+  const retryLink = new RetryLink({});
+  links.push(retryLink);
 
   let httpLink = new HttpLink({ uri: config.httpUrl, includeExtensions: config.auditLogging }) as ApolloLink;
   if (config.headerProvider) {
     httpLink = concat(createHeadersLink(config), httpLink);
   }
 
-  let links: ApolloLink[] = [offlineQueueLink, localDirectiveFilterLink, conflictLink(config), httpLink];
-
-  if (!config.conflictStrategy) {
-    links = [offlineQueueLink, localDirectiveFilterLink, httpLink];
+  if (config.conflictStrategy) {
+    links = [...links, conflictLink(config), httpLink];
+  } else {
+    links = [...links, httpLink];
   }
 
   if (config.auditLogging) {
@@ -37,7 +65,7 @@ export const defaultHttpLinks = async (config: DataSyncConfig): Promise<ApolloLi
     links.unshift(auditLoggingLink);
   }
 
-  return links;
+  return ApolloLink.from(links);
 };
 
 export const createAuditLoggingLink = async (config: DataSyncConfig): Promise<AuditLoggingLink> => {
