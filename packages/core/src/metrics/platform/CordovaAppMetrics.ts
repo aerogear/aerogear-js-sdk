@@ -1,4 +1,3 @@
-import console from "loglevel";
 import { AppMetrics, Metrics } from "../model";
 
 // tslint:disable-next-line:no-var-requires
