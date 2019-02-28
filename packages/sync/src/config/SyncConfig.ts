@@ -4,7 +4,7 @@ import { ConfigError } from "./ConfigError";
 import { DataSyncConfig } from "./DataSyncConfig";
 import { WebNetworkStatus } from "../offline";
 import { CordovaNetworkStatus } from "../offline";
-import { diffMergeClientWins } from "../conflicts/strategies";
+import { diffMergeClientWins } from "../conflicts";
 import { VersionedNextState } from "../conflicts/VersionedNextState";
 import { ConflictResolutionStrategies } from "../conflicts";
 
@@ -46,9 +46,8 @@ export class SyncConfig implements DataSyncConfig {
   public auditLogging = false;
   public conflictStrategy: ConflictResolutionStrategies;
   public conflictStateProvider = new VersionedNextState();
-
   public networkStatus = (isMobileCordova()) ? new CordovaNetworkStatus() : new WebNetworkStatus();
-  private clientConfig: DataSyncConfig;
+  private readonly clientConfig: DataSyncConfig;
 
   constructor(clientOptions?: DataSyncConfig) {
     if (window) {
@@ -68,6 +67,8 @@ export class SyncConfig implements DataSyncConfig {
   public getClientConfig(): DataSyncConfig {
     return this.clientConfig;
   }
+
+  public shouldRetry = () => true;
 
   private init(clientOptions?: DataSyncConfig) {
     const config = this.merge(clientOptions);
