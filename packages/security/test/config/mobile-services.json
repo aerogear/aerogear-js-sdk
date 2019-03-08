@@ -24,6 +24,14 @@
       "type": "push",
       "url": "https://www.mocky.io/v2/5a6b59fb31000088191b8ac6",
       "config": {}
+    },
+    {
+      "id": "security",
+      "name": "security",
+      "type": "security",
+      "url": "https://www.mocky.io/v2/5a6b59fb31000088191b8ac6",
+      "config": {}
     }
+
   ]
 }

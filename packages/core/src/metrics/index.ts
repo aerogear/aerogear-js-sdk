@@ -1,4 +1,4 @@
 export * from "./MetricsService";
-export * from "./MetricsBuilder";
+export * from "./DefaultMetricsBuilder";
 export * from "./model";
 export * from "./publisher";

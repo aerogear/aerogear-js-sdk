@@ -2,9 +2,9 @@ import console from "loglevel";
 import { ServiceConfiguration } from "../config";
 
 import { isNative } from "../PlatformUtils";
-import { Metrics, MetricsPayload } from "./model";
+import { Metrics, MetricsPayload, MetricsBuilder } from "./model";
 import { MetricsPublisher, NetworkMetricsPublisher } from "./publisher";
-import { MetricsBuilder } from "./MetricsBuilder";
+import { DefaultMetricsBuilder } from "./DefaultMetricsBuilder";
 
 declare var window: any;
 
@@ -34,7 +34,7 @@ export class MetricsService {
 
     this.builder = options && options.builder
       ? options.builder
-      : new MetricsBuilder();
+      : new DefaultMetricsBuilder();
 
     if (this.configuration) {
       this.defaultMetrics = this.builder.buildDefaultMetrics();
@@ -71,7 +71,7 @@ export class MetricsService {
    * @param type type of the metrics to be published
    * @param metrics metrics instances that should be published
    */
-  public publish(type: string, metrics: Metrics[]): Promise<any> {
+  public async publish(type: string, metrics: Metrics[]): Promise<any> {
     if (!type) {
       throw new Error(`Type is invalid: ${type}`);
     }
@@ -90,21 +90,11 @@ export class MetricsService {
       return Promise.reject(err);
     }
 
-    const payload: MetricsPayload = {
-      clientId: this.builder.getClientId(),
-      type,
-      timestamp: new Date().getTime(),
-      data: {}
-    };
+    metrics = metrics.concat(this.defaultMetrics);
 
-    const metricsPromise = metrics.concat(this.defaultMetrics)
-      .map(m => m.collect().then(data => {
-        payload.data[m.identifier] = data;
-      }));
+    const payload: MetricsPayload = await this.builder.buildMetricsPayload(type, metrics);
 
-    return Promise.all(metricsPromise).then(() => {
-      return publisher.publish(payload);
-    });
+    return publisher.publish(payload);
   }
 
   /**
