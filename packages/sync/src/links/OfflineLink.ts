@@ -40,7 +40,7 @@ export class OfflineLink extends ApolloLink {
     const queueOptions = {
       ...options,
       onEnqueue: this.handleQueueChange,
-      onDequeue: this.handleQueueChange
+      onDequeue: ()=>{return;}
     };
 
     this.queue = new OfflineQueue(queueOptions);
