@@ -5,7 +5,7 @@ import { conflictLink } from "../conflicts";
 import { DataSyncConfig } from "../config";
 import { createAuthLink } from "./AuthLink";
 import { AuditLoggingLink } from "./AuditLoggingLink";
-import { MetricsBuilder } from "@aerogear/core";
+import { DefaultMetricsBuilder, MetricsBuilder } from "@aerogear/core";
 import { LocalDirectiveFilterLink } from "./LocalDirectiveFilterLink";
 import { createUploadLink } from "apollo-upload-client";
 import { isMutation, isOnlineOnly, isSubscription, isMarkedOffline } from "../utils/helpers";
@@ -93,7 +93,7 @@ export const defaultHttpLinks = async (config: DataSyncConfig, offlineLink: Apol
 };
 
 const createAuditLoggingLink = async (): Promise<AuditLoggingLink> => {
-  const metricsBuilder: MetricsBuilder = new MetricsBuilder();
+  const metricsBuilder: MetricsBuilder = new DefaultMetricsBuilder();
   const metricsPayload: {
     [key: string]: any;
   } = {};

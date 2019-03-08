@@ -1,5 +1,5 @@
 import {assert} from "chai";
-import {MetricsBuilder} from "../../src/metrics";
+import {MetricsBuilder, DefaultMetricsBuilder} from "../../src/metrics";
 
 declare var window: any;
 declare var global: any;
@@ -34,7 +34,7 @@ describe("MetricsBuilder", () => {
   let metricsBuilder: MetricsBuilder;
 
   beforeEach(() => {
-    metricsBuilder = new MetricsBuilder(localStorage);
+    metricsBuilder = new DefaultMetricsBuilder(localStorage);
     storage.aerogear_metrics_client_key = "";
   });
 
