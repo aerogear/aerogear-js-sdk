@@ -27,12 +27,14 @@
   "homepage": "https://github.com/aerogear/aerogear-js-sdk#readme",
   "devDependencies": {
     "@types/chai": "4.1.7",
+    
     "chai": "4.2.0",
     "mocha": "6.0.2",
     "nyc": "13.3.0",
     "typescript": "3.3.3333"
   },
   "dependencies": {
-    "@aerogear/core": "2.3.1"
+    "@aerogear/core": "2.3.1",
+    "@types/loglevel": "1.5.4"
   }
 }
