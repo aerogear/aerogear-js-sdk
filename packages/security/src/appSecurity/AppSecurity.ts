@@ -5,7 +5,7 @@ export class AppSecurity {
   private static readonly TYPE: string = "security";
   private internalConfig: any;
 
-  constructor (config: ConfigurationService){
+  constructor(config: ConfigurationService) {
     const configuration = config.getConfigByType(AppSecurity.TYPE);
     if (configuration && configuration.length > 0) {
       const serviceConfiguration: ServiceConfiguration = configuration[0];
