@@ -6,7 +6,7 @@ import { ObjectState } from "../conflicts/ObjectState";
 import { ConflictListener } from "../conflicts/ConflictListener";
 import { ConfigurationService } from "@aerogear/core";
 import { ShouldRetryFn } from "../offline/retry/ShouldRetry";
-import ProxyUpdate from "../cache/ProxyUpdate";
+import CacheUpdates from "../cache/CacheUpdates";
 
 /**
  * Contains all configuration options required to initialize Voyager Client
@@ -114,7 +114,8 @@ export interface DataSyncConfig {
   /**
    * [Modifier]
    *
-   * This should return update function based on mutation name.
+   * Cache updates functions for your mutations
+   * Argument allows to restore optimistic responses on application restarts.
    */
-  proxyUpdate?: ProxyUpdate;
+  proxyUpdate?: CacheUpdates;
 }

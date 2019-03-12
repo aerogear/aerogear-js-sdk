@@ -5,7 +5,7 @@ import { OperationQueueEntry } from "./OperationQueueEntry";
 import { MUTATION_QUEUE_LOGGER } from "../config/Constants";
 import * as debug from "debug";
 import { DataSyncConfig } from "../config";
-import ProxyUpdate from "../cache/ProxyUpdate";
+import CacheUpdates from "../cache/CacheUpdates";
 import { getMutationName } from "../utils/helpers";
 
 export const logger = debug.default(MUTATION_QUEUE_LOGGER);
@@ -21,10 +21,9 @@ export class OfflineRestoreHandler {
   private storage: PersistentStore<PersistedData>;
   private readonly storageKey: string;
   private offlineData: OperationQueueEntry[] = [];
-  private proxyUpdate?: ProxyUpdate;
+  private proxyUpdate?: CacheUpdates;
 
-  constructor(apolloClient: ApolloClient<NormalizedCacheObject>,
-              clientConfig: DataSyncConfig) {
+  constructor(apolloClient: ApolloClient<NormalizedCacheObject>, clientConfig: DataSyncConfig) {
     this.apolloClient = apolloClient;
     this.storage = clientConfig.storage as PersistentStore<PersistedData>;
     this.storageKey = clientConfig.mutationsQueueName;
