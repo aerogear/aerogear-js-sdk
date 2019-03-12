@@ -55,7 +55,7 @@ export class OfflineRestoreHandler {
       const mutationName = getMutationName(item.operation.query);
       let updateFunction;
       if (this.mutationCacheUpdates && mutationName) {
-        updateFunction = this.mutationCacheUpdates.mutationName;
+        updateFunction = this.mutationCacheUpdates[mutationName];
       }
       const mutationOptions = {
         variables: item.operation.variables,
