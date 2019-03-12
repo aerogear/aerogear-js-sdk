@@ -117,5 +117,5 @@ export interface DataSyncConfig {
    * Cache updates functions for your mutations
    * Argument allows to restore optimistic responses on application restarts.
    */
-  proxyUpdate?: CacheUpdates;
+  mutationCacheUpdates?: CacheUpdates;
 }

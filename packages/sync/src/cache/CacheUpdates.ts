@@ -4,7 +4,7 @@ import { MutationUpdaterFn } from "apollo-client";
 /**
  * Interface map mutation names to their respective update functions.
  * Developers can write cache updates for individual views
- * in form of object with keys referencing actual mutation names that are being used.
+ * in form of object with keys referencing mutation names that are being used.
  *
  * For example:
  *

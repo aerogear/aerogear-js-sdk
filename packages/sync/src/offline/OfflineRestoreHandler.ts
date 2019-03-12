@@ -21,13 +21,13 @@ export class OfflineRestoreHandler {
   private storage: PersistentStore<PersistedData>;
   private readonly storageKey: string;
   private offlineData: OperationQueueEntry[] = [];
-  private proxyUpdate?: CacheUpdates;
+  private mutationCacheUpdates?: CacheUpdates;
 
   constructor(apolloClient: ApolloClient<NormalizedCacheObject>, clientConfig: DataSyncConfig) {
     this.apolloClient = apolloClient;
     this.storage = clientConfig.storage as PersistentStore<PersistedData>;
     this.storageKey = clientConfig.mutationsQueueName;
-    this.proxyUpdate = clientConfig.proxyUpdate;
+    this.mutationCacheUpdates = clientConfig.mutationCacheUpdates;
   }
 
   /**
@@ -54,8 +54,8 @@ export class OfflineRestoreHandler {
       const optimisticResponse = item.optimisticResponse;
       const mutationName = getMutationName(item.operation.query);
       let updateFunction;
-      if (this.proxyUpdate && mutationName) {
-        updateFunction = this.proxyUpdate.mutationName;
+      if (this.mutationCacheUpdates && mutationName) {
+        updateFunction = this.mutationCacheUpdates.mutationName;
       }
       const mutationOptions = {
         variables: item.operation.variables,
