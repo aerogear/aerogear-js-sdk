@@ -6,6 +6,7 @@ import { ObjectState } from "../conflicts/ObjectState";
 import { ConflictListener } from "../conflicts/ConflictListener";
 import { ConfigurationService } from "@aerogear/core";
 import { ShouldRetryFn } from "../offline/retry/ShouldRetry";
+import ProxyUpdate from "../cache/ProxyUpdate";
 
 /**
  * Contains all configuration options required to initialize Voyager Client
@@ -109,4 +110,11 @@ export interface DataSyncConfig {
    * By default offline requests are retried 5 times.
    */
   shouldRetry?: ShouldRetryFn;
+
+  /**
+   * [Modifier]
+   *
+   * This should return update function based on mutation name.
+   */
+  proxyUpdate?: ProxyUpdate;
 }
