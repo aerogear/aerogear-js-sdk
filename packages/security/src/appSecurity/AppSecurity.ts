@@ -1,5 +1,5 @@
 import console from "loglevel";
-import { ServiceConfiguration, ConfigurationService } from "@aerogear/core";
+import { ServiceConfiguration, ConfigurationService, MetricsBuilder } from "@aerogear/core";
 
 export class AppSecurity {
   private static readonly TYPE: string = "security";
@@ -15,8 +15,21 @@ export class AppSecurity {
     } else {
       console.warn("Security configuration is missing. The Security module will not work properly.");
     }
+    console.info("Url: ", this.internalConfig.url);
   }
-  // TODO get device info AEROGEAR-8773
+
+  // Get device info AEROGEAR-8773
+  public getClientData = async (): Promise<any> => {
+    const metricsBuilder: MetricsBuilder = new MetricsBuilder();
+    const metricsPayload: {
+      [key: string]: any;
+    } = {};
+    const metrics = metricsBuilder.buildDefaultMetrics();
+    for (const metric of metrics) {
+      metricsPayload[metric.identifier] = await metric.collect();
+    }
+    return  {metricsPayload};
+  }
 
   // TODO call init endpoint on go mobile security service AEROGEAR-8774
 
