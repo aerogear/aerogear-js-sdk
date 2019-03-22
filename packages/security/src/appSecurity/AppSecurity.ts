@@ -1,4 +1,4 @@
-import console from "loglevel";
+//import console from "loglevel";
 import { ServiceConfiguration, ConfigurationService, MetricsBuilder } from "@aerogear/core";
 
 export class AppSecurity {
@@ -33,6 +33,20 @@ export class AppSecurity {
   }
 
   // TODO call init endpoint on go mobile security service AEROGEAR-8774
+  public clientInit() {
+    this.getClientData()
+    .then(metricsPayload => {
+      const initPayload: {[key: string]: any; } = {};
+      // build the initPayload
+      initPayload.deviceId = metricsPayload.clientID;
+      initPayload.appId = metricsPayload.app.appId,
+      initPayload.deviceType = metricsPayload.device.platform;
+      initPayload.deviceVersion = metricsPayload.device.platformVersion;
+      initPayload.version = metricsPayload.app.appVersion;
+      console.log(initPayload);
+      return "initPayload";
+    });
+  }
 
   // TODO need to deal with data return by init AEROGEAR-8775
 
