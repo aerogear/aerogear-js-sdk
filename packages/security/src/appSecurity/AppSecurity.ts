@@ -15,10 +15,10 @@ export class AppSecurity {
     } else {
       console.warn("Security configuration is missing. The Security module will not work properly.");
     }
-    console.info("Url: ", this.internalConfig.url);
   }
 
   // Get device info AEROGEAR-8773
+  // TODO move this functionality to the core
   public getClientData = async (): Promise<any> => {
     const metricsBuilder: MetricsBuilder = new MetricsBuilder();
     const metricsPayload: {
