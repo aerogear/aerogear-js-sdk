@@ -28,6 +28,7 @@ export class AppSecurity {
     for (const metric of metrics) {
       metricsPayload[metric.identifier] = await metric.collect();
     }
+    metricsPayload.clientID = metricsBuilder.getClientId();
     return  {metricsPayload};
   }
 
