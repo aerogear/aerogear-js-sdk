@@ -29,7 +29,7 @@ export class AppSecurity {
       metricsPayload[metric.identifier] = await metric.collect();
     }
     metricsPayload.clientID = metricsBuilder.getClientId();
-    return  {metricsPayload};
+    return metricsPayload;
   }
 
   // TODO call init endpoint on go mobile security service AEROGEAR-8774
