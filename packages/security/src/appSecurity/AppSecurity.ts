@@ -1,4 +1,5 @@
-//import console from "loglevel";
+import console from "loglevel";
+import axios from "axios";
 import { ServiceConfiguration, ConfigurationService, MetricsBuilder } from "@aerogear/core";
 
 export class AppSecurity {
@@ -21,9 +22,7 @@ export class AppSecurity {
   // TODO move this functionality to the core
   public getClientData = async (): Promise<any> => {
     const metricsBuilder: MetricsBuilder = new MetricsBuilder();
-    const metricsPayload: {
-      [key: string]: any;
-    } = {};
+    const metricsPayload: {[key: string]: any;} = {};
     const metrics = metricsBuilder.buildDefaultMetrics();
     for (const metric of metrics) {
       metricsPayload[metric.identifier] = await metric.collect();
@@ -33,8 +32,8 @@ export class AppSecurity {
   }
 
   // TODO call init endpoint on go mobile security service AEROGEAR-8774
-  public clientInit() {
-    this.getClientData()
+  public clientInit(): Promise<any> {
+    const clientInitResponse = this.getClientData()
     .then(metricsPayload => {
       const initPayload: {[key: string]: any; } = {};
       // build the initPayload
@@ -43,9 +42,9 @@ export class AppSecurity {
       initPayload.deviceType = metricsPayload.device.platform;
       initPayload.deviceVersion = metricsPayload.device.platformVersion;
       initPayload.version = metricsPayload.app.appVersion;
-      console.log(initPayload);
-      return "initPayload";
+      return axios.post(this.internalConfig.url, initPayload);
     });
+    return clientInitResponse;
   }
 
   // TODO need to deal with data return by init AEROGEAR-8775
