@@ -31,7 +31,7 @@ export class AppSecurity {
     return metricsPayload;
   }
 
-  // TODO call init endpoint on go mobile security service AEROGEAR-8774
+  // Call the init endpoint on go mobile security service AEROGEAR-8774
   public clientInit(): Promise<any> {
     const clientInitResponse = this.getClientData()
     .then(metricsPayload => {
@@ -46,10 +46,6 @@ export class AppSecurity {
     });
     return clientInitResponse;
   }
-
-  // TODO need to deal with data return by init AEROGEAR-8775
-
-  // TODO send enabled/disabled data to metrics AEROGEAR-8776
 
   /**
    * Return the config used for the Security server
