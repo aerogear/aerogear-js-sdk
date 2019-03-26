@@ -22,7 +22,7 @@ export class AppSecurity {
   // TODO move this functionality to the core
   public getClientData = async (): Promise<any> => {
     const metricsBuilder: MetricsBuilder = new MetricsBuilder();
-    const metricsPayload: {[key: string]: any;} = {};
+    const metricsPayload: {[key: string]: any; } = {};
     const metrics = metricsBuilder.buildDefaultMetrics();
     for (const metric of metrics) {
       metricsPayload[metric.identifier] = await metric.collect();
