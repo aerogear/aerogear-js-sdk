@@ -19,7 +19,7 @@ export class AppSecurity {
 
   constructor(config: ConfigurationService, options?: AppSecurityOptions) {
     if (!isMobileCordova()) {
-      throw new Error("Cordova Platform Not Detected. This module should not be used.");
+      console.error("Cordova Platform Not Detected. This module should not be used.");
     }
 
     this.metricsBuilder = (options && options.metricsBuilder) ? options.metricsBuilder : new DefaultMetricsBuilder();
