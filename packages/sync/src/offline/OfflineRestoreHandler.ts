@@ -1,6 +1,5 @@
 import ApolloClient from "apollo-client";
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
-import { PersistedData, PersistentStore } from "../PersistentStore";
 import { OperationQueueEntry } from "./OperationQueueEntry";
 import { MUTATION_QUEUE_LOGGER } from "../config/Constants";
 import * as debug from "debug";
@@ -18,13 +17,13 @@ export const logger = debug.default(MUTATION_QUEUE_LOGGER);
 export class OfflineRestoreHandler {
 
   private apolloClient: ApolloClient<NormalizedCacheObject>;
-  private storage: PersistentStore<PersistedData>;
+  private storage: LocalForage;
   private readonly storageKey: string;
   private mutationCacheUpdates?: CacheUpdates;
 
   constructor(apolloClient: ApolloClient<NormalizedCacheObject>, clientConfig: DataSyncConfig) {
     this.apolloClient = apolloClient;
-    this.storage = clientConfig.storage as PersistentStore<PersistedData>;
+    this.storage = clientConfig.storage as LocalForage;
     this.storageKey = clientConfig.mutationsQueueName;
     this.mutationCacheUpdates = clientConfig.mutationCacheUpdates;
   }

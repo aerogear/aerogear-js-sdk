@@ -4,9 +4,9 @@ import { ApolloClient } from "apollo-client";
 import { DataSyncConfig } from "./config";
 import { SyncConfig } from "./config/SyncConfig";
 import { createDefaultLink, createOfflineLink } from "./links/LinksBuilder";
-import { PersistedData, PersistentStore } from "./PersistentStore";
 import { OfflineRestoreHandler } from "./offline/OfflineRestoreHandler";
 import { OfflineLink } from "./links/OfflineLink";
+import { PersistentStorage, PersistedData } from "apollo-cache-persist/types";
 
 /**
  * @see ApolloClient
@@ -64,7 +64,7 @@ async function buildCachePersistence(clientConfig: DataSyncConfig) {
   const cache = new InMemoryCache();
   await persistCache({
     cache,
-    storage: clientConfig.storage as PersistentStore<PersistedData>,
+    storage: clientConfig.storage as PersistentStorage<PersistedData<NormalizedCacheObject>>,
     maxSize: false,
     debug: false
   });

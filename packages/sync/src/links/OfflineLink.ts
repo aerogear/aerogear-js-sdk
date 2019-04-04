@@ -1,5 +1,4 @@
 import { ApolloLink, NextLink, Operation, Observable } from "apollo-link";
-import { PersistedData, PersistentStore } from "../PersistentStore";
 import { NetworkInfo, NetworkStatus, OfflineQueueListener } from "../offline";
 import { OfflineQueue } from "../offline/OfflineQueue";
 import { ObjectState } from "../conflicts";
@@ -7,7 +6,7 @@ import { isMarkedOffline } from "../utils/helpers";
 
 export interface OfflineLinkOptions {
   networkStatus: NetworkStatus;
-  storage?: PersistentStore<PersistedData>;
+  storage?: LocalForage;
   storageKey?: string;
   listener?: OfflineQueueListener;
   conflictStateProvider?: ObjectState;

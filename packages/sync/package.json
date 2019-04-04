@@ -52,6 +52,7 @@
     "apollo-link-context": "1.0.17",
     "apollo-link-error": "1.1.10",
     "apollo-link-http": "1.5.14",
+    "apollo-link-http-common": "^0.2.13",
     "apollo-link-retry": "^2.2.13",
     "apollo-link-ws": "1.0.17",
     "apollo-upload-client": "10.0.0",
@@ -59,6 +60,7 @@
     "graphql": "14.1.1",
     "graphql-tag": "2.10.1",
     "graphql-tools": "4.0.4",
+    "localforage": "^1.7.3",
     "subscriptions-transport-ws": "0.9.16"
   }
 }

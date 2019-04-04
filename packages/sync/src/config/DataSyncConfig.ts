@@ -1,5 +1,4 @@
 import { ConflictResolutionStrategies } from "../conflicts/ConflictResolutionStrategy";
-import { PersistedData, PersistentStore } from "../PersistentStore";
 import { NetworkStatus, OfflineQueueListener } from "../offline";
 import { AuthContextProvider } from "../auth/AuthContextProvider";
 import { ObjectState } from "../conflicts/ObjectState";
@@ -31,9 +30,16 @@ export interface DataSyncConfig {
   /**
    * [Modifier]
    *
-   * The storage you want your client to use (Uses window.localStorage by default)
+   * The storage you want your client to use (Uses localForage by default)
    */
-  storage?: PersistentStore<PersistedData>;
+  storage?: LocalForage;
+
+  /**
+   * [Modifier]
+   *
+   * The storage options for your client
+   */
+  storageOptions?: StorageOptions;
 
   /**
    * [Modifier]
@@ -117,4 +123,9 @@ export interface DataSyncConfig {
    *
    */
   retryOptions?: RetryLink.Options;
+}
+
+export interface StorageOptions {
+  name: string;
+  storeName: string;
 }

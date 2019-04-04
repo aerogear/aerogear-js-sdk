@@ -1,12 +1,11 @@
 import { isMobileCordova, ServiceConfiguration } from "@aerogear/core";
-import { PersistedData, PersistentStore } from "../PersistentStore";
 import { ConfigError } from "./ConfigError";
-import { DataSyncConfig } from "./DataSyncConfig";
+import { DataSyncConfig, StorageOptions } from "./DataSyncConfig";
 import { CordovaNetworkStatus, NetworkStatus, WebNetworkStatus } from "../offline";
 import { clientWins } from "../conflicts/strategies";
 import { VersionedState } from "../conflicts/VersionedState";
 import { ConflictResolutionStrategies } from "../conflicts";
-
+import localForage from "localforage";
 declare var window: any;
 
 // Legacy platform configuration that needs to be merged into sync configuration
@@ -39,7 +38,11 @@ export class SyncConfig implements DataSyncConfig {
     }
   }
 
-  public storage?: PersistentStore<PersistedData>;
+  public storage?: LocalForage;
+  public storageOptions = {
+    name: "applicationDB",
+    storeName: "localdata"
+  };
   public mutationsQueueName = "offline-mutation-store";
   public auditLogging = false;
   public conflictStrategy: ConflictResolutionStrategies;
@@ -61,7 +64,12 @@ export class SyncConfig implements DataSyncConfig {
 
   constructor(clientOptions?: DataSyncConfig) {
     if (window) {
-      this.storage = window.localStorage;
+      localForage.config({});
+      if (!this.storage && clientOptions && clientOptions.storageOptions) {
+        this.storage = localForage.createInstance(clientOptions.storageOptions);
+      } else {
+        this.storage = localForage.createInstance(this.storageOptions);
+      }
     }
     this.networkStatus = (isMobileCordova()) ?
       new CordovaNetworkStatus() : new WebNetworkStatus();

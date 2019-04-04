@@ -1,5 +1,4 @@
 import { OperationQueueEntry } from "./OperationQueueEntry";
-import { PersistedData, PersistentStore } from "../PersistentStore";
 import { OfflineQueueListener } from "./OfflineQueueListener";
 import { isClientGeneratedId } from "../cache/createOptimisticResponse";
 import { ObjectState } from "../conflicts/ObjectState";
@@ -8,7 +7,7 @@ import { OfflineLinkOptions } from "..";
 import { isMarkedOffline, markOffline } from "../utils/helpers";
 
 export interface OfflineQueueOptions {
-  storage?: PersistentStore<PersistedData>;
+  storage?: LocalForage;
   storageKey?: string;
   listener?: OfflineQueueListener;
   conflictStateProvider?: ObjectState;
@@ -29,7 +28,7 @@ export type OperationQueueChangeHandler = (entry: OperationQueueEntry) => void;
  */
 export class OfflineQueue {
   public queue: OperationQueueEntry[] = [];
-  private readonly storage?: PersistentStore<PersistedData>;
+  private readonly storage?: LocalForage;
   private readonly storageKey?: string;
   private readonly listener?: OfflineQueueListener;
   private readonly state?: ObjectState;
