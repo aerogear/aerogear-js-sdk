@@ -1,8 +1,18 @@
-import { assert, expect } from "chai";
+import chai from "chai";
+import chaiPromises from "chai-as-promised";
 import sinon from "sinon";
-import { Metrics, MetricsPayload, MetricsPublisher, MetricsService, NetworkMetricsPublisher } from "../../src/metrics";
+import {
+  Metrics,
+  MetricsPayload,
+  MetricsPublisher,
+  MetricsService,
+  NetworkMetricsPublisher,
+  MetricsBuilder
+} from "../../src/metrics";
 import testAerogearConfig from "../mobile-config.json";
-import { MetricsBuilder } from "../../src/metrics/MetricsBuilder";
+import { DefaultMetricsBuilder } from "../../src/metrics/DefaultMetricsBuilder";
+
+chai.use(chaiPromises);
 
 declare var global: any;
 declare var window: any;
@@ -39,13 +49,13 @@ describe("MetricsService", () => {
     it("should instantiate NetworkMetricsPublisher with configuration url", () => {
       const publisher = metricsService.metricsPublisher as NetworkMetricsPublisher;
 
-      assert.equal((metricsConfig as any).url, publisher.url);
+      chai.assert.equal((metricsConfig as any).url, publisher.url);
     });
 
     it("should not throw an error when not being able to publish default metrics", () => {
       const test = () => new MetricsService({ configuration: testAerogearConfig, builder: metricsBuilder });
 
-      expect(test).to.not.throw();
+      chai.expect(test).to.not.throw();
     });
 
   });
@@ -118,22 +128,22 @@ describe("MetricsService", () => {
     });
 
     it("should throw an error if type is null", () => {
-      const test = () => metricsService.publish(null as unknown as string, []);
+      const test = metricsService.publish(null as unknown as string, []);
 
-      expect(test).to.throw("Type is invalid: null");
+      chai.expect(test).to.rejectedWith("Type is invalid: null");
     });
 
     it("should throw an error if type is undefined", () => {
-      const test = () => metricsService.publish(undefined as unknown as string, []);
+      const test = metricsService.publish(undefined as unknown as string, []);
 
-      expect(test).to.throw("Type is invalid: undefined");
+      chai.expect(test).to.rejectedWith("Type is invalid: undefined");
     });
 
     it("should not throw an error if publisher is undefined", () => {
       metricsService.metricsPublisher = undefined;
       const test = () => metricsService.publish("type", []);
 
-      expect(test).to.not.throw();
+      chai.expect(test).to.not.throw();
     });
 
   });
@@ -156,7 +166,7 @@ describe("MetricsService", () => {
     }
   }
 
-  class MockMetricsBuilder extends MetricsBuilder {
+  class MockMetricsBuilder extends DefaultMetricsBuilder {
 
     public getSavedClientId(): string {
       return "THE_CLIENT_ID";

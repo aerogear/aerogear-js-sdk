@@ -2,7 +2,7 @@ import console from "loglevel";
 import uuid from "uuid/v1";
 
 import { isMobileCordova } from "../PlatformUtils";
-import { Metrics } from "./model";
+import { Metrics, MetricsPayload, MetricsBuilder } from "./model";
 import { CordovaAppMetrics } from "./platform/CordovaAppMetrics";
 import { CordovaDeviceMetrics } from "./platform/CordovaDeviceMetrics";
 declare var window: any;
@@ -12,7 +12,7 @@ export interface Storage {
   setItem(key: string, data: string): void;
 }
 
-export class MetricsBuilder {
+export class DefaultMetricsBuilder implements MetricsBuilder {
 
   public static readonly CLIENT_ID_KEY = "aerogear_metrics_client_key";
 
@@ -37,11 +37,11 @@ export class MetricsBuilder {
   }
 
   public getSavedClientId(): string | null {
-    return this.storage.getItem(MetricsBuilder.CLIENT_ID_KEY);
+    return this.storage.getItem(DefaultMetricsBuilder.CLIENT_ID_KEY);
   }
 
   public saveClientId(id: string): void {
-    this.storage.setItem(MetricsBuilder.CLIENT_ID_KEY, id);
+    this.storage.setItem(DefaultMetricsBuilder.CLIENT_ID_KEY, id);
   }
 
   /**
@@ -58,4 +58,26 @@ export class MetricsBuilder {
       return [];
     }
   }
+
+  /**
+   * Builds the payload
+   * @param type string
+   * @param metrics Metrics array, typically can be new buildDefaultMetrics()
+   * returns promise with metrics payload
+   */
+  public async buildMetricsPayload(type: string, metrics: Metrics[]): Promise<MetricsPayload> {
+    const payload: MetricsPayload = {
+      clientId: this.getClientId(),
+      type,
+      timestamp: new Date().getTime(),
+      data: {}
+    };
+
+    for (const metric of metrics) {
+      payload.data[metric.identifier] = await metric.collect();
+    }
+
+    return payload;
+  }
+
 }

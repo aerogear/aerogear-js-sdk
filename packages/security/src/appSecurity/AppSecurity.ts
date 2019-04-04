@@ -1,12 +1,29 @@
-import console from "loglevel";
 import axios from "axios";
-import { ServiceConfiguration, ConfigurationService, MetricsBuilder } from "@aerogear/core";
+import console from "loglevel";
+import {
+  ServiceConfiguration,
+  ConfigurationService,
+  MetricsBuilder,
+  DefaultMetricsBuilder,
+  isMobileCordova
+ } from "@aerogear/core";
+
+export interface AppSecurityOptions {
+   metricsBuilder?: MetricsBuilder;
+}
 
 export class AppSecurity {
   private static readonly TYPE: string = "security";
   private internalConfig: any;
+  private metricsBuilder: MetricsBuilder;
 
-  constructor(config: ConfigurationService) {
+  constructor(config: ConfigurationService, options?: AppSecurityOptions) {
+    if (!isMobileCordova()) {
+      throw new Error("Cordova Platform Not Detected. This module should not be used.");
+    }
+
+    this.metricsBuilder = (options && options.metricsBuilder) ? options.metricsBuilder : new DefaultMetricsBuilder();
+
     const configuration = config.getConfigByType(AppSecurity.TYPE);
     if (configuration && configuration.length > 0) {
       const serviceConfiguration: ServiceConfiguration = configuration[0];
@@ -18,33 +35,22 @@ export class AppSecurity {
     }
   }
 
-  // Get device info AEROGEAR-8773
-  // TODO move this functionality to the core
-  public getClientData = async (): Promise<any> => {
-    const metricsBuilder: MetricsBuilder = new MetricsBuilder();
-    const metricsPayload: {[key: string]: any; } = {};
-    const metrics = metricsBuilder.buildDefaultMetrics();
-    for (const metric of metrics) {
-      metricsPayload[metric.identifier] = await metric.collect();
-    }
-    metricsPayload.clientID = metricsBuilder.getClientId();
-    return metricsPayload;
-  }
+  /**
+   * client Init called on device start returns app security enable/disable data
+   */
+  public async clientInit() {
+    const defaultMetrics = this.metricsBuilder.buildDefaultMetrics();
+    const defaultMetricsPayload = await this.metricsBuilder.buildMetricsPayload("security", defaultMetrics);
 
-  // Call the init endpoint on go mobile security service AEROGEAR-8774
-  public clientInit(): Promise<any> {
-    const clientInitResponse = this.getClientData()
-    .then(metricsPayload => {
-      const initPayload: {[key: string]: any; } = {};
-      // build the initPayload
-      initPayload.deviceId = metricsPayload.clientID;
-      initPayload.appId = metricsPayload.app.appId,
-      initPayload.deviceType = metricsPayload.device.platform;
-      initPayload.deviceVersion = metricsPayload.device.platformVersion;
-      initPayload.version = metricsPayload.app.appVersion;
-      return axios.post(this.internalConfig.url, initPayload);
-    });
-    return clientInitResponse;
+    const initPayload: {[key: string]: any; } = {
+      deviceId: defaultMetricsPayload.clientId,
+      appId: defaultMetricsPayload.data.app.appId,
+      deviceType: defaultMetricsPayload.data.device.platform,
+      deviceVersion: defaultMetricsPayload.data.device.platformVersion,
+      version: defaultMetricsPayload.data.app.appVersion
+    };
+
+    return axios.post(`${this.internalConfig.url}/api/init`, initPayload);
   }
 
   /**
