@@ -34,7 +34,7 @@
     "typescript": "3.4.1"
   },
   "dependencies": {
-    "@aerogear/core": "2.3.1",
+    "@aerogear/core": "2.4.0-dev.1",
     "axios": "0.18.0"
   }
 }
