@@ -21,7 +21,6 @@ export type VoyagerClient = ApolloClient<NormalizedCacheObject>;
 export const createClient = async (userConfig?: DataSyncConfig): Promise<VoyagerClient> => {
   const clientConfig = extractConfig(userConfig);
   const { cache } = await buildCachePersistence(clientConfig);
-
   const offlineLink = await createOfflineLink(clientConfig);
   const link = await createDefaultLink(clientConfig, offlineLink);
 

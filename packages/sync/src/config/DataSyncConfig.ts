@@ -33,6 +33,7 @@ export interface DataSyncConfig {
    * The storage you want your client to use (Uses localForage by default)
    */
   storage?: LocalForage;
+  offlineStorage?: LocalForage;
 
   /**
    * [Modifier]

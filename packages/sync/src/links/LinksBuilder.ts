@@ -40,6 +40,7 @@ export const createOfflineLink = async (config: DataSyncConfig) => {
   return new OfflineLink({
     storage: config.storage,
     storageKey: config.mutationsQueueName,
+    offlineStorage: config.offlineStorage,
     listener: config.offlineQueueListener,
     networkStatus: config.networkStatus as NetworkStatus,
     conflictStateProvider: config.conflictStateProvider

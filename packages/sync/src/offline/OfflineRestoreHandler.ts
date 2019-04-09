@@ -17,14 +17,12 @@ export const logger = debug.default(MUTATION_QUEUE_LOGGER);
 export class OfflineRestoreHandler {
 
   private apolloClient: ApolloClient<NormalizedCacheObject>;
-  private storage: LocalForage;
-  private readonly storageKey: string;
+  private offlineStorage: LocalForage;
   private mutationCacheUpdates?: CacheUpdates;
 
   constructor(apolloClient: ApolloClient<NormalizedCacheObject>, clientConfig: DataSyncConfig) {
     this.apolloClient = apolloClient;
-    this.storage = clientConfig.storage as LocalForage;
-    this.storageKey = clientConfig.mutationsQueueName;
+    this.offlineStorage = clientConfig.offlineStorage as LocalForage;
     this.mutationCacheUpdates = clientConfig.mutationCacheUpdates;
   }
 
@@ -34,18 +32,9 @@ export class OfflineRestoreHandler {
    * after page refresh/app restart
    */
   public replayOfflineMutations = async () => {
-    const stored = await this.getOfflineData();
-    let offlineData;
-    if (stored) {
-      offlineData = JSON.parse(stored.toString());
-    } else {
-      offlineData = [];
-    }
-    // if there is no offline data  then just exit
-    if (!this.hasOfflineData(offlineData)) { return; }
-
-    logger("Replying offline mutations after application restart");
-    for (const item of offlineData) {
+    logger("Replaying offline mutations after application restart");
+    this.offlineStorage.iterate((value: any, key, iterationNumber) => {
+      const item = JSON.parse(value);
       const extensions = item.operation.extensions;
       const optimisticResponse = item.optimisticResponse;
       const mutationName = getMutationName(item.operation.query);
@@ -64,14 +53,7 @@ export class OfflineRestoreHandler {
         context: { extensions }
       };
       this.apolloClient.mutate(mutationOptions);
-    }
+    });
   }
 
-  private getOfflineData = async () => {
-    return this.storage.getItem(this.storageKey);
-  }
-
-  private hasOfflineData(offlineData: OperationQueueEntry[]) {
-    return (offlineData && offlineData.length > 0);
-  }
 }

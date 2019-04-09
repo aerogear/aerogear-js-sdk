@@ -8,6 +8,7 @@ export interface OfflineLinkOptions {
   networkStatus: NetworkStatus;
   storage?: LocalForage;
   storageKey?: string;
+  offlineStorage?: LocalForage;
   listener?: OfflineQueueListener;
   conflictStateProvider?: ObjectState;
 }

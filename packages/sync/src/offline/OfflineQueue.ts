@@ -7,8 +7,7 @@ import { OfflineLinkOptions } from "..";
 import { isMarkedOffline, markOffline } from "../utils/helpers";
 
 export interface OfflineQueueOptions {
-  storage?: LocalForage;
-  storageKey?: string;
+  offlineStorage?: LocalForage;
   listener?: OfflineQueueListener;
   conflictStateProvider?: ObjectState;
   onEnqueue: OperationQueueChangeHandler;
@@ -28,16 +27,14 @@ export type OperationQueueChangeHandler = (entry: OperationQueueEntry) => void;
  */
 export class OfflineQueue {
   public queue: OperationQueueEntry[] = [];
-  private readonly storage?: LocalForage;
-  private readonly storageKey?: string;
+  private readonly offlineStorage?: LocalForage;
   private readonly listener?: OfflineQueueListener;
   private readonly state?: ObjectState;
 
   constructor(options: OfflineLinkOptions) {
-    this.storage = options.storage;
-    this.storageKey = options.storageKey;
     this.listener = options.listener;
     this.state = options.conflictStateProvider;
+    this.offlineStorage = options.offlineStorage;
   }
 
   public enqueue(operation: Operation, forward: NextLink) {
@@ -83,7 +80,7 @@ export class OfflineQueue {
     // If operation was already enqueued before (sent from OfflineRestoreHandler)
     if (!isMarkedOffline(entry.operation)) {
       markOffline(entry.operation);
-      this.persist();
+      this.save(entry);
     }
   }
 
@@ -97,6 +94,7 @@ export class OfflineQueue {
   }
 
   private onForwardNext(op: OperationQueueEntry, result: FetchResult<any>) {
+    const entry = this.queue.find(e => e === op);
     this.queue = this.queue.filter(e => e !== op);
     if (result.errors) {
       if (this.listener && this.listener.onOperationFailure) {
@@ -110,7 +108,9 @@ export class OfflineQueue {
       this.updateIds(op, result);
       this.updateObjectState(op, result);
     }
-    this.persist();
+    if (entry) {
+      this.remove(entry);
+    }
     if (this.queue.length === 0 && this.listener && this.listener.queueCleared) {
       this.listener.queueCleared();
     }
@@ -119,9 +119,29 @@ export class OfflineQueue {
     }
   }
 
-  private persist() {
-    if (this.storage && this.storageKey) {
-      this.storage.setItem(this.storageKey, JSON.stringify(this.queue));
+  private save(entry: OperationQueueEntry) {
+    if (this.offlineStorage) {
+      if (entry.operation && entry.operation.variables) {
+        const operationName = entry.operation.operationName;
+        if (entry.operation.variables.id) {
+          this.offlineStorage.setItem(entry.operation.variables.id.toString(), JSON.stringify(entry));
+        } else if (entry.optimisticResponse && entry.optimisticResponse[operationName].id) {
+          this.offlineStorage.setItem(entry.optimisticResponse[operationName].id.toString(), JSON.stringify(entry));
+        }
+      }
+    }
+  }
+
+  private remove(entry: OperationQueueEntry) {
+    if (this.offlineStorage) {
+      if (entry.operation && entry.operation.variables) {
+        const operationName = entry.operation.operationName;
+        if (entry.operation.variables.id) {
+          this.offlineStorage.removeItem(entry.operation.variables.id.toString());
+        } else if (entry.optimisticResponse && entry.optimisticResponse[operationName].id) {
+          this.offlineStorage.removeItem(entry.optimisticResponse[operationName].id.toString());
+        }
+      }
     }
   }
 

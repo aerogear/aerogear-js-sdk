@@ -39,11 +39,16 @@ export class SyncConfig implements DataSyncConfig {
   }
 
   public storage?: LocalForage;
+  public offlineStorage?: LocalForage;
   public storageOptions = {
-    name: "applicationDB",
-    storeName: "localdata"
+    name: "cacheDB",
+    storeName: "cacheData"
   };
-  public mutationsQueueName = "offline-mutation-store";
+  public mutationsQueueName = "offlineMutationStore";
+  public offlineStorageOptions = {
+    name: "offlineDB",
+    storeName: "offlineMutationStore"
+  };
   public auditLogging = false;
   public conflictStrategy: ConflictResolutionStrategies;
   public conflictStateProvider = new VersionedState();
@@ -65,11 +70,8 @@ export class SyncConfig implements DataSyncConfig {
   constructor(clientOptions?: DataSyncConfig) {
     if (window) {
       localForage.config({});
-      if (!this.storage && clientOptions && clientOptions.storageOptions) {
-        this.storage = localForage.createInstance(clientOptions.storageOptions);
-      } else {
-        this.storage = localForage.createInstance(this.storageOptions);
-      }
+      this.offlineStorage = localForage.createInstance(this.offlineStorageOptions);
+      this.storage = localForage.createInstance(this.storageOptions);
     }
     this.networkStatus = (isMobileCordova()) ?
       new CordovaNetworkStatus() : new WebNetworkStatus();
