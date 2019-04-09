@@ -29,14 +29,14 @@
     "@types/chai": "4.1.7",
     "chai": "4.2.0",
     "mocha": "6.0.2",
-    "mockttp": "^0.13.0",
+    "mockttp": "0.13.0",
     "nyc": "13.3.0",
     "typescript": "3.3.3333"
   },
   "dependencies": {
     "@aerogear/core": "2.4.0",
     "@types/loglevel": "1.5.4",
-    "axios": "^0.18.0",
-    "loglevel": "^1.6.1"
+    "axios": "0.18.0",
+    "loglevel": "1.6.1"
   }
 }
