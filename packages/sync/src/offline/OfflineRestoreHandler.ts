@@ -33,7 +33,7 @@ export class OfflineRestoreHandler {
    */
   public replayOfflineMutations = async () => {
     logger("Replaying offline mutations after application restart");
-    this.offlineStorage.iterate((value: any, key, iterationNumber) => {
+    await this.offlineStorage.iterate((value: any) => {
       const item = JSON.parse(value);
       const extensions = item.operation.extensions;
       const optimisticResponse = item.optimisticResponse;

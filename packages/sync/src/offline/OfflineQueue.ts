@@ -121,26 +121,18 @@ export class OfflineQueue {
 
   private save(entry: OperationQueueEntry) {
     if (this.offlineStorage) {
-      if (entry.operation && entry.operation.variables) {
-        const operationName = entry.operation.operationName;
-        if (entry.operation.variables.id) {
-          this.offlineStorage.setItem(entry.operation.variables.id.toString(), JSON.stringify(entry));
-        } else if (entry.optimisticResponse && entry.optimisticResponse[operationName].id) {
-          this.offlineStorage.setItem(entry.optimisticResponse[operationName].id.toString(), JSON.stringify(entry));
-        }
+      const itemId = this.getEntryId(entry);
+      if (itemId) {
+        this.offlineStorage.setItem(itemId, JSON.stringify(entry));
       }
     }
   }
 
   private remove(entry: OperationQueueEntry) {
     if (this.offlineStorage) {
-      if (entry.operation && entry.operation.variables) {
-        const operationName = entry.operation.operationName;
-        if (entry.operation.variables.id) {
-          this.offlineStorage.removeItem(entry.operation.variables.id.toString());
-        } else if (entry.optimisticResponse && entry.optimisticResponse[operationName].id) {
-          this.offlineStorage.removeItem(entry.optimisticResponse[operationName].id.toString());
-        }
+      const itemId = this.getEntryId(entry);
+      if (itemId) {
+        this.offlineStorage.removeItem(itemId);
       }
     }
   }
@@ -191,6 +183,21 @@ export class OfflineQueue {
             break;
           }
         }
+      }
+    }
+  }
+
+  /**
+   * Returns the value of the entry id. Can be client generated.
+   * @param entry the operation we which to fetch the id of.
+   */
+  private getEntryId = (entry: OperationQueueEntry): string | undefined => {
+    if (entry.operation && entry.operation.variables) {
+      const operationName = entry.operation.operationName;
+      if (entry.operation.variables.id) {
+        return entry.operation.variables.id.toString();
+      } else if (entry.optimisticResponse && entry.optimisticResponse[operationName].id) {
+        return entry.optimisticResponse[operationName].id.toString();
       }
     }
   }
