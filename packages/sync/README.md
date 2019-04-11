@@ -4,6 +4,6 @@ Client JavaScript library for [Voyager GraphQL Server](https://github.com/aeroge
 
 # Documentation
 
-For documentation please reference to
+For documentation please refer to
 
 https://docs.aerogear.org/aerogear/latest/data-sync.html#sync-js-client
