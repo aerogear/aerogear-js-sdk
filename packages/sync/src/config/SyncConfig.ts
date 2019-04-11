@@ -1,5 +1,5 @@
 import { isMobileCordova, ServiceConfiguration } from "@aerogear/core";
-import { PersistedData, PersistentStore } from "../PersistentStore";
+import { PersistedData, PersistentStore, StorageWrapper } from "../PersistentStore";
 import { ConfigError } from "./ConfigError";
 import { DataSyncConfig } from "./DataSyncConfig";
 import { CordovaNetworkStatus, NetworkStatus, WebNetworkStatus } from "../offline";
@@ -38,7 +38,7 @@ export class SyncConfig implements DataSyncConfig {
       throw new ConfigError("Missing server URL", "httpUrl");
     }
   }
-
+  public encryptionPassword?: string;
   public storage?: PersistentStore<PersistedData>;
   public mutationsQueueName = "offline-mutation-store";
   public auditLogging = false;
@@ -61,7 +61,12 @@ export class SyncConfig implements DataSyncConfig {
 
   constructor(clientOptions?: DataSyncConfig) {
     if (window) {
-      this.storage = window.localStorage;
+      if (clientOptions) {
+        this.encryptionPassword = clientOptions.encryptionPassword;
+        this.getStorage();
+      } else {
+        this.storage = window.localStorage;
+      }
     }
     this.networkStatus = (isMobileCordova()) ?
       new CordovaNetworkStatus() : new WebNetworkStatus();
@@ -75,6 +80,12 @@ export class SyncConfig implements DataSyncConfig {
       this.conflictStrategy = { default: clientWins };
     }
     this.clientConfig = this.init(clientOptions);
+  }
+
+  public async getStorage() {
+    if (this.encryptionPassword) {
+      this.storage = new StorageWrapper(window.localStorage, this.encryptionPassword);
+    }
   }
 
   public getClientConfig(): DataSyncConfig {

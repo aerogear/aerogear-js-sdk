@@ -117,4 +117,11 @@ export interface DataSyncConfig {
    *
    */
   retryOptions?: RetryLink.Options;
+
+  /**
+   * [Modifier]
+   *
+   * The password to use when encrypting data
+   */
+  encryptionPassword?: string;
 }

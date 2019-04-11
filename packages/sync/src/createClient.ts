@@ -19,7 +19,7 @@ export type VoyagerClient = ApolloClient<NormalizedCacheObject>;
  * @param userConfig options object used to build client
  */
 export const createClient = async (userConfig?: DataSyncConfig): Promise<VoyagerClient> => {
-  const clientConfig = extractConfig(userConfig);
+  const clientConfig = await extractConfig(userConfig);
   const { cache } = await buildCachePersistence(clientConfig);
 
   const offlineLink = await createOfflineLink(clientConfig);
@@ -49,8 +49,8 @@ async function restoreOfflineOperations(apolloClient: ApolloClient<NormalizedCac
 /**
  * Extract configuration from user and external sources
  */
-function extractConfig(userConfig: DataSyncConfig | undefined) {
-  const config = new SyncConfig(userConfig);
+async function extractConfig(userConfig: DataSyncConfig | undefined) {
+  const config = await new SyncConfig(userConfig);
   const clientConfig = config.getClientConfig();
   return clientConfig;
 }
@@ -62,11 +62,16 @@ function extractConfig(userConfig: DataSyncConfig | undefined) {
  */
 async function buildCachePersistence(clientConfig: DataSyncConfig) {
   const cache = new InMemoryCache();
-  await persistCache({
-    cache,
-    storage: clientConfig.storage as PersistentStore<PersistedData>,
-    maxSize: false,
-    debug: false
-  });
+  try {
+    await persistCache({
+      cache,
+      storage: clientConfig.storage as PersistentStore<PersistedData>,
+      maxSize: false,
+      debug: false
+    });
+
+  } catch (error) {
+    console.warn(error);
+  }
   return { cache };
 }
