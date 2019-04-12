@@ -29,7 +29,6 @@ export const createClient = async (userConfig?: DataSyncConfig): Promise<Voyager
     link,
     cache
   });
-
   await restoreOfflineOperations(apolloClient, clientConfig, offlineLink);
   return apolloClient;
 };
@@ -39,7 +38,9 @@ export const createClient = async (userConfig?: DataSyncConfig): Promise<Voyager
  */
 async function restoreOfflineOperations(apolloClient: ApolloClient<NormalizedCacheObject>,
                                         clientConfig: DataSyncConfig, offlineLink: OfflineLink) {
+
   const offlineMutationHandler = new OfflineRestoreHandler(apolloClient, clientConfig);
+  offlineLink.setup(offlineMutationHandler);
   // Reschedule offline mutations for new client instance
   await offlineMutationHandler.replayOfflineMutations();
   // After pushing all online changes check and set network status
