@@ -1,9 +1,10 @@
 import { ApolloLink, NextLink, Operation, Observable } from "apollo-link";
 import { PersistedData, PersistentStore } from "../PersistentStore";
-import { NetworkInfo, NetworkStatus, OfflineQueueListener } from "../offline";
+import { NetworkInfo, NetworkStatus, OfflineQueueListener, OfflineRestoreHandler } from "../offline";
 import { OfflineQueue } from "../offline/OfflineQueue";
 import { ObjectState } from "../conflicts";
 import { isMarkedOffline } from "../utils/helpers";
+import { OperationQueueEntry } from "../offline/OperationQueueEntry";
 
 export interface OfflineLinkOptions {
   networkStatus: NetworkStatus;
@@ -26,9 +27,12 @@ export interface OfflineLinkOptions {
  *   operations ready to be forwarded - see OfflineQueue class)
  */
 export class OfflineLink extends ApolloLink {
+
   private queue: OfflineQueue;
   private readonly networkStatus: NetworkStatus;
   private online: boolean = false;
+  private offlineMutationHandler?: OfflineRestoreHandler;
+  private client: any;
 
   constructor(options: OfflineLinkOptions) {
     super();
@@ -37,8 +41,20 @@ export class OfflineLink extends ApolloLink {
   }
 
   public request(operation: Operation, forward: NextLink) {
-    if (!this.online || isMarkedOffline(operation)) {
+    // Reatempting operation that was marked as offline
+    if (isMarkedOffline(operation)) {
       return this.queue.enqueue(operation, forward);
+    }
+
+    if (!this.online) {
+      const operationEntry = new OperationQueueEntry(operation, forward);
+      if (this.offlineMutationHandler) {
+        this.offlineMutationHandler.mutateOfflineElement(operationEntry);
+      }
+      return new Observable(observer => {
+        observer.error({ isOffline: true });
+        return () => { return; };
+      });
     }
     // We are online and can skip this link;
     return forward(operation);
@@ -66,5 +82,9 @@ export class OfflineLink extends ApolloLink {
         }
       }
     });
+  }
+
+  public setup(handler: OfflineRestoreHandler) {
+    this.offlineMutationHandler = handler;
   }
 }
