@@ -3,7 +3,7 @@ import { PersistedData, PersistentStore } from "../PersistentStore";
 import { NetworkInfo, NetworkStatus, OfflineQueueListener, OfflineRestoreHandler } from "../offline";
 import { OfflineQueue } from "../offline/OfflineQueue";
 import { ObjectState } from "../conflicts";
-import { isMarkedOffline } from "../utils/helpers";
+import { isMarkedOffline, markOffline } from "../utils/helpers";
 import { OperationQueueEntry } from "../offline/OperationQueueEntry";
 
 export interface OfflineLinkOptions {
@@ -49,6 +49,7 @@ export class OfflineLink extends ApolloLink {
     if (!this.online) {
       const operationEntry = new OperationQueueEntry(operation, forward);
       if (this.offlineMutationHandler) {
+        markOffline(operationEntry.operation);
         this.offlineMutationHandler.mutateOfflineElement(operationEntry);
       }
       return new Observable(observer => {
