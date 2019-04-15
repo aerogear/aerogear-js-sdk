@@ -6,6 +6,8 @@ import { CordovaNetworkStatus, NetworkStatus, WebNetworkStatus } from "../offlin
 import { clientWins } from "../conflicts/strategies";
 import { VersionedState } from "../conflicts/VersionedState";
 import { ConflictResolutionStrategies } from "../conflicts";
+import { dbName, storeName, driver } from "./Constants";
+import LocalForage from "localforage";
 
 declare var window: any;
 
@@ -56,13 +58,17 @@ export class SyncConfig implements DataSyncConfig {
     }
   };
 
+  public storageOptions = {
+    name: dbName,
+    storeName,
+    driver
+  };
+
   public networkStatus: NetworkStatus;
   private readonly clientConfig: DataSyncConfig;
 
   constructor(clientOptions?: DataSyncConfig) {
-    if (window) {
-      this.storage = window.localStorage;
-    }
+    this.setStorage(clientOptions);
     this.networkStatus = (isMobileCordova()) ?
       new CordovaNetworkStatus() : new WebNetworkStatus();
 
@@ -93,6 +99,25 @@ export class SyncConfig implements DataSyncConfig {
    */
   private merge(clientOptions?: DataSyncConfig): DataSyncConfig {
     return Object.assign(this, clientOptions);
+  }
+
+  /**
+   * A method to setup the storage. Defaults to IndexedDB wrapped by LocalForage if none is passed
+   * @param clientOptions the options passed from the constructor containing the storage options
+   */
+  private setStorage(clientOptions?: DataSyncConfig) {
+    LocalForage.config(this.storageOptions);
+    this.storage = LocalForage.createInstance(this.storageOptions);
+    if (clientOptions) {
+      if (clientOptions.storage) {
+        this.storage = clientOptions.storage;
+      } else {
+        if (clientOptions.storageOptions) {
+          LocalForage.config(clientOptions.storageOptions);
+          this.storage = LocalForage.createInstance(clientOptions.storageOptions);
+        }
+      }
+    }
   }
 
 }
