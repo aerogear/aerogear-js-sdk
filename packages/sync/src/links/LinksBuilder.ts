@@ -62,7 +62,7 @@ export const defaultHttpLinks = async (config: DataSyncConfig, offlineLink: Apol
   }, offlineLink);
   const retryLink = ApolloLink.split(OfflineRestoreHandler.isMarkedOffline, new RetryLink(config.retryOptions));
   const localFilterLink = new LocalDirectiveFilterLink();
-  const links: ApolloLink[] = [extensionsLink, mutationOfflineLink, retryLink, localFilterLink];
+  const links: ApolloLink[] = [mutationOfflineLink, retryLink, localFilterLink];
 
   if (config.auditLogging) {
     links.push(await createAuditLoggingLink());
