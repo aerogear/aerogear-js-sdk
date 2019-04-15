@@ -10,7 +10,19 @@ global.window = {};
 
 describe("OnOffLink", () => {
 
-  const userConfig = { httpUrl: "test", retryOptions: { attempts: { max: 10 } } };
+  const userConfig = {
+    httpUrl: "test",
+    retryOptions: {
+      attempts: {
+        max: 10
+      }
+    },
+    storageOptions: {
+      storeName: "test",
+      name: "testDB",
+      driver: "asyncStorage"
+    }
+  };
   const configWithConflictDictionary: DataSyncConfig = {
     httpUrl: "test",
     conflictStrategy: {
@@ -25,6 +37,7 @@ describe("OnOffLink", () => {
     const mergedConfig = config.getClientConfig();
     expect(mergedConfig.httpUrl).eq(userConfig.httpUrl);
     expect(mergedConfig.retryOptions).eq(userConfig.retryOptions);
+    expect(mergedConfig.storageOptions).eq(userConfig.storageOptions);
   });
 
   it("validates config", () => {
