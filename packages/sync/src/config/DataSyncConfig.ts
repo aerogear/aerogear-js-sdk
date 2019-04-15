@@ -8,6 +8,7 @@ import { ConflictListener } from "../conflicts/ConflictListener";
 import { ConfigurationService } from "@aerogear/core";
 import CacheUpdates from "../cache/CacheUpdates";
 import { RetryLink } from "apollo-link-retry";
+import { StringValueNode } from "graphql";
 
 /**
  * Contains all configuration options required to initialize Voyager Client
@@ -35,6 +36,13 @@ export interface DataSyncConfig {
    * The storage you want your client to use (Uses window.localStorage by default)
    */
   storage?: PersistentStore<PersistedData>;
+
+  /**
+   * [Modifier]
+   *
+   * The storage options you want the default driver to use. Ignored if `storage` is passed in config.
+   */
+  storageOptions?: StorageOptions;
 
   /**
    * [Modifier]
@@ -120,4 +128,10 @@ export interface DataSyncConfig {
    *
    */
   retryOptions?: RetryLink.Options;
+}
+
+export interface StorageOptions {
+  storeName: string;
+  name: string;
+  driver: string;
 }
