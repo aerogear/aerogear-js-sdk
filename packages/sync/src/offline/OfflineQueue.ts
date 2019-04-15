@@ -5,7 +5,6 @@ import { isClientGeneratedId } from "../cache/createOptimisticResponse";
 import { ObjectState } from "../conflicts/ObjectState";
 import { Operation, NextLink, Observable, FetchResult } from "apollo-link";
 import { OfflineLinkOptions } from "..";
-import { isMarkedOffline, markOffline } from "../utils/helpers";
 
 export interface OfflineQueueOptions {
   storage?: PersistentStore<PersistedData>;
@@ -82,10 +81,7 @@ export class OfflineQueue {
       this.listener.onOperationEnqueued(entry);
     }
     // If operation was already enqueued before (sent from OfflineRestoreHandler)
-    if (!isMarkedOffline(entry.operation)) {
-      markOffline(entry.operation);
-      this.persist();
-    }
+    this.persist();
   }
 
   private onForwardError(op: OperationQueueEntry, error: any) {

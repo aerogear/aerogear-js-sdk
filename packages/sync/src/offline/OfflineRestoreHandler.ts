@@ -7,6 +7,7 @@ import * as debug from "debug";
 import { DataSyncConfig } from "../config";
 import CacheUpdates from "../cache/CacheUpdates";
 import { getMutationName } from "../utils/helpers";
+import { Operation } from "apollo-link";
 
 export const logger = debug.default(MUTATION_QUEUE_LOGGER);
 
@@ -51,8 +52,12 @@ export class OfflineRestoreHandler {
     }
   }
 
-  public async mutateOfflineElement(item: any) {
-    const extensions = item.operation.extensions;
+  /**
+   * Perform mutation using client replicating parameters that user provided into
+   *
+   * @param item
+   */
+  public async mutateOfflineElement(item: OperationQueueEntry) {
     const optimisticResponse = item.optimisticResponse;
     const mutationName = getMutationName(item.operation.query);
     let updateFunction;
@@ -67,9 +72,26 @@ export class OfflineRestoreHandler {
       // Pass client update functions
       update: updateFunction,
       // Pass extensions as part of the context
-      context: { extensions }
+      context: this.getOfflineContext()
     };
     await this.apolloClient.mutate(mutationOptions);
+  }
+
+  /**
+   * Check if operation was done when offline
+   */
+  public getOfflineContext() {
+    return { madeOffline: true };
+  }
+
+  /**
+   * Checks if operation was scheduled to saved to offline queue.
+   * This operations have special handling.
+   * They are never forwarded when sent back again to client.
+   */
+  // tslint:disable-next-line:member-ordering
+  public static isMarkedOffline(operation: Operation) {
+    return !!operation.getContext().madeOffline;
   }
 
   private getOfflineData = async () => {
