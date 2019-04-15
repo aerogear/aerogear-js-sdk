@@ -8,10 +8,10 @@ import { AuditLoggingLink } from "./AuditLoggingLink";
 import { DefaultMetricsBuilder, MetricsBuilder } from "@aerogear/core";
 import { LocalDirectiveFilterLink } from "./LocalDirectiveFilterLink";
 import { createUploadLink } from "apollo-upload-client";
-import { isMutation, isOnlineOnly, isSubscription, isMarkedOffline } from "../utils/helpers";
+import { isMutation, isOnlineOnly, isSubscription } from "../utils/helpers";
 import { defaultWebSocketLink } from "./WebsocketLink";
 import { OfflineLink } from "./OfflineLink";
-import { NetworkStatus } from "../offline";
+import { NetworkStatus, OfflineRestoreHandler } from "../offline";
 import { extensionsLink } from "./ExtensionsLink";
 
 /**
@@ -60,7 +60,7 @@ export const defaultHttpLinks = async (config: DataSyncConfig, offlineLink: Apol
   const mutationOfflineLink = ApolloLink.split((op: Operation) => {
     return isMutation(op) && !isOnlineOnly(op);
   }, offlineLink);
-  const retryLink = ApolloLink.split(isMarkedOffline, new RetryLink(config.retryOptions));
+  const retryLink = ApolloLink.split(OfflineRestoreHandler.isMarkedOffline, new RetryLink(config.retryOptions));
   const localFilterLink = new LocalDirectiveFilterLink();
   const links: ApolloLink[] = [extensionsLink, mutationOfflineLink, retryLink, localFilterLink];
 
