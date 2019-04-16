@@ -20,9 +20,12 @@ export class OfflineStore {
    *
    * @param queue - array of offline elements to store
    */
-  public async persistOfflineData(queue: OfflineItem[]) {
+  public async persistOfflineData(queue: OperationQueueEntry[]) {
+    const offlineItems = queue.map((item: OperationQueueEntry) => {
+      return item.toOfflineItem();
+    });
     if (this.storage && this.storageKey) {
-      await this.storage.setItem(this.storageKey, JSON.stringify(queue));
+      await this.storage.setItem(this.storageKey, JSON.stringify(offlineItems));
     }
   }
 
