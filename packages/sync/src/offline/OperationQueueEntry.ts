@@ -6,7 +6,7 @@ import { isClientGeneratedId } from "../cache/createOptimisticResponse";
  */
 export interface OfflineItem {
   operation: Operation;
-  optimisticResponse ?: any;
+  optimisticResponse?: any;
 }
 
 /**
@@ -32,7 +32,21 @@ export class OperationQueueEntry implements OfflineItem {
     }
   }
 
+  /**
+   * Checks if offline operation contains client id or server side id.
+   * For new items made when offline changes will always have client side id.
+   */
   public hasClientId() {
     return isClientGeneratedId(this.operation.variables.id);
+  }
+
+  /**
+   * Adapt object in order to persist required information
+   */
+  public toOfflineItem(): OfflineItem {
+    return {
+      operation: this.operation,
+      optimisticResponse: this.optimisticResponse
+    };
   }
 }
