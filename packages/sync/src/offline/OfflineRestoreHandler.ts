@@ -41,7 +41,7 @@ export class OfflineRestoreHandler {
 
     logger("Replying offline mutations after application restart");
     for (const item of offlineData) {
-      await this.mutateOfflineElement(item);
+      this.mutateOfflineElement(item);
     }
   }
 
