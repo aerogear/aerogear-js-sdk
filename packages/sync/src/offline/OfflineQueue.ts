@@ -29,12 +29,29 @@ export class OfflineQueue {
     this.state = options.conflictStateProvider;
   }
 
-  public enqueue(operation: Operation, forward: NextLink) {
+  /**
+   * Persist entire queue with the new item to make sure that change
+   * is going to be working across restarts
+   */
+  public async persistItemWithQueue(operation: Operation) {
+    const operationEntry = new OperationQueueEntry(operation);
+    await this.store.persistOfflineData([...this.queue, operationEntry]);
+    return operationEntry;
+  }
+
+  /**
+   * Enqueue offline change and wait for it to be sent to server when online.
+   * Every offline change is added to queue.
+   *
+   */
+  public enqueueOfflineChange(operation: Operation, forward: NextLink) {
     const operationEntry = new OperationQueueEntry(operation, forward);
-    this.enqueueEntry(operationEntry);
+    this.queue.push(operationEntry);
+    if (this.listener && this.listener.onOperationEnqueued) {
+      this.listener.onOperationEnqueued(operationEntry);
+    }
     return new Observable((observer) => {
       operationEntry.observer = observer;
-      // TODO add support for cancelling offline requests
       return () => {
         return;
       };
@@ -43,8 +60,10 @@ export class OfflineQueue {
 
   public async forwardOperations() {
     for (const op of this.queue) {
-      // FIXME block operations till result is back (completed)
       await new Promise((resolve, reject) => {
+        if (!op.forward) {
+          return;
+        }
         op.forward(op.operation).subscribe({
           next: (result: FetchResult) => {
             this.onForwardNext(op, result);
@@ -62,15 +81,6 @@ export class OfflineQueue {
         });
       });
     }
-  }
-
-  private enqueueEntry(entry: OperationQueueEntry) {
-    this.queue.push(entry);
-    if (this.listener && this.listener.onOperationEnqueued) {
-      this.listener.onOperationEnqueued(entry);
-    }
-    // If operation was already enqueued before (sent from OfflineRestoreHandler)
-    this.store.persistOfflineData(this.queue);
   }
 
   private onForwardError(op: OperationQueueEntry, error: any) {
