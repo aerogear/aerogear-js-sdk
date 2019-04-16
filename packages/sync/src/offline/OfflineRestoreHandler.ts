@@ -66,7 +66,7 @@ export class OfflineRestoreHandler {
       // Pass extensions as part of the context
       context: this.getOfflineContext()
     };
-    this.apolloClient.mutate(mutationOptions);
+    await this.apolloClient.mutate(mutationOptions);
   }
 
   /**
