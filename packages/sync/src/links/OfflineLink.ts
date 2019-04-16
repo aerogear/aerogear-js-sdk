@@ -45,18 +45,18 @@ export class OfflineLink extends ApolloLink {
   public request(operation: Operation, forward: NextLink) {
     // Reattempting operation that was marked as offline
     if (OfflineRestoreHandler.isMarkedOffline(operation)) {
-      logger.log("Enqueueing offline mutation", operation.variables);
+      logger("Enqueueing offline mutation", operation.variables);
       return this.queue.enqueue(operation, forward);
     }
 
     if (this.online) {
-      logger.log("Online: Forwarding mutation", operation.variables);
+      logger("Online: Forwarding mutation", operation.variables);
       // We are online and can skip this link;
       return forward(operation);
     }
 
     if (!this.offlineMutationHandler) {
-      logger.log("Error: Offline link setup method was not called");
+      logger("Error: Offline link setup method was not called");
       return forward(operation);
     }
 
