@@ -11,7 +11,7 @@ import { createUploadLink } from "apollo-upload-client";
 import { isMutation, isOnlineOnly, isSubscription } from "../utils/helpers";
 import { defaultWebSocketLink } from "./WebsocketLink";
 import { OfflineLink } from "./OfflineLink";
-import { NetworkStatus, OfflineRestoreHandler } from "../offline";
+import { NetworkStatus, OfflineRestoreHandler, OfflineStore } from "../offline";
 
 /**
  * Method for creating "uber" composite Apollo Link implementation including:
@@ -37,8 +37,7 @@ export const createDefaultLink = async (config: DataSyncConfig, offlineLink: Apo
  */
 export const createOfflineLink = async (config: DataSyncConfig) => {
   return new OfflineLink({
-    storage: config.storage,
-    storageKey: config.mutationsQueueName,
+    store: new OfflineStore(config),
     listener: config.offlineQueueListener,
     networkStatus: config.networkStatus as NetworkStatus,
     conflictStateProvider: config.conflictStateProvider
