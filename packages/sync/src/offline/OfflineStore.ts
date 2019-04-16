@@ -20,9 +20,9 @@ export class OfflineStore {
    *
    * @param queue - array of offline elements to store
    */
-  public persistOfflineData(queue: OfflineItem[]) {
+  public async persistOfflineData(queue: OfflineItem[]) {
     if (this.storage && this.storageKey) {
-      this.storage.setItem(this.storageKey, JSON.stringify(queue));
+      await this.storage.setItem(this.storageKey, JSON.stringify(queue));
     }
   }
 
