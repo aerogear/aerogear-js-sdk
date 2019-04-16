@@ -1,6 +1,6 @@
 import { ApolloLink, NextLink, Operation, Observable } from "apollo-link";
 import { PersistedData, PersistentStore } from "../PersistentStore";
-import { NetworkInfo, NetworkStatus, OfflineQueueListener, OfflineRestoreHandler } from "../offline";
+import { NetworkInfo, NetworkStatus, OfflineQueueListener, OfflineRestoreHandler, OfflineStore } from "../offline";
 import { OfflineQueue } from "../offline/OfflineQueue";
 import { ObjectState } from "../conflicts";
 import { OperationQueueEntry } from "../offline/OperationQueueEntry";
@@ -11,8 +11,7 @@ export const logger = debug.default(QUEUE_LOGGER);
 
 export interface OfflineLinkOptions {
   networkStatus: NetworkStatus;
-  storage?: PersistentStore<PersistedData>;
-  storageKey?: string;
+  store: OfflineStore;
   listener?: OfflineQueueListener;
   conflictStateProvider?: ObjectState;
 }

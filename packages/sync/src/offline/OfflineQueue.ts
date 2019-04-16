@@ -4,16 +4,9 @@ import { OfflineQueueListener } from "./OfflineQueueListener";
 import { isClientGeneratedId } from "../cache/createOptimisticResponse";
 import { ObjectState } from "../conflicts/ObjectState";
 import { Operation, NextLink, Observable, FetchResult } from "apollo-link";
-import { OfflineLinkOptions } from "..";
+import { OfflineStore } from "./OfflineStore";
+import { OfflineLinkOptions } from "../links";
 
-export interface OfflineQueueOptions {
-  storage?: PersistentStore<PersistedData>;
-  storageKey?: string;
-  listener?: OfflineQueueListener;
-  conflictStateProvider?: ObjectState;
-  onEnqueue: OperationQueueChangeHandler;
-  onDequeue: OperationQueueChangeHandler;
-}
 
 export type OperationQueueChangeHandler = (entry: OperationQueueEntry) => void;
 
@@ -28,14 +21,12 @@ export type OperationQueueChangeHandler = (entry: OperationQueueEntry) => void;
  */
 export class OfflineQueue {
   public queue: OperationQueueEntry[] = [];
-  private readonly storage?: PersistentStore<PersistedData>;
-  private readonly storageKey?: string;
   private readonly listener?: OfflineQueueListener;
   private readonly state?: ObjectState;
+  private store: OfflineStore;
 
   constructor(options: OfflineLinkOptions) {
-    this.storage = options.storage;
-    this.storageKey = options.storageKey;
+    this.store = options.store;
     this.listener = options.listener;
     this.state = options.conflictStateProvider;
   }
@@ -81,7 +72,7 @@ export class OfflineQueue {
       this.listener.onOperationEnqueued(entry);
     }
     // If operation was already enqueued before (sent from OfflineRestoreHandler)
-    this.persist();
+    this.store.persistOfflineData(this.queue);
   }
 
   private onForwardError(op: OperationQueueEntry, error: any) {
@@ -107,18 +98,12 @@ export class OfflineQueue {
       this.updateIds(op, result);
       this.updateObjectState(op, result);
     }
-    this.persist();
+    this.store.persistOfflineData(this.queue);
     if (this.queue.length === 0 && this.listener && this.listener.queueCleared) {
       this.listener.queueCleared();
     }
     if (op.observer) {
       op.observer.next(result);
-    }
-  }
-
-  private persist() {
-    if (this.storage && this.storageKey) {
-      this.storage.setItem(this.storageKey, JSON.stringify(this.queue));
     }
   }
 
