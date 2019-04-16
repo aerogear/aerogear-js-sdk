@@ -12,7 +12,6 @@ import { isMutation, isOnlineOnly, isSubscription } from "../utils/helpers";
 import { defaultWebSocketLink } from "./WebsocketLink";
 import { OfflineLink } from "./OfflineLink";
 import { NetworkStatus, OfflineRestoreHandler } from "../offline";
-import { extensionsLink } from "./ExtensionsLink";
 
 /**
  * Method for creating "uber" composite Apollo Link implementation including:
