@@ -6,7 +6,7 @@ import { SyncConfig } from "./config/SyncConfig";
 import { createDefaultLink, createOfflineLink } from "./links/LinksBuilder";
 import { PersistedData, PersistentStore } from "./PersistentStore";
 import { OfflineRestoreHandler } from "./offline/OfflineRestoreHandler";
-import { OfflineLink } from "./links/OfflineLink";
+import { OfflineLink } from "./offline/OfflineLink";
 
 /**
  * @see ApolloClient
