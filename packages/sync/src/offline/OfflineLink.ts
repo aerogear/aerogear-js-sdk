@@ -1,9 +1,8 @@
 import { ApolloLink, NextLink, Operation, Observable } from "apollo-link";
-import { PersistedData, PersistentStore } from "../PersistentStore";
-import { NetworkInfo, NetworkStatus, OfflineQueueListener, OfflineRestoreHandler, OfflineStore } from "../offline";
-import { OfflineQueue } from "../offline/OfflineQueue";
+import { NetworkInfo, NetworkStatus, OfflineQueueListener, OfflineRestoreHandler, OfflineStore } from ".";
+import { OfflineQueue } from "./OfflineQueue";
 import { ObjectState } from "../conflicts";
-import { OperationQueueEntry } from "../offline/OperationQueueEntry";
+import { OperationQueueEntry } from "./OperationQueueEntry";
 import * as debug from "debug";
 import { QUEUE_LOGGER } from "../config/Constants";
 
