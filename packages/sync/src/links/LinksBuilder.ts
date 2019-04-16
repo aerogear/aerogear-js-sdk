@@ -10,7 +10,7 @@ import { LocalDirectiveFilterLink } from "./LocalDirectiveFilterLink";
 import { createUploadLink } from "apollo-upload-client";
 import { isMutation, isOnlineOnly, isSubscription } from "../utils/helpers";
 import { defaultWebSocketLink } from "./WebsocketLink";
-import { OfflineLink } from "./OfflineLink";
+import { OfflineLink } from "../offline/OfflineLink";
 import { NetworkStatus, OfflineRestoreHandler, OfflineStore } from "../offline";
 
 /**
