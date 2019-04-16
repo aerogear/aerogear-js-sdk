@@ -16,6 +16,7 @@ export const logger = debug.default(MUTATION_QUEUE_LOGGER);
  * Class used to send offline changes again after error is sent to user or after application restart.
  * It will trigger saved offline mutations using client to restore all elements in the link.
  */
+// TODO rename
 export class OfflineRestoreHandler {
 
   private apolloClient: ApolloClient<NormalizedCacheObject>;

@@ -5,6 +5,7 @@ import { ObjectState } from "../conflicts";
 import { OperationQueueEntry } from "./OperationQueueEntry";
 import * as debug from "debug";
 import { QUEUE_LOGGER } from "../config/Constants";
+import { OfflineError } from "./OfflineError";
 
 export const logger = debug.default(QUEUE_LOGGER);
 
@@ -44,7 +45,7 @@ export class OfflineLink extends ApolloLink {
     // Reattempting operation that was marked as offline
     if (OfflineRestoreHandler.isMarkedOffline(operation)) {
       logger("Enqueueing offline mutation", operation.variables);
-      return this.queue.enqueue(operation, forward);
+      return this.queue.enqueueOfflineChange(operation, forward);
     }
 
     if (this.online) {
@@ -57,12 +58,14 @@ export class OfflineLink extends ApolloLink {
       logger("Error: Offline link setup method was not called");
       return forward(operation);
     }
-
-    const operationEntry = new OperationQueueEntry(operation, forward);
-    this.offlineMutationHandler.mutateOfflineElement(operationEntry);
+    const handler = this.offlineMutationHandler;
     return new Observable(observer => {
-      logger.log("Returning error to client", operation.variables);
-      observer.error({ isOffline: true });
+      this.queue.persistItemWithQueue(operation).then((operationEntry) => {
+        // Send mutation request again
+        const offlineMutation = handler.mutateOfflineElement(operationEntry);
+        logger("Returning offline error to client", operation.variables);
+        observer.error(new OfflineError(offlineMutation));
+      });
       return () => { return; };
     });
   }
