@@ -74,14 +74,14 @@ export class OfflineRestoreHandler {
       // Pass extensions as part of the context
       context: this.getOfflineContext()
     };
-    await this.apolloClient.mutate(mutationOptions);
+    this.apolloClient.mutate(mutationOptions);
   }
 
   /**
-   * Check if operation was done when offline
+   * Add info to operation that was done when offline
    */
   public getOfflineContext() {
-    return { madeOffline: true };
+    return { isOffline: true };
   }
 
   /**
@@ -91,7 +91,7 @@ export class OfflineRestoreHandler {
    */
   // tslint:disable-next-line:member-ordering
   public static isMarkedOffline(operation: Operation) {
-    return !!operation.getContext().madeOffline;
+    return !!operation.getContext().isOffline;
   }
 
   private getOfflineData = async () => {
