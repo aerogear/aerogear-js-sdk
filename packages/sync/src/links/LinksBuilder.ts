@@ -11,7 +11,7 @@ import { createUploadLink } from "apollo-upload-client";
 import { isMutation, isOnlineOnly, isSubscription } from "../utils/helpers";
 import { defaultWebSocketLink } from "./WebsocketLink";
 import { OfflineLink } from "../offline/OfflineLink";
-import { NetworkStatus, OfflineRestoreHandler, OfflineStore } from "../offline";
+import { NetworkStatus, OfflineMutationsHandler, OfflineStore } from "../offline";
 
 /**
  * Method for creating "uber" composite Apollo Link implementation including:
@@ -58,7 +58,7 @@ export const defaultHttpLinks = async (config: DataSyncConfig, offlineLink: Apol
   const mutationOfflineLink = ApolloLink.split((op: Operation) => {
     return isMutation(op) && !isOnlineOnly(op);
   }, offlineLink);
-  const retryLink = ApolloLink.split(OfflineRestoreHandler.isMarkedOffline, new RetryLink(config.retryOptions));
+  const retryLink = ApolloLink.split(OfflineMutationsHandler.isMarkedOffline, new RetryLink(config.retryOptions));
   const localFilterLink = new LocalDirectiveFilterLink();
   const links: ApolloLink[] = [mutationOfflineLink, retryLink, localFilterLink];
 
