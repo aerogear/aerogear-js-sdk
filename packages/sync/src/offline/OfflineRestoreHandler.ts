@@ -41,16 +41,17 @@ export class OfflineRestoreHandler {
 
     logger("Replying offline mutations after application restart");
     for (const item of offlineData) {
-      this.mutateOfflineElement(item);
+      await this.mutateOfflineElement(item, false);
     }
   }
 
   /**
    * Perform mutation using client replicating parameters that user provided into
    *
-   * @param item
+   * @param item - item to save
+   * @param blocking - await for offline response or just enqueue change if false
    */
-  public async mutateOfflineElement(item: OfflineItem) {
+  public async mutateOfflineElement(item: OfflineItem, blocking: boolean = true) {
     const optimisticResponse = item.optimisticResponse;
     const mutationName = getMutationName(item.operation.query);
     let updateFunction;
@@ -65,25 +66,31 @@ export class OfflineRestoreHandler {
       // Pass client update functions
       update: updateFunction,
       // Pass extensions as part of the context
-      context: this.getOfflineContext()
+      context: this.getOfflineContext(blocking)
     };
-    await this.apolloClient.mutate(mutationOptions);
+    return await this.apolloClient.mutate(mutationOptions);
   }
 
   /**
    * Add info to operation that was done when offline
    */
-  public getOfflineContext() {
-    return { isOffline: true };
+  public getOfflineContext(blocking: boolean) {
+    return { isOffline: true, isBlockingOffline: blocking };
   }
 
   /**
-   * Checks if operation was scheduled to saved to offline queue.
-   * This operations have special handling.
-   * They are never forwarded when sent back again to client.
+   * Checks if operation was scheduled again (offline change)
    */
   // tslint:disable-next-line:member-ordering
   public static isMarkedOffline(operation: Operation) {
     return !!operation.getContext().isOffline;
+  }
+
+  /**
+   * Check if operation should await till offline request is sent
+   */
+  // tslint:disable-next-line:member-ordering
+  public static isBlocking(operation: Operation) {
+    return !!operation.getContext().isBlockingOffline;
   }
 }

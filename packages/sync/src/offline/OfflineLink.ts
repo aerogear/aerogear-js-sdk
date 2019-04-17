@@ -45,7 +45,15 @@ export class OfflineLink extends ApolloLink {
     // Reattempting operation that was marked as offline
     if (OfflineRestoreHandler.isMarkedOffline(operation)) {
       logger("Enqueueing offline mutation", operation.variables);
-      return this.queue.enqueueOfflineChange(operation, forward);
+      if (OfflineRestoreHandler.isBlocking(operation)) {
+        return this.queue.enqueueOfflineChange(operation, forward);
+      }
+      // When operations are restored after restart simply send empty observable
+      return new Observable(observer => {
+        observer.next({});
+        observer.complete();
+        return () => { return; };
+      });
     }
 
     if (this.online) {

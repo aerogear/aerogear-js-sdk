@@ -41,8 +41,8 @@ export class OfflineQueue {
 
   /**
    * Enqueue offline change and wait for it to be sent to server when online.
+   * OperationQueueEntry will hold observable to action offline item once is sent back from server
    * Every offline change is added to queue.
-   *
    */
   public enqueueOfflineChange(operation: Operation, forward: NextLink) {
     const operationEntry = new OperationQueueEntry(operation, forward);
@@ -58,6 +58,9 @@ export class OfflineQueue {
     });
   }
 
+  /**
+   * Push all operations to server and listen to results
+   */
   public async forwardOperations() {
     for (const op of this.queue) {
       await new Promise((resolve, reject) => {
