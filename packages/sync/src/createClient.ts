@@ -5,7 +5,7 @@ import { DataSyncConfig } from "./config";
 import { SyncConfig } from "./config/SyncConfig";
 import { createDefaultLink, createOfflineLink } from "./links/LinksBuilder";
 import { PersistedData, PersistentStore } from "./PersistentStore";
-import { OfflineRestoreHandler } from "./offline/OfflineRestoreHandler";
+import { OfflineMutationsHandler } from "./offline/OfflineMutationsHandler";
 import { OfflineLink } from "./offline/OfflineLink";
 
 /**
@@ -39,7 +39,7 @@ export const createClient = async (userConfig?: DataSyncConfig): Promise<Voyager
 async function restoreOfflineOperations(apolloClient: ApolloClient<NormalizedCacheObject>,
                                         clientConfig: DataSyncConfig, offlineLink: OfflineLink) {
 
-  const offlineMutationHandler = new OfflineRestoreHandler(apolloClient, clientConfig);
+  const offlineMutationHandler = new OfflineMutationsHandler(apolloClient, clientConfig);
   offlineLink.setup(offlineMutationHandler);
   // Reschedule offline mutations for new client instance
   await offlineMutationHandler.replayOfflineMutations();

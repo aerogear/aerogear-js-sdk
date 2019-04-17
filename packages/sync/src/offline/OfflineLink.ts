@@ -1,5 +1,5 @@
 import { ApolloLink, NextLink, Operation, Observable } from "apollo-link";
-import { NetworkInfo, NetworkStatus, OfflineQueueListener, OfflineRestoreHandler, OfflineStore } from ".";
+import { NetworkInfo, NetworkStatus, OfflineQueueListener, OfflineMutationsHandler, OfflineStore } from ".";
 import { OfflineQueue } from "./OfflineQueue";
 import { ObjectState } from "../conflicts";
 import { OperationQueueEntry } from "./OperationQueueEntry";
@@ -33,7 +33,7 @@ export class OfflineLink extends ApolloLink {
   private online: boolean = false;
   private queue: OfflineQueue;
   private readonly networkStatus: NetworkStatus;
-  private offlineMutationHandler?: OfflineRestoreHandler;
+  private offlineMutationHandler?: OfflineMutationsHandler;
 
   constructor(options: OfflineLinkOptions) {
     super();
@@ -43,7 +43,7 @@ export class OfflineLink extends ApolloLink {
 
   public request(operation: Operation, forward: NextLink) {
     // Reattempting operation that was marked as offline
-    if (OfflineRestoreHandler.isMarkedOffline(operation)) {
+    if (OfflineMutationsHandler.isMarkedOffline(operation)) {
       logger("Enqueueing offline mutation", operation.variables);
       return this.queue.enqueueOfflineChange(operation, forward);
     }
@@ -94,7 +94,7 @@ export class OfflineLink extends ApolloLink {
     });
   }
 
-  public setup(handler: OfflineRestoreHandler) {
+  public setup(handler: OfflineMutationsHandler) {
     this.offlineMutationHandler = handler;
   }
 }

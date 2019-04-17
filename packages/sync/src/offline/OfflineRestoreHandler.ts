@@ -17,7 +17,7 @@ export const logger = debug.default(MUTATION_QUEUE_LOGGER);
  * It will trigger saved offline mutations using client to restore all elements in the link.
  */
 // TODO rename
-export class OfflineRestoreHandler {
+export class OfflineMutationsHandler {
 
   private apolloClient: ApolloClient<NormalizedCacheObject>;
   private store: OfflineStore;
