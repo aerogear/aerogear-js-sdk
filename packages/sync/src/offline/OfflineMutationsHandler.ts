@@ -1,7 +1,6 @@
 import ApolloClient from "apollo-client";
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
-import { PersistedData, PersistentStore } from "../PersistentStore";
-import { OperationQueueEntry, OfflineItem } from "./OperationQueueEntry";
+import { OfflineItem } from "./OperationQueueEntry";
 import { MUTATION_QUEUE_LOGGER } from "../config/Constants";
 import * as debug from "debug";
 import { DataSyncConfig } from "../config";
