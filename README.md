@@ -16,7 +16,7 @@
 
 ## Showcase application
 
-To try out the latest release of the SDK go to our [Cordova Showcase Template Application](https://github.com/aerogear/cordova-showcase-template)
+To try out the latest release of the SDK go to our [Ionic Showcase Application](https://github.com/aerogear/ionic-showcase)
 
 ### List of Modules
 
