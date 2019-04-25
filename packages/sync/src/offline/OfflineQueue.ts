@@ -34,8 +34,9 @@ export class OfflineQueue {
    * is going to be working across restarts
    */
   public async persistItemWithQueue(operation: Operation) {
-    const operationEntry = new OperationQueueEntry(operation);
-    await this.store.persistOfflineData([...this.queue, operationEntry]);
+    const length = this.queue.length;
+    const operationEntry = new OperationQueueEntry(operation, length);
+    await this.store.saveEntry(operationEntry);
     return operationEntry;
   }
 
@@ -45,7 +46,8 @@ export class OfflineQueue {
    *
    */
   public enqueueOfflineChange(operation: Operation, forward: NextLink) {
-    const operationEntry = new OperationQueueEntry(operation, forward);
+    const length = this.queue.length;
+    const operationEntry = new OperationQueueEntry(operation, length, forward);
     this.queue.push(operationEntry);
     if (this.listener && this.listener.onOperationEnqueued) {
       this.listener.onOperationEnqueued(operationEntry);
@@ -93,7 +95,7 @@ export class OfflineQueue {
   }
 
   private onForwardNext(op: OperationQueueEntry, result: FetchResult<any>) {
-    this.queue = this.queue.filter(e => e !== op);
+    const entry = this.queue.find(e => e === op);
     if (result.errors) {
       if (this.listener && this.listener.onOperationFailure) {
         this.listener.onOperationFailure(op.operation, result.errors);
@@ -106,7 +108,9 @@ export class OfflineQueue {
       this.updateIds(op, result);
       this.updateObjectState(op, result);
     }
-    this.store.persistOfflineData(this.queue);
+    if (entry) {
+      this.store.removeEntry(entry);
+    }
     if (this.queue.length === 0 && this.listener && this.listener.queueCleared) {
       this.listener.queueCleared();
     }
