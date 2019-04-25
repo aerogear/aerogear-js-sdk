@@ -17,6 +17,16 @@ const generateId = (length = 8) => {
   return result;
 };
 
+export const generateOfflineId = (length = 8) => {
+  let result = "";
+  const chars = "0123456789";
+
+  for (let i = length; i > 0; i -= 1) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return result;
+};
+
 /**
  * Create optimistic response.
  * For example:

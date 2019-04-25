@@ -8,38 +8,61 @@ import { OperationQueueEntry, OfflineItem } from "./OperationQueueEntry";
 export class OfflineStore {
 
   private storage: PersistentStore<PersistedData>;
-  private readonly storageKey: string;
+  private offlineMetaKey: string = "offline-meta-data";
+  private arrayOfKeys: string[];
 
   constructor(clientConfig: DataSyncConfig) {
     this.storage = clientConfig.storage as PersistentStore<PersistedData>;
-    this.storageKey = clientConfig.mutationsQueueName;
+    this.arrayOfKeys = [];
   }
 
   /**
-   * Save data to store
+   * Save an entry to store
    *
-   * @param queue - array of offline elements to store
+   * @param entry - the entry to be saved
    */
-  public async persistOfflineData(queue: OperationQueueEntry[]) {
-    const offlineItems = queue.map((item: OperationQueueEntry) => {
-      return item.toOfflineItem();
-    });
-    if (this.storage && this.storageKey) {
-      await this.storage.setItem(this.storageKey, JSON.stringify(offlineItems));
-    }
+  public async saveEntry(entry: OperationQueueEntry) {
+    this.arrayOfKeys.push(entry.id);
+    await this.storage.setItem(this.offlineMetaKey, this.arrayOfKeys);
+    await this.storage.setItem(this.generateOfflineKey(entry), entry.toOfflineItem());
+  }
+
+  /**
+   * Remove an entry from the store
+   *
+   * @param queue - the entry to be removed
+   */
+  public async removeEntry(entry: OperationQueueEntry) {
+    const index = this.arrayOfKeys.indexOf(entry.id);
+    this.arrayOfKeys.splice(index, 1);
+    this.storage.setItem(this.offlineMetaKey, this.arrayOfKeys);
+    const offlineKey = this.generateOfflineKey(entry);
+    await this.storage.removeItem(offlineKey);
   }
 
   /**
    * Fetch data from the
    */
   public async getOfflineData(): Promise<OfflineItem[]> {
-    const stored = this.storage.getItem(this.storageKey);
-    let offlineData;
-    if (stored) {
-      offlineData = JSON.parse(stored.toString());
-    } else {
-      offlineData = [];
+    const keys = await this.storage.getItem(this.offlineMetaKey);
+    const offlineItems: OfflineItem[] = [];
+    if (keys) {
+      this.arrayOfKeys = keys as string[];
+      for (const key of this.arrayOfKeys) {
+        const item = await this.storage.getItem("offline:" + key.toString());
+        if (typeof item === "string") {
+          offlineItems.push(JSON.parse(item));
+        } else {
+          if (item) {
+            offlineItems.push(item as OfflineItem);
+          }
+        }
+      }
     }
-    return offlineData;
+    return offlineItems;
+  }
+
+  private generateOfflineKey(entry: OperationQueueEntry): string {
+    return "offline:" + entry.id;
   }
 }
