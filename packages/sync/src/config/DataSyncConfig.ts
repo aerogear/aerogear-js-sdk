@@ -8,7 +8,7 @@ import { ConflictListener } from "../conflicts/ConflictListener";
 import { ConfigurationService } from "@aerogear/core";
 import CacheUpdates from "../cache/CacheUpdates";
 import { RetryLink } from "apollo-link-retry";
-import { StringValueNode } from "graphql";
+import { OfflineItem } from "../offline/OperationQueueEntry";
 
 /**
  * Contains all configuration options required to initialize Voyager Client
@@ -40,9 +40,9 @@ export interface DataSyncConfig {
   /**
    * [Modifier]
    *
-   * The storage options you want the default driver to use. Ignored if `storage` is passed in config.
+   * The storage the offline client will use to persist offline mutations
    */
-  storageOptions?: StorageOptions;
+  offlineStorage?: PersistentStore<OfflineItem>;
 
   /**
    * [Modifier]
@@ -128,10 +128,4 @@ export interface DataSyncConfig {
    *
    */
   retryOptions?: RetryLink.Options;
-}
-
-export interface StorageOptions {
-  storeName: string;
-  name: string;
-  driver: string;
 }
