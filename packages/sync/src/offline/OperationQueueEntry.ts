@@ -18,15 +18,16 @@ export class OperationQueueEntry implements OfflineItem {
 
   public readonly operation: Operation;
   public readonly optimisticResponse?: any;
-
+  public id: string;
   public forward?: NextLink;
   public result?: FetchResult;
   public networkError: any;
   public observer?: ZenObservable.SubscriptionObserver<FetchResult>;
 
-  constructor(operation: Operation, forward?: NextLink) {
+  constructor(operation: Operation, id: number, forward?: NextLink) {
     this.operation = operation;
     this.forward = forward;
+    this.id = id.toString();
     if (typeof operation.getContext === "function") {
       this.optimisticResponse = operation.getContext().optimisticResponse;
     }

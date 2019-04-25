@@ -8,11 +8,18 @@ import { VersionedState } from "../conflicts/VersionedState";
 import { ConflictResolutionStrategies } from "../conflicts";
 import { dbName, storeName, driver } from "./Constants";
 import LocalForage from "localforage";
+import { OfflineItem } from "../offline/OperationQueueEntry";
 
 declare var window: any;
 
 // Legacy platform configuration that needs to be merged into sync configuration
 const TYPE: string = "sync-app";
+
+export const storageOptions = {
+    name: dbName,
+    storeName,
+    driver
+  };
 
 /**
  * Class for managing user and default configuration.
@@ -42,6 +49,7 @@ export class SyncConfig implements DataSyncConfig {
   }
 
   public storage?: PersistentStore<PersistedData>;
+  public offlineStorage?: PersistentStore<OfflineItem>;
   public mutationsQueueName = "offline-mutation-store";
   public auditLogging = false;
   public conflictStrategy: ConflictResolutionStrategies;
@@ -56,12 +64,6 @@ export class SyncConfig implements DataSyncConfig {
     attempts: {
       max: 5
     }
-  };
-
-  public storageOptions = {
-    name: dbName,
-    storeName,
-    driver
   };
 
   public networkStatus: NetworkStatus;
@@ -105,17 +107,11 @@ export class SyncConfig implements DataSyncConfig {
    * A method to setup the storage. Defaults to IndexedDB wrapped by LocalForage if none is passed
    * @param clientOptions the options passed from the constructor containing the storage options
    */
-  private setStorage(clientOptions?: DataSyncConfig) {
-    LocalForage.config(this.storageOptions);
-    this.storage = LocalForage.createInstance(this.storageOptions);
+  private async setStorage(clientOptions?: DataSyncConfig) {
+    this.storage = LocalForage.createInstance(storageOptions) as PersistentStore<PersistedData>;
     if (clientOptions) {
       if (clientOptions.storage) {
         this.storage = clientOptions.storage;
-      } else {
-        if (clientOptions.storageOptions) {
-          LocalForage.config(clientOptions.storageOptions);
-          this.storage = LocalForage.createInstance(clientOptions.storageOptions);
-        }
       }
     }
   }
