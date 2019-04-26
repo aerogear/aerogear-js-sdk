@@ -7,67 +7,82 @@ import { createDefaultLink, createOfflineLink } from "./links/LinksBuilder";
 import { PersistedData, PersistentStore } from "./PersistentStore";
 import { OfflineMutationsHandler } from "./offline/OfflineMutationsHandler";
 import { OfflineLink } from "./offline/OfflineLink";
+import { OfflineStore } from "./offline";
 
 /**
  * @see ApolloClient
  */
 export type VoyagerClient = ApolloClient<NormalizedCacheObject>;
 
-/**
- * Factory for creating Apollo Client
- *
- * @param userConfig options object used to build client
- */
-export const createClient = async (userConfig?: DataSyncConfig): Promise<VoyagerClient> => {
-  const clientConfig = extractConfig(userConfig);
-  const { cache } = await buildCachePersistence(clientConfig);
+export class OfflineClient {
+  private client?: VoyagerClient;
+  private offlineStore: OfflineStore;
+  private config: DataSyncConfig;
 
-  const offlineLink = await createOfflineLink(clientConfig);
-  const link = await createDefaultLink(clientConfig, offlineLink);
+  constructor(userConfig?: DataSyncConfig) {
+    this.config = this.extractConfig(userConfig);
+    this.offlineStore = new OfflineStore(this.config);
+  }
 
-  const apolloClient = new ApolloClient({
-    link,
-    cache
-  });
-  await restoreOfflineOperations(apolloClient, clientConfig, offlineLink);
-  return apolloClient;
-};
+  public getOfflineStore(): OfflineStore {
+    return this.offlineStore;
+  }
 
-/**
- * Restore offline operations into the queue
- */
-async function restoreOfflineOperations(apolloClient: ApolloClient<NormalizedCacheObject>,
-                                        clientConfig: DataSyncConfig, offlineLink: OfflineLink) {
+  /**
+  * Factory for creating Apollo Client
+  *
+  * @param userConfig options object used to build client
+  */
+  public createClient = async (): Promise<VoyagerClient> => {
+    const { cache } = await this.buildCachePersistence(this.config);
+    const offlineLink = await createOfflineLink(this.config, this.offlineStore);
+    const link = await createDefaultLink(this.config, offlineLink);
 
-  const offlineMutationHandler = new OfflineMutationsHandler(apolloClient, clientConfig);
-  offlineLink.setup(offlineMutationHandler);
-  // Reschedule offline mutations for new client instance
-  await offlineMutationHandler.replayOfflineMutations();
-  // After pushing all online changes check and set network status
-  await offlineLink.initOnlineState();
-}
-
-/**
+    const apolloClient = new ApolloClient({
+      link,
+      cache
+    });
+    await this.restoreOfflineOperations(apolloClient, this.config, offlineLink);
+    return apolloClient;
+  }
+  /**
  * Extract configuration from user and external sources
  */
-function extractConfig(userConfig: DataSyncConfig | undefined) {
-  const config = new SyncConfig(userConfig);
-  const clientConfig = config.getClientConfig();
-  return clientConfig;
-}
+  private extractConfig(userConfig: DataSyncConfig | undefined) {
+    const config = new SyncConfig(userConfig);
+    const clientConfig = config.getClientConfig();
+    return clientConfig;
+  }
 
-/**
+  /**
+ * Restore offline operations into the queue
+ */
+  private async restoreOfflineOperations(
+    apolloClient: ApolloClient<NormalizedCacheObject>,
+    clientConfig: DataSyncConfig, offlineLink: OfflineLink) {
+
+    const offlineMutationHandler = new OfflineMutationsHandler(apolloClient, clientConfig);
+    offlineLink.setup(offlineMutationHandler);
+    // Reschedule offline mutations for new client instance
+    await offlineMutationHandler.replayOfflineMutations();
+    // After pushing all online changes check and set network status
+    await offlineLink.initOnlineState();
+  }
+
+  /**
  * Build storage that will be used for caching data
  *
  * @param clientConfig
  */
-async function buildCachePersistence(clientConfig: DataSyncConfig) {
-  const cache = new InMemoryCache();
-  await persistCache({
-    cache,
-    storage: clientConfig.storage as PersistentStore<PersistedData>,
-    maxSize: false,
-    debug: false
-  });
-  return { cache };
+  private async buildCachePersistence(clientConfig: DataSyncConfig) {
+    const cache = new InMemoryCache();
+    await persistCache({
+      cache,
+      storage: clientConfig.storage as PersistentStore<PersistedData>,
+      maxSize: false,
+      debug: false
+    });
+    return { cache };
+  }
+
 }
