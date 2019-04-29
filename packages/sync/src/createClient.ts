@@ -4,46 +4,79 @@ import { ApolloClient } from "apollo-client";
 import { DataSyncConfig } from "./config";
 import { SyncConfig } from "./config/SyncConfig";
 import { createDefaultLink, createOfflineLink } from "./links/LinksBuilder";
-import { PersistedData, PersistentStore } from "./PersistentStore";
-import { OfflineMutationsHandler } from "./offline/OfflineMutationsHandler";
-import { OfflineLink } from "./offline/OfflineLink";
 import { OfflineStore } from "./offline";
+import { OfflineLink } from "./offline/OfflineLink";
+import { OfflineMutationsHandler } from "./offline/OfflineMutationsHandler";
+import { PersistedData, PersistentStore } from "./PersistentStore";
 
 /**
  * @see ApolloClient
  */
-export type VoyagerClient = ApolloClient<NormalizedCacheObject>;
+export type ApolloOfflineClient = ApolloClient<NormalizedCacheObject>;
 
+/**
+* Factory for creating Apollo Client
+*
+* @param userConfig options object used to build client
+* @deprecated use OfflineClient class directly:
+* ```javascript
+*  const offlineClient = new OfflineClient(config);
+*  await offlineClient.init();
+*  ```
+*/
+export const createClient = async (userConfig: DataSyncConfig):
+  Promise<ApolloOfflineClient> => {
+  const offlineClient = new OfflineClient(userConfig);
+  return offlineClient.init();
+};
+
+/**
+ * OfflineClient
+ *
+ * Enables offline workflows, conflict resolution and cache
+ * storage for Apollo GraphQL client.
+ *
+ * Usage:
+ *
+ *  ```javascript
+ *  const offlineClient = new OfflineClient(config);
+ *  await offlineClient.init();
+ *  ```
+ */
 export class OfflineClient {
-  private client?: VoyagerClient;
-  private offlineStore: OfflineStore;
+  private apolloClient?: ApolloOfflineClient;
+  private store: OfflineStore;
   private config: DataSyncConfig;
 
-  constructor(userConfig?: DataSyncConfig) {
+  constructor(userConfig: DataSyncConfig) {
     this.config = this.extractConfig(userConfig);
-    this.offlineStore = new OfflineStore(this.config);
-  }
-
-  public getOfflineStore(): OfflineStore {
-    return this.offlineStore;
+    this.store = new OfflineStore(this.config);
   }
 
   /**
-  * Factory for creating Apollo Client
+   * Get access to offline store that can be used to
+   * visualize  offline  operations that are currently pending
+   */
+  public get offlineStore(): OfflineStore {
+    return this.store;
+  }
+
+  /**
+  * Create new client
   *
   * @param userConfig options object used to build client
   */
-  public createClient = async (): Promise<VoyagerClient> => {
+  public async init(): Promise<ApolloOfflineClient> {
     const { cache } = await this.buildCachePersistence(this.config);
-    const offlineLink = await createOfflineLink(this.config, this.offlineStore);
+    const offlineLink = await createOfflineLink(this.config, this.store);
     const link = await createDefaultLink(this.config, offlineLink);
 
-    const apolloClient = new ApolloClient({
+    this.apolloClient = new ApolloClient({
       link,
       cache
     });
-    await this.restoreOfflineOperations(apolloClient, this.config, offlineLink);
-    return apolloClient;
+    await this.restoreOfflineOperations(offlineLink);
+    return this.apolloClient;
   }
   /**
  * Extract configuration from user and external sources
@@ -55,13 +88,13 @@ export class OfflineClient {
   }
 
   /**
- * Restore offline operations into the queue
- */
-  private async restoreOfflineOperations(
-    apolloClient: ApolloClient<NormalizedCacheObject>,
-    clientConfig: DataSyncConfig, offlineLink: OfflineLink) {
+   * Restore offline operations into the queue
+   */
+  private async restoreOfflineOperations(offlineLink: OfflineLink) {
 
-    const offlineMutationHandler = new OfflineMutationsHandler(apolloClient, clientConfig);
+    const offlineMutationHandler = new OfflineMutationsHandler(
+      this.apolloClient as ApolloOfflineClient,
+      this.config);
     offlineLink.setup(offlineMutationHandler);
     // Reschedule offline mutations for new client instance
     await offlineMutationHandler.replayOfflineMutations();
