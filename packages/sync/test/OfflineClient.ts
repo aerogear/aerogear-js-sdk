@@ -13,12 +13,13 @@ describe("Top level api tests", () => {
   it("check old api", async () => {
     const client = await createClient({
       httpUrl: url, storage, networkStatus});
-    should().exist(client.offlineStore);
+    should().exist(client);
   });
 
   it("check new api", async () => {
     const client = new OfflineClient({ httpUrl: url, storage, networkStatus });
     const initClient = await client.init();
     should().exist(initClient.offlineStore);
+    should().exist(client.registerOfflineEventListener);
   });
 });
