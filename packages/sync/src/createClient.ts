@@ -12,7 +12,9 @@ import { PersistedData, PersistentStore } from "./PersistentStore";
 /**
  * @see ApolloClient
  */
-export type ApolloOfflineClient = ApolloClient<NormalizedCacheObject>;
+export interface ApolloOfflineClient extends ApolloClient<NormalizedCacheObject> {
+  offlineStore: OfflineStore;
+}
 
 /**
 * Factory for creating Apollo Client
@@ -71,13 +73,20 @@ export class OfflineClient {
     const offlineLink = await createOfflineLink(this.config, this.store);
     const link = await createDefaultLink(this.config, offlineLink);
 
-    this.apolloClient = new ApolloClient({
+    const client = new ApolloClient({
       link,
       cache
-    });
+    }) as any;
+    this.apolloClient = this.decorateApolloClient(client);
     await this.restoreOfflineOperations(offlineLink);
     return this.apolloClient;
   }
+
+  private decorateApolloClient(apolloClient: any): ApolloOfflineClient {
+    apolloClient.offlineStore = this.offlineStore;
+    return apolloClient;
+  }
+
   /**
  * Extract configuration from user and external sources
  */
