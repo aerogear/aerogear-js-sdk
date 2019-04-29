@@ -28,10 +28,10 @@
   "devDependencies": {
     "@types/chai": "4.1.7",
     "chai": "4.2.0",
-    "mocha": "6.0.2",
-    "mockttp": "0.13.0",
+    "mocha": "6.1.4",
+    "mockttp": "0.14.2",
     "nyc": "13.3.0",
-    "typescript": "3.3.3333"
+    "typescript": "3.4.5"
   },
   "dependencies": {
     "@aerogear/core": "2.4.0",
