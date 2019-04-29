@@ -82,7 +82,7 @@ export class OfflineClient {
     return this.apolloClient;
   }
 
-  private decorateApolloClient(apolloClient: any): ApolloOfflineClient {
+  protected decorateApolloClient(apolloClient: any): ApolloOfflineClient {
     apolloClient.offlineStore = this.offlineStore;
     return apolloClient;
   }
@@ -90,7 +90,7 @@ export class OfflineClient {
   /**
  * Extract configuration from user and external sources
  */
-  private extractConfig(userConfig: DataSyncConfig | undefined) {
+  protected extractConfig(userConfig: DataSyncConfig | undefined) {
     const config = new SyncConfig(userConfig);
     const clientConfig = config.getClientConfig();
     return clientConfig;
@@ -99,7 +99,7 @@ export class OfflineClient {
   /**
    * Restore offline operations into the queue
    */
-  private async restoreOfflineOperations(offlineLink: OfflineLink) {
+  protected async restoreOfflineOperations(offlineLink: OfflineLink) {
 
     const offlineMutationHandler = new OfflineMutationsHandler(
       this.apolloClient as ApolloOfflineClient,
@@ -111,12 +111,12 @@ export class OfflineClient {
     await offlineLink.initOnlineState();
   }
 
-  /**
+/**
  * Build storage that will be used for caching data
  *
  * @param clientConfig
  */
-  private async buildCachePersistence(clientConfig: DataSyncConfig) {
+  protected async buildCachePersistence(clientConfig: DataSyncConfig) {
     const cache = new InMemoryCache();
     await persistCache({
       cache,
