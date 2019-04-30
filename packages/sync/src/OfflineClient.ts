@@ -1,4 +1,4 @@
-import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
+import { InMemoryCache } from "apollo-cache-inmemory";
 import { persistCache } from "apollo-cache-persist";
 import { ApolloClient } from "apollo-client";
 import { DataSyncConfig } from "./config";
@@ -10,17 +10,10 @@ import { OfflineMutationsHandler } from "./offline/OfflineMutationsHandler";
 import { PersistedData, PersistentStore } from "./PersistentStore";
 import { CompositeQueueListener } from "./offline/events/CompositeQueueListener";
 import { ListenerProvider } from "./offline/events/ListenerProvider";
+import { ApolloOfflineClient } from "./OfflineApolloClient";
 
 /**
- * @see ApolloClient
- */
-export interface ApolloOfflineClient extends ApolloClient<NormalizedCacheObject> {
-  offlineStore: OfflineStore;
-  registerOfflineEventListener(listener: OfflineQueueListener): void;
-}
-
-/**
-* Factory for creating Apollo Client
+* Factory for creating Apollo Offline Client
 *
 * @param userConfig options object used to build client
 * @deprecated use OfflineClient class directly:
@@ -39,7 +32,7 @@ export const createClient = async (userConfig: DataSyncConfig):
  * OfflineClient
  *
  * Enables offline workflows, conflict resolution and cache
- * storage for Apollo GraphQL client.
+ * storage on top Apollo GraphQL JavaScript client.
  *
  * Usage:
  *
@@ -85,6 +78,7 @@ export class OfflineClient implements ListenerProvider {
   public get offlineStore(): OfflineStore {
     return this.store;
   }
+
   /**
    * Add new listener for listening for queue changes
    *
