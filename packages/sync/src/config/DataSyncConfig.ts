@@ -1,6 +1,7 @@
 import { ConflictResolutionStrategies } from "../conflicts/ConflictResolutionStrategy";
 import { PersistedData, PersistentStore } from "../PersistentStore";
-import { NetworkStatus, OfflineQueueListener } from "../offline";
+import { NetworkStatus } from "../offline";
+import { OfflineQueueListener } from "../offline/events/OfflineQueueListener";
 import { AuthContextProvider } from "../auth/AuthContextProvider";
 import { ObjectState } from "../conflicts/ObjectState";
 import { ConflictListener } from "../conflicts/ConflictListener";
