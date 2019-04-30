@@ -108,7 +108,7 @@ export class OfflineClient implements ListenerProvider {
    */
   protected async restoreOfflineOperations(offlineLink: OfflineLink) {
 
-    const offlineMutationHandler = new OfflineMutationsHandler(
+    const offlineMutationHandler = new OfflineMutationsHandler(this.store,
       this.apolloClient as ApolloOfflineClient,
       this.config);
     offlineLink.setup(offlineMutationHandler);
