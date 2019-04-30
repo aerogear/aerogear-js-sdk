@@ -9,6 +9,9 @@ import { OperationQueueEntry } from "../OperationQueueEntry";
  */
 export class CompositeQueueListener implements OfflineQueueListener {
 
+  /**
+   * @param listenerProvider instance that contains all registered providers
+   */
   constructor(private listenerProvider: ListenerProvider) {
   }
 
