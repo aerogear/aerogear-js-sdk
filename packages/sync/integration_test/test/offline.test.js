@@ -13,6 +13,9 @@ const newNetworkStatus = (online = true) => {
   return networkStatus;
 };
 
+const offlineKey1 = "offline:0";
+const offlineKey2 = "offline:1";
+
 const newClient = async (clientOptions = {}) => {
   const config = {
     httpUrl: "http://localhost:4000/graphql",
@@ -71,14 +74,13 @@ describe('Offline mutations', function() {
       } catch (ignore) { }
 
 
-      const offlineMutationStore = JSON.parse(store.getItem(mutationsQueueName));
+      const offlineMutation = await store.getItem(offlineKey1);
 
-      expect(offlineMutationStore).to.exist;
-      expect(offlineMutationStore[0]).to.exist;
-      expect(offlineMutationStore[0].operation).to.exist;
-      expect(offlineMutationStore[0].operation.operationName).to.equal('createTask');
-      expect(offlineMutationStore[0].operation.variables.title).to.equal(newTask.title);
-      expect(offlineMutationStore[0].operation.variables.description).to.equal(newTask.description);
+      expect(offlineMutation).to.exist;
+      expect(offlineMutation.operation).to.exist;
+      expect(offlineMutation.operation.operationName).to.equal('createTask');
+      expect(offlineMutation.operation.variables.title).to.equal(newTask.title);
+      expect(offlineMutation.operation.variables.description).to.equal(newTask.description);
     });
 
   });
@@ -98,8 +100,6 @@ describe('Offline mutations', function() {
 
     it('should succeed', async function() {
       networkStatus.setOnline(true);
-
-      await waitFor(() => JSON.parse(store.getItem(mutationsQueueName)).length === 0);
 
       const response = await client.query({
         query: GET_TASKS
@@ -146,12 +146,13 @@ describe('Offline mutations', function() {
         });
       } catch (ignore) { }
 
-      const offlineMutationStore = JSON.parse(store.getItem(mutationsQueueName));
+      const offlineMutation1 = await store.getItem(offlineKey1);
+      const offlineMutation2 = await store.getItem(offlineKey2);
 
-      expect(offlineMutationStore).to.exist;
-      expect(offlineMutationStore.length).to.equal(2);
-      expect(offlineMutationStore.find(item => item.operation.operationName === 'updateTask')).to.exist;
-      expect(offlineMutationStore.find(item => item.operation.operationName === 'deleteTask')).to.exist;
+      expect(offlineMutation1).to.exist;
+      expect(offlineMutation2).to.exist;
+      expect(offlineMutation1.operation.operationName).to.equal('updateTask');
+      expect(offlineMutation2.operation.operationName).to.equal('deleteTask');
     });
   });
 
@@ -187,7 +188,7 @@ describe('Offline mutations', function() {
     it('should succeed', async function() {
       networkStatus.setOnline(true);
 
-      await waitFor(() => JSON.parse(store.getItem(mutationsQueueName)).length === 0);
+      await waitFor(() => store.getItem(offlineKey2) === undefined);
 
       const response = await client.query({
         query: GET_TASKS,
@@ -222,7 +223,7 @@ describe('Offline mutations', function() {
 
       networkStatus.setOnline(true);
 
-      await waitFor(() => JSON.parse(store.getItem(mutationsQueueName)).length === 0);
+      await waitFor(() => store.getItem(offlineKey2) === undefined);
 
       const response = await client.query({
         query: GET_TASKS,
@@ -347,15 +348,17 @@ describe('Offline mutations', function() {
         });
       } catch (ignore) { }
 
-      const offlineMutationStore = JSON.parse(store.getItem(mutationsQueueName));
+      const offlineMutation1 = await store.getItem(offlineKey1);
+      const offlineMutation2 = await store.getItem(offlineKey2);
 
-      expect(offlineMutationStore.length).to.equal(2);
-      expect(offlineMutationStore[0].operation.variables.title).to.equal(firstUpdateTitle);
-      expect(offlineMutationStore[1].operation.variables.title).to.equal(variables.title);
+      expect(offlineMutation1).to.exist;
+      expect(offlineMutation2).to.exist;
+      expect(offlineMutation1.operation.variables.title).to.equal(firstUpdateTitle);
+      expect(offlineMutation2.operation.variables.title).to.equal(variables.title);
 
       networkStatus.setOnline(true);
 
-      await waitFor(() => JSON.parse(store.getItem(mutationsQueueName)).length === 0);
+      await waitFor(() => store.getItem(offlineKey2) === undefined);
 
       const response = await client.query({
         query: GET_TASKS,
@@ -404,15 +407,17 @@ describe('Offline mutations', function() {
         });
       } catch (ignore) { }
 
-      const offlineMutationStore = JSON.parse(store.getItem(mutationsQueueName));
+      const offlineMutation1 = await store.getItem(offlineKey1);
+      const offlineMutation2 = await store.getItem(offlineKey2);
 
-      expect(offlineMutationStore.length).to.equal(2);
-      expect(offlineMutationStore[0].operation.variables.title).to.equal('nomerge1');
-      expect(offlineMutationStore[1].operation.variables.title).to.equal(variables.title);
+      expect(offlineMutation1).to.exist;
+      expect(offlineMutation2).to.exist;
+      expect(offlineMutation1.operation.variables.title).to.equal('nomerge1');
+      expect(offlineMutation2.operation.variables.title).to.equal(variables.title);
 
       networkStatus.setOnline(true);
 
-      await waitFor(() => JSON.parse(store.getItem(mutationsQueueName)).length === 0);
+      await waitFor(() => store.getItem(offlineKey2) === undefined);
 
       const response = await client.query({
         query: GET_TASKS,
@@ -447,7 +452,7 @@ describe('Offline mutations', function() {
 
       networkStatus.setOnline(true);
 
-      await waitFor(() => JSON.parse(store.getItem(mutationsQueueName)).length === 0);
+      await waitFor(() => store.getItem(offlineKey1) === undefined);
 
       expect(cleared).to.equal(1);
     });
@@ -471,8 +476,8 @@ describe('Offline mutations', function() {
         });
       } catch (ignore) { }
 
-      let offlineMutationStore = JSON.parse(store.getItem(mutationsQueueName));
-      expect(offlineMutationStore.length).to.equal(1);
+      let offlineMutation = await store.getItem(offlineKey1);
+      expect(offlineMutation).to.exist;
       networkStatus.setOnline(true);
     });
   });
