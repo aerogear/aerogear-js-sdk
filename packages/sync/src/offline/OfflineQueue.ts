@@ -96,6 +96,7 @@ export class OfflineQueue {
 
   private onForwardNext(op: OperationQueueEntry, result: FetchResult<any>) {
     const entry = this.queue.find(e => e === op);
+    this.queue = this.queue.filter(e => e !== op);
     if (result.errors) {
       if (this.listener && this.listener.onOperationFailure) {
         this.listener.onOperationFailure(op.operation, result.errors);
