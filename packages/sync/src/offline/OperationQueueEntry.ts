@@ -1,5 +1,5 @@
 import { FetchResult, NextLink, Operation } from "apollo-link";
-import { isClientGeneratedId } from "../cache/createOptimisticResponse";
+import { isClientGeneratedId, generateId } from "../cache/createOptimisticResponse";
 
 /**
  * Represents data that is being saved to the offlien store
@@ -18,7 +18,7 @@ export class OperationQueueEntry implements OfflineItem {
 
   public readonly operation: Operation;
   public readonly optimisticResponse?: any;
-  public id: number;
+  public id: string;
   public forward?: NextLink;
   public result?: FetchResult;
   public networkError: any;
@@ -27,7 +27,7 @@ export class OperationQueueEntry implements OfflineItem {
   constructor(operation: Operation, forward?: NextLink) {
     this.operation = operation;
     this.forward = forward;
-    this.id = Math.floor(Math.random() * 999999);
+    this.id = generateId();
     if (typeof operation.getContext === "function") {
       this.optimisticResponse = operation.getContext().optimisticResponse;
     }
