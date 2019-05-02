@@ -22,9 +22,9 @@ export class OfflineStore {
    * @param entry - the entry to be saved
    */
   public async saveEntry(entry: OperationQueueEntry) {
-    this.arrayOfKeys.push(entry.id);
+    this.arrayOfKeys.push(entry.id.toString());
     await this.storage.setItem(this.offlineMetaKey, JSON.stringify(this.arrayOfKeys));
-    await this.storage.setItem(this.getOfflineKey(entry.id), entry.toOfflineItem());
+    await this.storage.setItem(this.getOfflineKey(entry.id.toString()), entry.toOfflineItem());
   }
 
   /**
@@ -33,10 +33,10 @@ export class OfflineStore {
    * @param queue - the entry to be removed
    */
   public async removeEntry(entry: OperationQueueEntry) {
-    const index = this.arrayOfKeys.indexOf(entry.id);
-    this.arrayOfKeys.splice(index, 1);
+    const index = this.arrayOfKeys[0];
+    this.arrayOfKeys.splice(0, 1);
     this.storage.setItem(this.offlineMetaKey, JSON.stringify(this.arrayOfKeys));
-    const offlineKey = this.getOfflineKey(entry.id);
+    const offlineKey = this.getOfflineKey(index);
     await this.storage.removeItem(offlineKey);
   }
 

@@ -13,8 +13,7 @@ const newNetworkStatus = (online = true) => {
   return networkStatus;
 };
 
-const offlineKey1 = "offline:0";
-const offlineKey2 = "offline:1";
+const offlineMetaKey = "offline-meta-data";
 
 const newClient = async (clientOptions = {}) => {
   const config = {
@@ -26,7 +25,7 @@ const newClient = async (clientOptions = {}) => {
   return await createClient(config);
 };
 
-describe('Offline mutations', function() {
+describe('Offline mutations', function () {
 
   this.timeout(1000);
 
@@ -45,27 +44,27 @@ describe('Offline mutations', function() {
 
   let client, networkStatus, store;
 
-  before('start server', async function() {
+  before('start server', async function () {
     await server.start();
   });
 
-  after('stop server', async function() {
+  after('stop server', async function () {
     await server.stop();
   });
 
-  beforeEach('reset server', async function() {
+  beforeEach('reset server', async function () {
     await server.reset();
   });
 
-  beforeEach('create client', async function() {
+  beforeEach('create client', async function () {
     networkStatus = newNetworkStatus(false);
     store = new TestStore();
     client = await newClient({ networkStatus, storage: store, mutationsQueueName });
   });
 
-  describe('save mutation to offlineMutationStore while offline', function() {
+  describe('save mutation to offlineMutationStore while offline', function () {
 
-    it('should succeed', async function() {
+    it('should succeed', async function () {
       try {
         await client.mutate({
           mutation: ADD_TASK,
@@ -74,7 +73,8 @@ describe('Offline mutations', function() {
       } catch (ignore) { }
 
 
-      const offlineMutation = await store.getItem(offlineKey1);
+      const offlineKeys = await JSON.parse(store.getItem(offlineMetaKey));
+      const offlineMutation = await store.getItem("offline:" + offlineKeys[0]);
 
       expect(offlineMutation).to.exist;
       expect(offlineMutation.operation).to.exist;
@@ -85,9 +85,9 @@ describe('Offline mutations', function() {
 
   });
 
-  describe('send mutation when going back online', function() {
+  describe('send mutation when going back online', function () {
 
-    beforeEach('prepare data', async function() {
+    beforeEach('prepare data', async function () {
       try {
         await client.mutate({
           mutation: ADD_TASK,
@@ -98,7 +98,7 @@ describe('Offline mutations', function() {
 
     });
 
-    it('should succeed', async function() {
+    it('should succeed', async function () {
       networkStatus.setOnline(true);
 
       const response = await client.query({
@@ -113,11 +113,11 @@ describe('Offline mutations', function() {
 
   });
 
-  describe('save more mutations while offline', function() {
+  describe('save more mutations while offline', function () {
 
     let task;
 
-    beforeEach('prepare data', async function() {
+    beforeEach('prepare data', async function () {
       networkStatus.setOnline(true);
 
       const response = await client.mutate({
@@ -130,7 +130,7 @@ describe('Offline mutations', function() {
       networkStatus.setOnline(false);
     });
 
-    it('should succeed', async function() {
+    it('should succeed', async function () {
       const variables = { ...updatedTask, id: task.id, version: task.version };
       try {
         await client.mutate({
@@ -146,8 +146,9 @@ describe('Offline mutations', function() {
         });
       } catch (ignore) { }
 
-      const offlineMutation1 = await store.getItem(offlineKey1);
-      const offlineMutation2 = await store.getItem(offlineKey2);
+      const offlineKeys = await JSON.parse(store.getItem(offlineMetaKey));
+      const offlineMutation1 = await store.getItem("offline:" + offlineKeys[0]);
+      const offlineMutation2 = await store.getItem("offline:" + offlineKeys[1]);
 
       expect(offlineMutation1).to.exist;
       expect(offlineMutation2).to.exist;
@@ -156,9 +157,9 @@ describe('Offline mutations', function() {
     });
   });
 
-  describe('send more mutations when back online', function() {
+  describe('send more mutations when back online', function () {
 
-    beforeEach('prepare data', async function() {
+    beforeEach('prepare data', async function () {
       networkStatus.setOnline(true);
 
       const response = await client.mutate({
@@ -185,10 +186,10 @@ describe('Offline mutations', function() {
       } catch (ignore) { }
     });
 
-    it('should succeed', async function() {
+    it('should succeed', async function () {
       networkStatus.setOnline(true);
 
-      await waitFor(() => store.getItem(offlineKey2) === undefined);
+      await new Promise(resolve => setTimeout(resolve, 300));
 
       const response = await client.query({
         query: GET_TASKS,
@@ -200,8 +201,8 @@ describe('Offline mutations', function() {
     });
   });
 
-  describe('create then update item while offline', function() {
-    it('should succeed', async function() {
+  describe('create then update item while offline', function () {
+    it('should succeed', async function () {
       let task;
       try {
         await client.mutate({
@@ -223,7 +224,7 @@ describe('Offline mutations', function() {
 
       networkStatus.setOnline(true);
 
-      await waitFor(() => store.getItem(offlineKey2) === undefined);
+      await new Promise(resolve => setTimeout(resolve, 300));
 
       const response = await client.query({
         query: GET_TASKS,
@@ -236,8 +237,8 @@ describe('Offline mutations', function() {
     });
   });
 
-  describe('create then update item while offline then replaying mutations', function() {
-    it('should succeed', async function() {
+  describe('create then update item while offline then replaying mutations', function () {
+    it('should succeed', async function () {
       let task;
       try {
         await client.mutate({
@@ -273,8 +274,8 @@ describe('Offline mutations', function() {
   });
 
 
-  describe('replaying mutations with mutationCacheUpdates', function() {
-    it('should succeed', async function() {
+  describe('replaying mutations with mutationCacheUpdates', function () {
+    it('should succeed', async function () {
       let task;
       let updateMethod = (_, { data: { createTask } }) => task = createTask;
       try {
@@ -312,11 +313,11 @@ describe('Offline mutations', function() {
     });
   });
 
-  describe('queue offline mutations', function() {
+  describe('queue offline mutations', function () {
 
     let task;
 
-    beforeEach('prepare data', async function() {
+    beforeEach('prepare data', async function () {
       networkStatus.setOnline(true);
 
       const response = await client.mutate({
@@ -330,7 +331,7 @@ describe('Offline mutations', function() {
       networkStatus.setOnline(false);
     });
 
-    it('should succeed', async function() {
+    it('should succeed', async function () {
       const variables = { title: 'update1', description: 'merge', id: task.id, version: task.version };
       try {
         await client.mutate({
@@ -348,8 +349,9 @@ describe('Offline mutations', function() {
         });
       } catch (ignore) { }
 
-      const offlineMutation1 = await store.getItem(offlineKey1);
-      const offlineMutation2 = await store.getItem(offlineKey2);
+      const offlineKeys = await JSON.parse(store.getItem(offlineMetaKey));
+      const offlineMutation1 = await store.getItem("offline:" + offlineKeys[0]);
+      const offlineMutation2 = await store.getItem("offline:" + offlineKeys[1]);
 
       expect(offlineMutation1).to.exist;
       expect(offlineMutation2).to.exist;
@@ -358,7 +360,7 @@ describe('Offline mutations', function() {
 
       networkStatus.setOnline(true);
 
-      await waitFor(() => store.getItem(offlineKey2) === undefined);
+      await waitFor(() => store.getItem("offline:" + offlineKeys[1]) === undefined);
 
       const response = await client.query({
         query: GET_TASKS,
@@ -371,11 +373,11 @@ describe('Offline mutations', function() {
     });
   });
 
-  describe('do not merge offline mutations', function() {
+  describe('do not merge offline mutations', function () {
 
     let task;
 
-    beforeEach('prepare data', async function() {
+    beforeEach('prepare data', async function () {
       client = await newClient({ networkStatus, storage: store, mutationsQueueName });
       networkStatus.setOnline(true);
 
@@ -390,7 +392,7 @@ describe('Offline mutations', function() {
       networkStatus.setOnline(false);
     });
 
-    it('should succeed', async function() {
+    it('should succeed', async function () {
       const variables = { title: 'nomerge1', description: 'nomerge', id: task.id, version: task.version };
       try {
         await client.mutate({
@@ -407,8 +409,9 @@ describe('Offline mutations', function() {
         });
       } catch (ignore) { }
 
-      const offlineMutation1 = await store.getItem(offlineKey1);
-      const offlineMutation2 = await store.getItem(offlineKey2);
+      const offlineKeys = await JSON.parse(store.getItem(offlineMetaKey));
+      const offlineMutation1 = await store.getItem("offline:" + offlineKeys[0]);
+      const offlineMutation2 = await store.getItem("offline:" + offlineKeys[1]);
 
       expect(offlineMutation1).to.exist;
       expect(offlineMutation2).to.exist;
@@ -417,7 +420,7 @@ describe('Offline mutations', function() {
 
       networkStatus.setOnline(true);
 
-      await waitFor(() => store.getItem(offlineKey2) === undefined);
+      await waitFor(() => store.getItem("offline:" + offlineKeys[1]) === undefined);
 
       const response = await client.query({
         query: GET_TASKS,
@@ -430,8 +433,8 @@ describe('Offline mutations', function() {
     });
   });
 
-  describe('notify about offline changes', function() {
-    it('should succeed', async function() {
+  describe('notify about offline changes', function () {
+    it('should succeed', async function () {
       let offlineOps = 0;
       let cleared = 0;
 
@@ -452,14 +455,14 @@ describe('Offline mutations', function() {
 
       networkStatus.setOnline(true);
 
-      await waitFor(() => store.getItem(offlineKey1) === undefined);
+      await new Promise(resolve => setTimeout(resolve, 300));
 
       expect(cleared).to.equal(1);
     });
   });
 
-  describe('online only mutation', function() {
-    it('should succeed', async function() {
+  describe('online only mutation', function () {
+    it('should succeed', async function () {
       networkStatus.setOnline(false);
       try {
         await client.mutate({
@@ -476,7 +479,8 @@ describe('Offline mutations', function() {
         });
       } catch (ignore) { }
 
-      let offlineMutation = await store.getItem(offlineKey1);
+      const offlineKeys = await JSON.parse(store.getItem(offlineMetaKey));
+      const offlineMutation = await store.getItem("offline:" + offlineKeys[0]);
       expect(offlineMutation).to.exist;
       networkStatus.setOnline(true);
     });
