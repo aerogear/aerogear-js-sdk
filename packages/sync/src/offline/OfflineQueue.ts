@@ -45,7 +45,8 @@ export class OfflineQueue {
    *
    */
   public enqueueOfflineChange(operation: Operation, forward: NextLink) {
-    const operationEntry = new OperationQueueEntry(operation, forward);
+    const offlineId = operation.getContext().offlineId;
+    const operationEntry = new OperationQueueEntry(operation, offlineId, forward);
     this.queue.push(operationEntry);
     if (this.listener && this.listener.onOperationEnqueued) {
       this.listener.onOperationEnqueued(operationEntry);
