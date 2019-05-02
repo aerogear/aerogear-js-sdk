@@ -34,8 +34,7 @@ export class OfflineQueue {
    * is going to be working across restarts
    */
   public async persistItemWithQueue(operation: Operation) {
-    const length = this.queue.length;
-    const operationEntry = new OperationQueueEntry(operation, length);
+    const operationEntry = new OperationQueueEntry(operation);
     await this.store.saveEntry(operationEntry);
     return operationEntry;
   }
@@ -46,8 +45,7 @@ export class OfflineQueue {
    *
    */
   public enqueueOfflineChange(operation: Operation, forward: NextLink) {
-    const length = this.queue.length;
-    const operationEntry = new OperationQueueEntry(operation, length, forward);
+    const operationEntry = new OperationQueueEntry(operation, forward);
     this.queue.push(operationEntry);
     if (this.listener && this.listener.onOperationEnqueued) {
       this.listener.onOperationEnqueued(operationEntry);
