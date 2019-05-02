@@ -15,12 +15,6 @@ declare var window: any;
 // Legacy platform configuration that needs to be merged into sync configuration
 const TYPE: string = "sync-app";
 
-export const storageOptions = {
-    name: dbName,
-    storeName,
-    driver
-  };
-
 /**
  * Class for managing user and default configuration.
  * Default config is applied on top of user provided configuration
@@ -108,7 +102,11 @@ export class SyncConfig implements DataSyncConfig {
    * @param clientOptions the options passed from the constructor containing the storage options
    */
   private async setStorage(clientOptions?: DataSyncConfig) {
-    this.storage = LocalForage.createInstance(storageOptions) as PersistentStore<PersistedData>;
+    this.storage = LocalForage.createInstance({
+    name: dbName,
+    storeName,
+    driver
+  }) as PersistentStore<PersistedData>;
     if (clientOptions) {
       if (clientOptions.storage) {
         this.storage = clientOptions.storage;

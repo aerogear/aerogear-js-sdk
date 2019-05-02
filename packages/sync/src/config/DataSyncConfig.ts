@@ -40,13 +40,6 @@ export interface DataSyncConfig {
   /**
    * [Modifier]
    *
-   * The storage the offline client will use to persist offline mutations
-   */
-  offlineStorage?: PersistentStore<OfflineItem>;
-
-  /**
-   * [Modifier]
-   *
    * Interface for detecting changes in network status.
    * See `WebNetworkStatus` and `CordovaNetworkStatus`
    */
