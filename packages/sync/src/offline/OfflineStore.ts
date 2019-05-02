@@ -22,9 +22,9 @@ export class OfflineStore {
    * @param entry - the entry to be saved
    */
   public async saveEntry(entry: OperationQueueEntry) {
-    this.arrayOfKeys.push(entry.id.toString());
+    this.arrayOfKeys.push(entry.id);
     await this.storage.setItem(this.offlineMetaKey, JSON.stringify(this.arrayOfKeys));
-    await this.storage.setItem(this.getOfflineKey(entry.id.toString()), entry.toOfflineItem());
+    await this.storage.setItem(this.getOfflineKey(entry.id), entry.toOfflineItem());
   }
 
   /**
@@ -33,10 +33,9 @@ export class OfflineStore {
    * @param queue - the entry to be removed
    */
   public async removeEntry(entry: OperationQueueEntry) {
-    const index = this.arrayOfKeys[0];
-    this.arrayOfKeys.splice(0, 1);
+    this.arrayOfKeys.splice(this.arrayOfKeys.indexOf(entry.id), 1);
     this.storage.setItem(this.offlineMetaKey, JSON.stringify(this.arrayOfKeys));
-    const offlineKey = this.getOfflineKey(index);
+    const offlineKey = this.getOfflineKey(entry.id);
     await this.storage.removeItem(offlineKey);
   }
 
@@ -53,8 +52,8 @@ export class OfflineStore {
         if (typeof item === "string") {
           offlineItems.push(JSON.parse(item));
         } else if (item) {
-            offlineItems.push(item as OfflineItem);
-          }
+          offlineItems.push(item as OfflineItem);
+        }
       }
     }
     return offlineItems;

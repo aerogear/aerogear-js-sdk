@@ -62,7 +62,7 @@ export class OfflineMutationsHandler {
       // Pass client update functions
       update: updateFunction,
       // Pass extensions as part of the context
-      context: this.getOfflineContext()
+      context: this.getOfflineContext(item.id)
     };
     await this.apolloClient.mutate(mutationOptions);
   }
@@ -70,8 +70,8 @@ export class OfflineMutationsHandler {
   /**
    * Add info to operation that was done when offline
    */
-  public getOfflineContext() {
-    return { isOffline: true };
+  public getOfflineContext(id: string) {
+    return { isOffline: true, offlineId: id };
   }
 
   /**
