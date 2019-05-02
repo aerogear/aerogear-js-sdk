@@ -7,6 +7,7 @@ import { isClientGeneratedId, generateId } from "../cache/createOptimisticRespon
 export interface OfflineItem {
   operation: Operation;
   optimisticResponse?: any;
+  id: string;
 }
 
 /**
@@ -24,10 +25,14 @@ export class OperationQueueEntry implements OfflineItem {
   public networkError: any;
   public observer?: ZenObservable.SubscriptionObserver<FetchResult>;
 
-  constructor(operation: Operation, forward?: NextLink) {
+  constructor(operation: Operation, offlineId?: number, forward?: NextLink) {
     this.operation = operation;
     this.forward = forward;
-    this.id = generateId();
+    if (offlineId) {
+      this.id = offlineId.toString();
+    } else {
+      this.id = generateId();
+    }
     if (typeof operation.getContext === "function") {
       this.optimisticResponse = operation.getContext().optimisticResponse;
     }
@@ -47,7 +52,8 @@ export class OperationQueueEntry implements OfflineItem {
   public toOfflineItem(): OfflineItem {
     return {
       operation: this.operation,
-      optimisticResponse: this.optimisticResponse
+      optimisticResponse: this.optimisticResponse,
+      id: this.id
     };
   }
 }
