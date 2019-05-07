@@ -1,7 +1,8 @@
 import { getMainDefinition, hasDirectives } from "apollo-utilities";
 import { Operation, DocumentNode } from "apollo-link";
 import { localDirectives } from "../config/Constants";
-import { OperationDefinitionNode } from "graphql";
+import { OperationDefinitionNode, FieldNode } from "graphql";
+import { resultKeyNameFromField } from "apollo-utilities";
 
 export const isSubscription = (op: Operation) => {
   const { kind, operation } = getMainDefinition(op.query) as any;
@@ -26,3 +27,7 @@ export const getMutationName = (mutation: DocumentNode) => {
   const operationDefinition = definition && definition as OperationDefinitionNode;
   return operationDefinition && operationDefinition.name && operationDefinition.name.value;
 };
+
+export const getOperationFieldName = (operation: DocumentNode): string => resultKeyNameFromField(
+    (operation.definitions[0] as OperationDefinitionNode).selectionSet.selections[0] as FieldNode
+);
