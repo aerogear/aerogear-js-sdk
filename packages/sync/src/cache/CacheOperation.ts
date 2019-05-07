@@ -26,6 +26,11 @@ export enum CacheOperation {
   /**
    * Cache update that involves removing item from the query
    */
-  DELETE = "delete"
+  DELETE = "delete",
+
+  /**
+   * Cache update that involves updating an item from the query
+   */
+  UPDATE = "update"
 
 }
