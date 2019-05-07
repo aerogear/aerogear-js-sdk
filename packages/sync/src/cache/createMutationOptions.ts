@@ -4,6 +4,11 @@ import { CacheOperation } from "./CacheOperation";
 import { createOptimisticResponse } from "./createOptimisticResponse";
 import { type } from "os";
 
+export interface VariablesInfo<T = OperationVariables> {
+    inputType: DocumentNode;
+    variables: T;
+}
+
 /**
 * @param operation operation that is being performed (update)
 * @param typeName type that is going to be returned
@@ -35,14 +40,14 @@ export const buildMutation = <T = OperationVariables>(
   return { mutation, variables, optimisticResponse, update };
 };
 
-export const buildAddOperation = (typeName: string, operation: string, idField: string){
+export const buildAddOperation = (typeName: string, operation: string, idField: string) => {
 
   return (update: any) => {
     return update;
   };
 };
 
-export const buildDeleteOperation = (typeName: string, operation: string, idField: string){
+export const buildDeleteOperation = (typeName: string, operation: string, idField: string) => {
 
   return (update: any) => {
     return update;
