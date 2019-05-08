@@ -6,7 +6,6 @@ import { CordovaNetworkStatus, NetworkStatus, WebNetworkStatus } from "../offlin
 import { clientWins } from "../conflicts/strategies";
 import { VersionedState } from "../conflicts/VersionedState";
 import { ConflictResolutionStrategies } from "../conflicts";
-import { dbName, storeName, driver } from "./Constants";
 import LocalForage from "localforage";
 import { OfflineItem } from "../offline/OperationQueueEntry";
 
@@ -101,17 +100,20 @@ export class SyncConfig implements DataSyncConfig {
    * A method to setup the storage. Defaults to IndexedDB wrapped by LocalForage if none is passed
    * @param clientOptions the options passed from the constructor containing the storage options
    */
-  private async setStorage(clientOptions?: DataSyncConfig) {
-    this.storage = LocalForage.createInstance({
-    name: dbName,
-    storeName,
-    driver
-  }) as PersistentStore<PersistedData>;
+  private setStorage(clientOptions?: DataSyncConfig) {
     if (clientOptions) {
       if (clientOptions.storage) {
         this.storage = clientOptions.storage;
       }
+    } else {
+      const name = "offlinedb";
+      const storeName = "localData";
+      const driver = LocalForage.INDEXEDDB;
+      LocalForage.config({
+        storeName,
+        driver
+      });
+      this.storage = LocalForage.createInstance({ name }) as PersistentStore<PersistedData>;
     }
   }
-
 }

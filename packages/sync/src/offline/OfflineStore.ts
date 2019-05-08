@@ -40,7 +40,7 @@ export class OfflineStore {
   }
 
   /**
-   * Fetch data from the
+   * Fetch data from the offline store
    */
   public async getOfflineData(): Promise<OfflineItem[]> {
     const keys = await this.storage.getItem(this.offlineMetaKey);
