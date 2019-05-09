@@ -112,10 +112,7 @@ export class SyncConfig implements DataSyncConfig {
         name,
         driver
       });
-      this.storage = LocalForage.createInstance({
-        name,
-        storeName
-      }) as PersistentStore<PersistedData>;
+      this.storage = LocalForage as PersistentStore<PersistedData>;
     }
   }
 }
