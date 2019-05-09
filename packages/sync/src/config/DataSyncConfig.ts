@@ -6,7 +6,7 @@ import { AuthContextProvider } from "../auth/AuthContextProvider";
 import { ObjectState } from "../conflicts/ObjectState";
 import { ConflictListener } from "../conflicts/ConflictListener";
 import { ConfigurationService } from "@aerogear/core";
-import CacheUpdates from "../cache/CacheUpdates";
+import { CacheUpdates } from "../cache/CacheUpdates";
 import { RetryLink } from "apollo-link-retry";
 
 /**

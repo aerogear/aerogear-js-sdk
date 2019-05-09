@@ -10,27 +10,21 @@
  * discouraged by Apollo team as it will make extra request that is not needed.
  */
 export enum CacheOperation {
-  // Not needed from apollo 2.5
-  // /**
-  //  * Cache update that involves notifying cache that  specific query is refreshed.
-  //  * It can be applied for changes that perform updates on different objects etc.
-  //  * Used by default
-  //  */
-  // REFRESH = "refresh",
 
   /**
    * Cache update that involves adding new item to the query
    */
   ADD = "add",
+  /**
+   * Cache update that involves notifying cache that  specific query is refreshed.
+   * It can be applied for changes that perform updates on different objects etc.
+   * Used by default
+   */
+  REFRESH = "refresh",
 
   /**
    * Cache update that involves removing item from the query
    */
-  DELETE = "delete",
-
-  /**
-   * Cache update that involves updating an item from the query
-   */
-  UPDATE = "update"
+  DELETE = "delete"
 
 }
