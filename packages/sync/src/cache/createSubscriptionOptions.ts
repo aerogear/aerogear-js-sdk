@@ -1,62 +1,89 @@
-import { SubscribeToMoreOptions } from "apollo-client";
+import { SubscribeToMoreOptions, OperationVariables, ObservableQuery } from "apollo-client";
+import { QueryWithVariables, UpdateFunction, Query } from "./CacheUpdates";
 import { DocumentNode } from "graphql";
 import { CacheOperation } from "./CacheOperation";
 import { getOperationFieldName } from "..";
 
-export const createSubscriptionOptions = (
-  subscriptionQuery: DocumentNode,
-  cacheUpdateQuery: DocumentNode,
-  operationType: CacheOperation,
-  idField?: string
-): SubscribeToMoreOptions => {
-  const document = subscriptionQuery;
+export interface SubscriptionHelperOptions {
+  subscriptionQuery: Query;
+  cacheUpdateQuery: Query;
+  operationType: CacheOperation;
+  idField?: string;
+}
 
-  const query = cacheUpdateQuery;
+export const subscribeToMoreHelper = (observableQuery: ObservableQuery,
+                                      arrayOfHelperOptions: SubscriptionHelperOptions[]) => {
+  for (const option of arrayOfHelperOptions) {
+    observableQuery.subscribeToMore(createSubscriptionOptions(option));
+  }
+};
+
+export const createSubscriptionOptions = (options: SubscriptionHelperOptions): SubscribeToMoreOptions => {
+  const {
+    subscriptionQuery,
+    cacheUpdateQuery,
+    operationType,
+    idField = "id"
+  } = options;
+  const document = (subscriptionQuery && (subscriptionQuery as QueryWithVariables).query)
+    || (subscriptionQuery as DocumentNode);
+  const variables = (subscriptionQuery && (subscriptionQuery as QueryWithVariables).variables)
+    || {} as OperationVariables;
+  const query = (cacheUpdateQuery && (cacheUpdateQuery as QueryWithVariables).query)
+    || (cacheUpdateQuery as DocumentNode);
   const queryField = getOperationFieldName(query);
 
   return {
     document,
-    updateQuery: (prev: any, { subscriptionData: { data } }) => {
+    variables,
+    updateQuery: (prev, { subscriptionData }) => {
+      const data = subscriptionData.data;
       const [key] = Object.keys(data);
       const mutadedItem = data[key];
 
       const optype = operationType;
       const obj = prev[queryField];
 
-      const updater = getUpdateFunction(optype, idField);
+      const updater = getUpdateQueryFunction(optype, idField);
       const result = updater(obj, mutadedItem);
       return {
         [queryField]: result
       };
-
     }
   };
 };
 
-type UpdateFunction = (array: [CacheItem], newItem?: CacheItem) => CacheItem[];
-interface CacheItem {
-  [key: string]: any;
-}
-
-export const getUpdateFunction = (opType: CacheOperation, idField = "id"): UpdateFunction => {
+export const getUpdateQueryFunction = (opType: CacheOperation, idField = "id"): UpdateFunction => {
   let updateFunction: UpdateFunction;
 
   switch (opType) {
     case CacheOperation.ADD:
       updateFunction = (prev, newItem) => {
-        return !newItem ? [...prev] : [...prev.filter(item => {
-          return item[idField] !== newItem[idField];
-        }), newItem];
+        if (!newItem) {
+          return [...prev];
+        } else {
+          return [...prev.filter(item => {
+            return item[idField] !== newItem[idField];
+          }), newItem];
+        }
       };
       break;
-    case CacheOperation.UPDATE:
+    case CacheOperation.REFRESH:
       updateFunction = (prev, newItem) => {
-        return !newItem ? [...prev] : prev.map((item: any) => item[idField] === newItem[idField] ? newItem : item);
+        if (!newItem) {
+          return [...prev];
+        } else {
+          return prev.map((item: any) => item[idField] === newItem[idField] ? newItem : item);
+        }
       };
       break;
     case CacheOperation.DELETE:
       updateFunction = (prev, newItem) => {
-        return !newItem ? [] : prev.filter((item: any) => item[idField] !== newItem[idField]);
+        if (!newItem) {
+          return [];
+        } else {
+          return prev.filter((item: any) => item[idField] !== newItem[idField]);
+        }
       };
       break;
     default:
