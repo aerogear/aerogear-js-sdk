@@ -3,7 +3,7 @@ import { OfflineQueueListener } from "./events/OfflineQueueListener";
 import { isClientGeneratedId } from "../cache/createOptimisticResponse";
 import { ObjectState } from "../conflicts/ObjectState";
 import { Operation, NextLink, Observable, FetchResult } from "apollo-link";
-import { OfflineStore } from "./OfflineStore";
+import { OfflineStore } from "./storage/OfflineStore";
 import { OfflineLinkOptions } from "../links";
 
 export type OperationQueueChangeHandler = (entry: OperationQueueEntry) => void;
