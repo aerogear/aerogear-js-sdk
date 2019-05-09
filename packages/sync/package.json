@@ -61,7 +61,7 @@
     "graphql": "14.3.0",
     "graphql-tag": "2.10.1",
     "graphql-tools": "4.0.4",
-    "localforage": "1.7.3",
+    "idb-localstorage": "^0.2.0",
     "subscriptions-transport-ws": "0.9.16"
   }
 }

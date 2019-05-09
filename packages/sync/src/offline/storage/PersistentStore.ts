@@ -1,10 +1,10 @@
 
 /**
- * Interface for underlying storage solutions
+ * Interface for underlying storage for cache and offline data
  */
 export interface PersistentStore<T> {
-  getItem: (key: string) => Promise<T> | T;
-  setItem: (key: string, data: T) => Promise<void> | void;
+  getItem: (key: string) => Promise<T>;
+  setItem: (key: string, data: T) => Promise<void>;
   removeItem: (key: string) => Promise<void> | void;
 }
 

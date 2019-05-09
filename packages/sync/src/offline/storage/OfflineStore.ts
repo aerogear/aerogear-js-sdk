@@ -1,6 +1,7 @@
-import { PersistentStore, PersistedData } from "../PersistentStore";
-import { DataSyncConfig } from "..";
-import { OperationQueueEntry, OfflineItem } from "./OperationQueueEntry";
+import { PersistentStore, PersistedData } from "./PersistentStore";
+import { DataSyncConfig } from "../..";
+import { OperationQueueEntry, OfflineItem } from "../OperationQueueEntry";
+import { SyncConfig } from "../../config/SyncConfig";
 
 /**
  * Abstract Offline storage
@@ -11,9 +12,16 @@ export class OfflineStore {
   private offlineMetaKey: string = "offline-meta-data";
   private arrayOfKeys: string[];
 
-  constructor(clientConfig: DataSyncConfig) {
-    this.storage = clientConfig.storage as PersistentStore<PersistedData>;
+  constructor(config: SyncConfig) {
+    this.storage = config.offlineStorage;
     this.arrayOfKeys = [];
+  }
+
+  /**
+   * Init store 
+   */
+  public async init(){
+    this.arrayOfKeys = await this.storage.getItem(this.offlineMetaKey) as string[];
   }
 
   /**
@@ -23,7 +31,7 @@ export class OfflineStore {
    */
   public async saveEntry(entry: OperationQueueEntry) {
     this.arrayOfKeys.push(entry.id);
-    await this.storage.setItem(this.offlineMetaKey, JSON.stringify(this.arrayOfKeys));
+    await this.storage.setItem(this.offlineMetaKey, this.arrayOfKeys);
     await this.storage.setItem(this.getOfflineKey(entry.id), entry.toOfflineItem());
   }
 
@@ -34,7 +42,7 @@ export class OfflineStore {
    */
   public async removeEntry(entry: OperationQueueEntry) {
     this.arrayOfKeys.splice(this.arrayOfKeys.indexOf(entry.id), 1);
-    this.storage.setItem(this.offlineMetaKey, JSON.stringify(this.arrayOfKeys));
+    this.storage.setItem(this.offlineMetaKey, this.arrayOfKeys);
     const offlineKey = this.getOfflineKey(entry.id);
     await this.storage.removeItem(offlineKey);
   }
@@ -43,10 +51,7 @@ export class OfflineStore {
    * Fetch data from the offline store
    */
   public async getOfflineData(): Promise<OfflineItem[]> {
-    const keys = await this.storage.getItem(this.offlineMetaKey);
     const offlineItems: OfflineItem[] = [];
-    if (keys) {
-      this.arrayOfKeys = JSON.parse(keys.toString());
       for (const key of this.arrayOfKeys) {
         const item = await this.storage.getItem(this.getOfflineKey(key));
         if (typeof item === "string") {
@@ -54,7 +59,6 @@ export class OfflineStore {
         } else if (item) {
           offlineItems.push(item as OfflineItem);
         }
-      }
     }
     return offlineItems;
   }
