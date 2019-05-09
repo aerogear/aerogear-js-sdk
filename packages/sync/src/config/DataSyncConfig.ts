@@ -1,5 +1,5 @@
 import { ConflictResolutionStrategies } from "../conflicts/ConflictResolutionStrategy";
-import { PersistedData, PersistentStore } from "../PersistentStore";
+import { PersistedData, PersistentStore } from "../offline/storage/PersistentStore";
 import { NetworkStatus } from "../offline";
 import { OfflineQueueListener } from "../offline/events/OfflineQueueListener";
 import { AuthContextProvider } from "../auth/AuthContextProvider";
@@ -8,7 +8,6 @@ import { ConflictListener } from "../conflicts/ConflictListener";
 import { ConfigurationService } from "@aerogear/core";
 import CacheUpdates from "../cache/CacheUpdates";
 import { RetryLink } from "apollo-link-retry";
-import { OfflineItem } from "../offline/OperationQueueEntry";
 
 /**
  * Contains all configuration options required to initialize Voyager Client
@@ -44,13 +43,6 @@ export interface DataSyncConfig {
    * See `WebNetworkStatus` and `CordovaNetworkStatus`
    */
   networkStatus?: NetworkStatus;
-
-  /**
-   * [Modifier]
-   *
-   * The name to store requests under in your offline queue. By default "offline-mutation-store"
-   */
-  mutationsQueueName?: string | any;
 
   /**
    * User provided listener that contains set of methods that can be used to detect

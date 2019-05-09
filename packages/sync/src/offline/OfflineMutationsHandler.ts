@@ -7,7 +7,7 @@ import { DataSyncConfig } from "../config";
 import CacheUpdates from "../cache/CacheUpdates";
 import { getMutationName } from "../utils/helpers";
 import { Operation } from "apollo-link";
-import { OfflineStore } from "./OfflineStore";
+import { OfflineStore } from "./storage/OfflineStore";
 
 export const logger = debug.default(MUTATION_QUEUE_LOGGER);
 

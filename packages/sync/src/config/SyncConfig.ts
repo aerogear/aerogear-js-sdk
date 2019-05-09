@@ -1,13 +1,13 @@
-import { isMobileCordova, ServiceConfiguration } from "@aerogear/core";
-import { PersistedData, PersistentStore } from "../PersistentStore";
+import { isMobileCordova, ServiceConfiguration, ConfigurationService } from "@aerogear/core";
+import { PersistedData, PersistentStore } from "../offline/storage/PersistentStore";
 import { ConfigError } from "./ConfigError";
 import { DataSyncConfig } from "./DataSyncConfig";
-import { CordovaNetworkStatus, NetworkStatus, WebNetworkStatus } from "../offline";
+import { CordovaNetworkStatus, NetworkStatus, WebNetworkStatus, OfflineQueueListener } from "../offline";
 import { clientWins } from "../conflicts/strategies";
 import { VersionedState } from "../conflicts/VersionedState";
 import { ConflictResolutionStrategies } from "../conflicts";
-import LocalForage from "localforage";
-import { OfflineItem } from "../offline/OperationQueueEntry";
+import { createDefaultCacheStorage, createDefaultOfflineStorage } from "../offline/storage/defaultStorage";
+import { AuthContextProvider } from ".";
 
 declare var window: any;
 
@@ -19,34 +19,19 @@ const TYPE: string = "sync-app";
  * Default config is applied on top of user provided configuration
  */
 export class SyncConfig implements DataSyncConfig {
-  /**
-   * Platform configuration that is generated and supplied by OpenShift
-   *
-   * @param config user supplied configuration
-   */
-  private static applyPlatformConfig(config: DataSyncConfig) {
-    if (config.openShiftConfig) {
-      const configuration = config.openShiftConfig.getConfigByType(TYPE);
-      if (configuration && configuration.length > 0) {
-        const serviceConfiguration: ServiceConfiguration = configuration[0];
-        config.httpUrl = serviceConfiguration.url;
-        config.wsUrl = serviceConfiguration.config.websocketUrl;
-      }
-    }
-  }
-
-  private static validate(userConfig: DataSyncConfig) {
-    if (!userConfig.httpUrl) {
-      throw new ConfigError("Missing server URL", "httpUrl");
-    }
-  }
-
-  public storage?: PersistentStore<PersistedData>;
-  public offlineStorage?: PersistentStore<OfflineItem>;
-  public mutationsQueueName = "offline-mutation-store";
+  public wsUrl?: string;
+  public httpUrl?: string;
+  public offlineQueueListener?: OfflineQueueListener;
+  public authContextProvider?: AuthContextProvider;
+  public fileUpload?: boolean;
+  public openShiftConfig?: ConfigurationService;
   public auditLogging = false;
   public conflictStrategy: ConflictResolutionStrategies;
   public conflictStateProvider = new VersionedState();
+  public networkStatus: NetworkStatus;
+
+  public cacheStorage: PersistentStore<PersistedData>;
+  public offlineStorage: PersistentStore<PersistedData>;
 
   public retryOptions = {
     delay: {
@@ -59,11 +44,14 @@ export class SyncConfig implements DataSyncConfig {
     }
   };
 
-  public networkStatus: NetworkStatus;
-  private readonly clientConfig: DataSyncConfig;
-
   constructor(clientOptions?: DataSyncConfig) {
-    this.setStorage(clientOptions || {});
+    if (clientOptions && clientOptions.storage) {
+      this.cacheStorage = clientOptions.storage;
+      this.offlineStorage = clientOptions.storage;
+    } else {
+      this.cacheStorage = createDefaultCacheStorage();
+      this.offlineStorage = createDefaultOfflineStorage();
+    }
     this.networkStatus = (isMobileCordova()) ?
       new CordovaNetworkStatus() : new WebNetworkStatus();
 
@@ -75,44 +63,34 @@ export class SyncConfig implements DataSyncConfig {
     } else {
       this.conflictStrategy = { default: clientWins };
     }
-    this.clientConfig = this.init(clientOptions);
-  }
-
-  public getClientConfig(): DataSyncConfig {
-    return this.clientConfig;
+    this.init(clientOptions);
   }
 
   private init(clientOptions?: DataSyncConfig) {
-    const config = this.merge(clientOptions);
-    SyncConfig.applyPlatformConfig(config);
-    SyncConfig.validate(config);
-    return config;
+    Object.assign(this, clientOptions);
+    this.applyPlatformConfig();
+    this.validate();
   }
 
   /**
-   * Method used to join user configuration with defaults
-   */
-  private merge(clientOptions?: DataSyncConfig): DataSyncConfig {
-    return Object.assign(this, clientOptions);
+  * Platform configuration that is generated and supplied by OpenShift
+  *
+  * @param config user supplied configuration
+  */
+  private applyPlatformConfig() {
+    if (this.openShiftConfig) {
+      const configuration = this.openShiftConfig.getConfigByType(TYPE);
+      if (configuration && configuration.length > 0) {
+        const serviceConfiguration: ServiceConfiguration = configuration[0];
+        this.httpUrl = serviceConfiguration.url;
+        this.wsUrl = serviceConfiguration.config.websocketUrl;
+      }
+    }
   }
 
-  /**
-   * A method to setup the storage. Defaults to IndexedDB wrapped by LocalForage if none is passed
-   * @param clientOptions the options passed from the constructor containing the storage options
-   */
-  private setStorage(clientOptions: DataSyncConfig) {
-    if (clientOptions.storage) {
-      this.storage = clientOptions.storage;
-    } else {
-      const name = "offlinedb";
-      const storeName = "localData";
-      const driver = LocalForage.INDEXEDDB;
-      LocalForage.config({
-        storeName,
-        name,
-        driver
-      });
-      this.storage = LocalForage as PersistentStore<PersistedData>;
+  private validate() {
+    if (!this.httpUrl) {
+      throw new ConfigError("Missing server URL", "httpUrl");
     }
   }
 }
