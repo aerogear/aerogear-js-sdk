@@ -1,5 +1,5 @@
 import { Store } from "idb-localstorage";
-import { persistCache } from "apollo-cache-persist";
+import { persistCache } from "@graphqlheroes/apollo-cache-persist";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { PersistedData, PersistentStore } from "./PersistentStore";
 
@@ -18,6 +18,7 @@ export const buildCachePersistence = async (store: PersistentStore<PersistedData
   const cache = new InMemoryCache();
   await persistCache({
     cache,
+    serialize: false,
     storage: store,
     maxSize: false,
     debug: false
