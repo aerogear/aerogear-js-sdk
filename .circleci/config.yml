@@ -61,6 +61,76 @@ jobs:
       - run: CI=true npm run release:prep
       - run: TAG=$CIRCLE_TAG npm run release:validate
       - run: TAG=$CIRCLE_TAG npm run publish
+  build_android:
+    working_directory: ~/aerogear
+    docker:
+      - image: circleci/android:api-28-node
+      - image: verdaccio/verdaccio
+        name: verdaccio_instance
+    steps:
+      - checkout
+        # publish npm packages to local verdaccio instance for testing
+      - run: npm set registry http://verdaccio_instance:4873/
+      - run: npx npm-cli-login -u test -p test -e test@example.com -r http://verdaccio_instance:4873
+      - run: git config --global user.email "test@example.com"
+      - run: git config --global user.name "test"
+      - run: npx lerna version patch --no-push --yes
+      - run: CI=true npm run release:prep
+      - run:
+          command: |
+            TAG=$(node -e "console.log(require('./lerna.json').version);") \
+            npm run release:validate
+      - run:
+          command: |
+            TAG=$(node -e "console.log(require('./lerna.json').version);") \
+            npm run publish
+        # build cordova testing app
+      - run: git clone https://github.com/jhellar/aerogear-integration-tests.git ~/tests
+      - run: sudo apt install gradle
+      - run: sudo npm --global install cordova@8
+      - run:
+          command: ./scripts/build-testing-app.sh
+          working_directory: ~/tests
+      - persist_to_workspace:
+          root: ~/tests/testing-app/platforms/android/app/build/outputs/apk/debug/
+          paths:
+            - app-debug.apk
+  test_android:
+    docker:
+      - image: circleci/node:carbon
+      - image: jboss/keycloak
+        name: keycloak_instance
+        environment:
+            KEYCLOAK_USER: admin
+            KEYCLOAK_PASSWORD: admin
+            DB_VENDOR: h2
+    steps:
+      - run: git clone https://github.com/jhellar/aerogear-integration-tests.git .
+      - run:
+          name: Wait for keycloak instance to start up
+          command: dockerize -wait tcp://keycloak_instance:8080 -timeout 120s
+      - run:
+          name: Install node modules
+          command: npm install
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: Download BrowserStack Local binary
+          command: |
+            wget "https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip"
+            unzip BrowserStackLocal-linux-x64.zip
+      - run:
+          name: Run the tests
+          command: |
+            ./BrowserStackLocal $BROWSERSTACK_KEY &
+            export BROWSERSTACK_APP="$(curl -u "$BROWSERSTACK_USER:$BROWSERSTACK_KEY" \
+              -X POST https://api-cloud.browserstack.com/app-automate/upload \
+              -F "file=@/tmp/workspace/app-debug.apk" | cut -d '"' -f 4)"
+            npm start -- test/**/*.js
+          environment:
+            KEYCLOAK_HOST: 'keycloak_instance'
+            KEYCLOAK_PORT: '8080'
+      - run: echo stop && false
 
 workflows:
   version: 2
@@ -70,9 +140,21 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - npm_publish:
+      - build_android:
           requires:
             - build
+          filters:
+            tags:
+              only: /.*/
+      - test_android:
+          requires:
+            - build_android
+          filters:
+            tags:
+              only: /.*/
+      - npm_publish:
+          requires:
+            - test_android
           filters:
             tags:
               only: /.*/ # allow anything because tag syntax is validated as part of validate-release.sh
