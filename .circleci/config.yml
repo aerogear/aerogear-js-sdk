@@ -130,7 +130,6 @@ jobs:
           environment:
             KEYCLOAK_HOST: 'keycloak_instance'
             KEYCLOAK_PORT: '8080'
-      - run: echo stop && false
 
 workflows:
   version: 2
