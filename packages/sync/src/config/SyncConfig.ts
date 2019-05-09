@@ -63,7 +63,7 @@ export class SyncConfig implements DataSyncConfig {
   private readonly clientConfig: DataSyncConfig;
 
   constructor(clientOptions?: DataSyncConfig) {
-    this.setStorage(clientOptions);
+    this.setStorage(clientOptions || {});
     this.networkStatus = (isMobileCordova()) ?
       new CordovaNetworkStatus() : new WebNetworkStatus();
 
@@ -100,20 +100,22 @@ export class SyncConfig implements DataSyncConfig {
    * A method to setup the storage. Defaults to IndexedDB wrapped by LocalForage if none is passed
    * @param clientOptions the options passed from the constructor containing the storage options
    */
-  private setStorage(clientOptions?: DataSyncConfig) {
-    if (clientOptions) {
-      if (clientOptions.storage) {
-        this.storage = clientOptions.storage;
-      }
+  private setStorage(clientOptions: DataSyncConfig) {
+    if (clientOptions.storage) {
+      this.storage = clientOptions.storage;
     } else {
       const name = "offlinedb";
       const storeName = "localData";
       const driver = LocalForage.INDEXEDDB;
       LocalForage.config({
         storeName,
+        name,
         driver
       });
-      this.storage = LocalForage.createInstance({ name }) as PersistentStore<PersistedData>;
+      this.storage = LocalForage.createInstance({
+        name,
+        storeName
+      }) as PersistentStore<PersistedData>;
     }
   }
 }
