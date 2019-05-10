@@ -18,9 +18,9 @@ export class OfflineStore {
   }
 
   /**
-   * Init store 
+   * Init store
    */
-  public async init(){
+  public async init() {
     this.arrayOfKeys = await this.storage.getItem(this.offlineMetaKey) as string[];
   }
 
@@ -52,13 +52,13 @@ export class OfflineStore {
    */
   public async getOfflineData(): Promise<OfflineItem[]> {
     const offlineItems: OfflineItem[] = [];
-      for (const key of this.arrayOfKeys) {
-        const item = await this.storage.getItem(this.getOfflineKey(key));
-        if (typeof item === "string") {
-          offlineItems.push(JSON.parse(item));
-        } else if (item) {
-          offlineItems.push(item as OfflineItem);
-        }
+    for (const key of this.arrayOfKeys) {
+      const item = await this.storage.getItem(this.getOfflineKey(key));
+      if (typeof item === "string") {
+        offlineItems.push(JSON.parse(item));
+      } else if (item) {
+        offlineItems.push(item as OfflineItem);
+      }
     }
     return offlineItems;
   }
