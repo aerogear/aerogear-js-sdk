@@ -21,7 +21,8 @@ export class OfflineStore {
    * Init store
    */
   public async init() {
-    this.arrayOfKeys = await this.storage.getItem(this.offlineMetaKey) as string[];
+    const keys = await this.storage.getItem(this.offlineMetaKey) as string[];
+    this.arrayOfKeys = keys || [];
   }
 
   /**
