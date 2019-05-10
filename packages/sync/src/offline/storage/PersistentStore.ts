@@ -8,8 +8,6 @@ export interface PersistentStore<T> {
   removeItem: (key: string) => Promise<void> | void;
 }
 
-
-
 /// leave type as object only
 
 export type PersistedData = string | null | object;
