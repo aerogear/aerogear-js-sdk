@@ -34,7 +34,7 @@ export class OfflineMutationsHandler {
   public replayOfflineMutations = async () => {
     const offlineData = await this.store.getOfflineData();
     // if there is no offline data  then just exit
-    if (offlineData.length === 0) { return; }
+    if (offlineData && offlineData.length === 0) { return; }
 
     logger("Replying offline mutations after application restart");
     for (const item of offlineData) {

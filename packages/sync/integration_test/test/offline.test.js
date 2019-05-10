@@ -73,7 +73,7 @@ describe('Offline mutations', function () {
       } catch (ignore) { }
 
 
-      const offlineKeys = await JSON.parse(store.getItem(offlineMetaKey));
+      const offlineKeys = await store.getItem(offlineMetaKey);
       const offlineMutation = await store.getItem("offline:" + offlineKeys[0]);
 
       expect(offlineMutation).to.exist;
@@ -146,7 +146,7 @@ describe('Offline mutations', function () {
         });
       } catch (ignore) { }
 
-      const offlineKeys = await JSON.parse(store.getItem(offlineMetaKey));
+      const offlineKeys = await store.getItem(offlineMetaKey);
       const offlineMutation1 = await store.getItem("offline:" + offlineKeys[0]);
       const offlineMutation2 = await store.getItem("offline:" + offlineKeys[1]);
 
@@ -349,7 +349,7 @@ describe('Offline mutations', function () {
         });
       } catch (ignore) { }
 
-      const offlineKeys = await JSON.parse(store.getItem(offlineMetaKey));
+      const offlineKeys = await store.getItem(offlineMetaKey);
       const offlineMutation1 = await store.getItem("offline:" + offlineKeys[0]);
       const offlineMutation2 = await store.getItem("offline:" + offlineKeys[1]);
 
@@ -409,7 +409,7 @@ describe('Offline mutations', function () {
         });
       } catch (ignore) { }
 
-      const offlineKeys = await JSON.parse(store.getItem(offlineMetaKey));
+      const offlineKeys = await store.getItem(offlineMetaKey);
       const offlineMutation1 = await store.getItem("offline:" + offlineKeys[0]);
       const offlineMutation2 = await store.getItem("offline:" + offlineKeys[1]);
 
@@ -479,7 +479,7 @@ describe('Offline mutations', function () {
         });
       } catch (ignore) { }
 
-      const offlineKeys = await JSON.parse(store.getItem(offlineMetaKey));
+      const offlineKeys = await store.getItem(offlineMetaKey);
       const offlineMutation = await store.getItem("offline:" + offlineKeys[0]);
       expect(offlineMutation).to.exist;
       networkStatus.setOnline(true);
