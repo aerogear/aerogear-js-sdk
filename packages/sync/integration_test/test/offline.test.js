@@ -3,6 +3,7 @@ import { TestStore } from '../utils/testStore';
 import { ToggleableNetworkStatus } from '../utils/network';
 import server from '../utils/server';
 import waitFor from '../utils/waitFor';
+import timeout from '../utils/timeout';
 import { ADD_TASK, GET_TASKS, UPDATE_TASK, DELETE_TASK, ONLINE_ONLY } from '../utils/graphql.queries';
 
 // TODO: error handling when server is down
@@ -61,6 +62,11 @@ describe('Offline mutations', function () {
     store = new TestStore();
     client = await newClient({ networkStatus, storage: store, mutationsQueueName });
   });
+
+  async function isQueueEmpty(){
+    const store = await store.getItem(offlineMetaKey);
+    return store.length === 0
+  }
 
   describe('save mutation to offlineMutationStore while offline', function () {
 
@@ -348,8 +354,10 @@ describe('Offline mutations', function () {
           variables
         });
       } catch (ignore) { }
-
+    
       const offlineKeys = await store.getItem(offlineMetaKey);
+     
+
       const offlineMutation1 = await store.getItem("offline:" + offlineKeys[0]);
       const offlineMutation2 = await store.getItem("offline:" + offlineKeys[1]);
 
@@ -359,8 +367,12 @@ describe('Offline mutations', function () {
       expect(offlineMutation2.operation.variables.title).to.equal(variables.title);
 
       networkStatus.setOnline(true);
+      console.log("offlineKeys for ", offlineKeys);
+      // console.log("waiting for 1",  (await store.getItem("offline:" + offlineKeys[0])))
+      // console.log("waiting for 2",  (await store.getItem("offline:" + offlineKeys[1])))
 
-      await waitFor(() => store.getItem("offline:" + offlineKeys[1]) === undefined);
+      await waitFor(() => isQueueEmpty, 100);
+      await timeout(100);
 
       const response = await client.query({
         query: GET_TASKS,
@@ -370,6 +382,7 @@ describe('Offline mutations', function () {
       expect(response.data.allTasks).to.exist;
       expect(response.data.allTasks.length).to.equal(1);
       expect(response.data.allTasks[0].title).to.equal(variables.title);
+      
     });
   });
 
@@ -403,7 +416,7 @@ describe('Offline mutations', function () {
 
       variables.title = 'nomerge2';
       try {
-        client.mutate({
+        await client.mutate({
           mutation: UPDATE_TASK,
           variables
         });
@@ -420,7 +433,8 @@ describe('Offline mutations', function () {
 
       networkStatus.setOnline(true);
 
-      await waitFor(() => store.getItem("offline:" + offlineKeys[1]) === undefined);
+      await waitFor(() => isQueueEmpty, 100);
+      await timeout(100);
 
       const response = await client.query({
         query: GET_TASKS,
@@ -487,3 +501,5 @@ describe('Offline mutations', function () {
   });
 
 });
+
+
