@@ -75,7 +75,6 @@ export class PushRegistration {
       "deviceType": window.device.model,
       "operatingSystem": window.device.platform,
       "osVersion": window.device.version,
-      "alias": alias,
       "categories": categories
     };
     if(alias){
