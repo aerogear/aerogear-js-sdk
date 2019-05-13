@@ -2,8 +2,8 @@ import { MutationOptions, OperationVariables, MutationUpdaterFn } from "apollo-c
 import { DocumentNode } from "graphql";
 import { CacheOperation } from "./CacheOperation";
 import { createOptimisticResponse } from "./createOptimisticResponse";
-import { Query, QueryWithVariables } from "./CacheUpdates";
-import { getOperationFieldName } from "../utils/helpers";
+import { Query } from "./CacheUpdates";
+import { getOperationFieldName, deconstructQuery } from "../utils/helpers";
 
 export interface MutationHelperOptions {
   mutation: DocumentNode;
@@ -55,7 +55,7 @@ const getUpdateFunction = (
             let queryResult = cache.readQuery({ query, variables }) as any;
             const operationData = data[operation];
             const result = queryResult[queryField];
-            if (result) {
+            if (result && operationData) {
               if (!result.find((item: any) => {
                 return item[idField] === operationData[idField];
               })) {
@@ -71,7 +71,7 @@ const getUpdateFunction = (
             });
           }
         } catch (e) {
-          throw (e);
+          console.info(e);
         }
       };
       break;
@@ -81,17 +81,20 @@ const getUpdateFunction = (
           if (data) {
             const queryResult = cache.readQuery({ query, variables }) as any;
             const operationData = data[operation];
-            const newData = queryResult[queryField].filter((item: any) => {
-              return operationData[idField] !== item[idField];
-            });
-            cache.writeQuery({
-              query,
-              variables,
-              data: newData
-            });
+            if (operationData) {
+              const newData = queryResult[queryField].filter((item: any) => {
+                return operationData[idField] !== item[idField];
+              });
+              queryResult[queryField] = newData;
+              cache.writeQuery({
+                query,
+                variables,
+                data: queryResult
+              });
+            }
           }
         } catch (e) {
-          throw (e);
+          console.info(e);
         }
       };
       break;
@@ -101,25 +104,4 @@ const getUpdateFunction = (
       };
   }
   return updateFunction;
-};
-
-// this function takes a Query and returns its constituent parts, if available.
-const deconstructQuery = (updateQuery: Query): QueryWithVariables => {
-  let query: DocumentNode;
-  let variables: OperationVariables | undefined;
-  if (isQueryWithVariables(updateQuery)) {
-    query = updateQuery.query;
-    variables = updateQuery.variables;
-  } else {
-    query = updateQuery;
-  }
-  return { query, variables };
-};
-
-const isQueryWithVariables = (doc: Query): doc is QueryWithVariables => {
-  if ((doc as QueryWithVariables).variables) {
-    return true;
-  } else {
-    return false;
-  }
 };
