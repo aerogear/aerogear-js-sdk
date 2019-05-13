@@ -78,6 +78,9 @@ export class PushRegistration {
       "alias": alias,
       "categories": categories
     };
+    if(alias){
+       postData.alias = alias;
+    }
     const instance = axios.create({
       baseURL: url,
       timeout: 5000,
