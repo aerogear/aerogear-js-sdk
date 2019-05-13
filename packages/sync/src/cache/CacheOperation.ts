@@ -12,13 +12,13 @@
 export enum CacheOperation {
 
   /**
-   * Cache update that involves adding new item to the query
+   * Cache update that involves adding new item to the query.
+   * Used by default
    */
   ADD = "add",
   /**
    * Cache update that involves notifying cache that  specific query is refreshed.
    * It can be applied for changes that perform updates on different objects etc.
-   * Used by default
    */
   REFRESH = "refresh",
 
