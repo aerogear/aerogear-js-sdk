@@ -19,15 +19,11 @@ export const createMutationOptions = (options: MutationHelperOptions): MutationO
     mutation,
     variables,
     updateQuery,
-    typeName,
     operationType = CacheOperation.ADD,
     idField = "id"
   } = options;
   const operationName = getOperationFieldName(mutation);
-  const optimisticResponse = createOptimisticResponse(operationName,
-    typeName,
-    variables,
-    operationType === CacheOperation.ADD);
+  const optimisticResponse = createOptimisticResponse(options);
 
   const update = getUpdateFunction(operationName, idField, updateQuery, operationType);
   return { mutation, variables, optimisticResponse, update };
