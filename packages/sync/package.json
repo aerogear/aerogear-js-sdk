@@ -48,7 +48,7 @@
   "dependencies": {
     "@aerogear/core": "2.4.0",
     "apollo-cache-inmemory": "1.5.1",
-    "@graphqlheroes/apollo-cache-persist": "0.1.2",
+    "apollo-cache-persist": "apollo/apollo-cache-persist#github-install",
     "apollo-client": "2.5.1",
     "apollo-link": "1.2.11",
     "apollo-link-context": "1.0.17",
