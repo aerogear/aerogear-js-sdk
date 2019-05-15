@@ -1,6 +1,6 @@
 {
   "name": "@aerogear/voyager-client",
-  "version": "2.5.0-dev.4",
+  "version": "2.5.0-rc1",
   "description": "AeroGear Voyager GraphQL client",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -46,7 +46,7 @@
     "typescript": "3.4.5"
   },
   "dependencies": {
-    "@aerogear/core": "2.4.0",
+    "@aerogear/core": "2.5.0-rc1",
     "apollo-cache-inmemory": "1.5.1",
     "apollo-cache-persist": "apollographql/apollo-cache-persist#github-install",
     "apollo-client": "2.5.1",
