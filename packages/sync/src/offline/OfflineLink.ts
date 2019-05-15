@@ -6,6 +6,7 @@ import { ObjectState } from "../conflicts";
 import * as debug from "debug";
 import { QUEUE_LOGGER } from "../config/Constants";
 import { OfflineError } from "./OfflineError";
+import { IResultProcessor } from "./procesors/IResultProcessor";
 
 export const logger = debug.default(QUEUE_LOGGER);
 
@@ -13,7 +14,7 @@ export interface OfflineLinkOptions {
   networkStatus: NetworkStatus;
   store: OfflineStore;
   listener?: OfflineQueueListener;
-  conflictStateProvider?: ObjectState;
+  resultProcessors?: IResultProcessor[];
 }
 
 /**
