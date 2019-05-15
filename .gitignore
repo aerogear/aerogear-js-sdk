@@ -76,6 +76,8 @@ typings/
 
 npm-shrinkwrap.json
 package-lock.json
+testfile.png
+testfile.txt
 
 ## Dist folders
 dist
