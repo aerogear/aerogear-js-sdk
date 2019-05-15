@@ -59,7 +59,7 @@ export const createOptimisticResponse = (options: MutationHelperOptions) => {
       ...variables,
       optimisticResponse: true
     };
-    if (operationType !== CacheOperation.REFRESH) {
+    if (operationType === CacheOperation.ADD) {
       optimisticResponse[operation][idField] = generateId();
     }
 
