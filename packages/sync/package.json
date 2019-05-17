@@ -34,7 +34,7 @@
     "@types/apollo-upload-client": "8.1.1",
     "@types/chai": "4.1.7",
     "@types/debug": "4.1.4",
-    "@types/fetch-mock": "7.2.3",
+    "@types/fetch-mock": "7.2.5",
     "@types/graphql": "14.2.0",
     "@types/mocha": "5.2.6",
     "@types/ws": "6.0.1",
