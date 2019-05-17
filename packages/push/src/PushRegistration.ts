@@ -107,16 +107,11 @@ export class PushRegistration {
       .then(
         () => {
           if (isCordovaAndroid()) {
-            this._objectInstance.subscribe(
-              variantId,
-              () => {
-                resolve();
-              },
-              (e: any) => {
-                console.warn("error:", e);
-                reject();
-              }
-            );
+            this.subscribeToFirebaseTopic(variantId);
+            for (const category of categories) {
+              this.subscribeToFirebaseTopic(category);
+            }
+            resolve();
           } else {
             resolve();
           }
@@ -139,4 +134,17 @@ export class PushRegistration {
   public hasConfig(): boolean {
     return !!this.pushConfig;
   }
+
+  private subscribeToFirebaseTopic(topic: string) {
+    this._objectInstance.subscribe(
+      topic,
+      () => {
+        console.warn("FCM topic: " + topic + " subscribed");
+      },
+      (e: any) => {
+        console.warn("error:", e);
+      }
+    );
+  }
+
 }
