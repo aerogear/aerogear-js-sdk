@@ -1,4 +1,3 @@
-
 import { isCordovaAndroid, isCordovaIOS, ServiceConfiguration, ConfigurationService } from "@aerogear/core";
 import axios from "axios";
 
@@ -18,7 +17,8 @@ export class PushRegistration {
   public static readonly TYPE: string = "push";
   public static readonly API_PATH: string = "rest/registry/device";
 
-  private pushConfig?: ServiceConfiguration;
+  private readonly pushConfig?: ServiceConfiguration;
+  private _objectInstance: any;
 
   constructor(config: ConfigurationService) {
     const configuration = config.getConfigByType(PushRegistration.TYPE);
@@ -41,12 +41,15 @@ export class PushRegistration {
       return Promise.reject(new Error("Registration requires cordova plugin. Verify the " +
         "@aerogear/cordova-plugin-aerogear-push plugin is installed."));
     }
+
     if (!this.pushConfig || !this.pushConfig.config || !this.pushConfig.url) {
       return Promise.reject(new Error("UPS registration: configuration is invalid"));
     }
+
     if (!deviceToken) {
       return Promise.reject(new Error("Device token should not be empty"));
     }
+
     let platformConfig;
     const url = this.pushConfig.url;
     if (isCordovaAndroid()) {
@@ -61,14 +64,28 @@ export class PushRegistration {
       return Promise.reject(new Error("UPS registration: Platform is configured." +
         "Please add UPS variant and generate mobile - config.json again"));
     }
+
     const variantId = platformConfig.variantId || platformConfig.variantID;
-    const variantSecret = platformConfig.variantSecret;
     if (!variantId) {
       return Promise.reject(new Error("UPS registration: variantId is not defined."));
     }
+
+    const variantSecret = platformConfig.variantSecret;
     if (!variantSecret) {
       return Promise.reject(new Error("UPS registration: variantSecret is not defined."));
     }
+
+    this._objectInstance = window.PushNotification.init(
+      {
+        android: {},
+        ios: {
+          alert: true,
+          badge: true,
+          sound: true
+        }
+      }
+    );
+
     const authToken = window.btoa(`${variantId}:${variantSecret}`);
     const postData = {
       "deviceToken": deviceToken,
@@ -78,13 +95,34 @@ export class PushRegistration {
       "alias": alias,
       "categories": categories
     };
+
     const instance = axios.create({
       baseURL: url,
       timeout: 5000,
-      headers: { "Authorization": `Basic ${authToken}` }
+      headers: {"Authorization": `Basic ${authToken}`}
     });
+
     return new Promise((resolve, reject) => {
-      return instance.post(PushRegistration.API_PATH, postData).then(() => resolve()).catch(reject);
+      return instance.post(PushRegistration.API_PATH, postData)
+      .then(
+        () => {
+          if (isCordovaAndroid()) {
+            this._objectInstance.subscribe(
+              variantId,
+              () => {
+                resolve();
+              },
+              (e: any) => {
+                console.warn("error:", e);
+                reject();
+              }
+            );
+          } else {
+            resolve();
+          }
+        }
+      )
+      .catch(reject);
     });
   }
 
