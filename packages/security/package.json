@@ -29,7 +29,7 @@
     "@types/chai": "4.1.7",
     "chai": "4.2.0",
     "mocha": "6.1.4",
-    "mockttp": "0.14.5",
+    "mockttp": "0.14.7",
     "nyc": "13.3.0",
     "typescript": "3.4.5"
   },
