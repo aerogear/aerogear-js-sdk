@@ -14,6 +14,10 @@ export interface MutationHelperOptions {
   idField?: string;
 }
 
+/**
+ * Returns an Apollo Client mutate compatible set of options.
+ * @param options see `MutationHelperOptions`
+ */
 export const createMutationOptions = (options: MutationHelperOptions): MutationOptions => {
   const {
     mutation,
@@ -37,9 +41,15 @@ export const createMutationOptions = (options: MutationHelperOptions): MutationO
   return { mutation, variables, optimisticResponse, update };
 };
 
-// returns the update function used to update the cache by the client
-// ignores the scenario where the cache operation is an update as this is handled automatically
-// from Apollo client 2.5 onwards.
+/**
+ * Generate the update function to update the cache for a given operation and query.
+ * Ignores the scenario where the cache operation is an update as this is handled automatically
+ * from Apollo Client 2.5 onwards.
+ * @param operation The title of the operation being performed
+ * @param idField The id field the item keys off
+ * @param updateQuery The Query to update in the cache
+ * @param opType The type of operation being performed
+ */
 export const getUpdateFunction = (
   operation: string,
   idField: string,
