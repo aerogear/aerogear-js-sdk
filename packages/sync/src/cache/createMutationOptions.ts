@@ -40,7 +40,7 @@ export const createMutationOptions = (options: MutationHelperOptions): MutationO
 // returns the update function used to update the cache by the client
 // ignores the scenario where the cache operation is an update as this is handled automatically
 // from Apollo client 2.5 onwards.
-const getUpdateFunction = (
+export const getUpdateFunction = (
   operation: string,
   idField: string,
   updateQuery: Query,
