@@ -1,11 +1,12 @@
-import { assert, expect } from "chai";
-import { PushRegistration } from "../src/PushRegistration";
+import { assert } from "chai";
+import { PushRegistration } from "../src";
 import { ConfigurationService } from "@aerogear/core";
 
 declare var window: any;
 declare var global: any;
 
 global.window = { btoa: () => "dGVzdA==" };
+global.window.PushNotification = { init: () => "" };
 window.device = { platform: "iOS" };
 
 describe("Registration tests", () => {
