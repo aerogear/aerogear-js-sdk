@@ -4,20 +4,17 @@ import { CacheOperation } from "./CacheOperation";
 import { createOptimisticResponse } from "./createOptimisticResponse";
 import { Query } from "./CacheUpdates";
 import { getOperationFieldName, deconstructQuery } from "../utils/helpers";
+import { isArray } from "util";
 
 export interface MutationHelperOptions {
   mutation: DocumentNode;
   variables: OperationVariables;
-  updateQuery: Query;
+  updateQuery: Query | Query[];
   typeName: string;
   operationType?: CacheOperation;
   idField?: string;
 }
 
-/**
- * Returns an Apollo Client mutate compatible set of options.
- * @param options see `MutationHelperOptions`
- */
 export const createMutationOptions = (options: MutationHelperOptions): MutationOptions => {
   const {
     mutation,
@@ -37,7 +34,16 @@ export const createMutationOptions = (options: MutationHelperOptions): MutationO
     typeName
   });
 
-  const update = getUpdateFunction(operationName, idField, updateQuery, operationType);
+  const update: MutationUpdaterFn = (cache, { data }) => {
+    if (isArray(updateQuery)) {
+      updateQuery.forEach(query => {
+        getUpdateFunction(operationName, idField, query, operationType)(cache, { data });
+      });
+    } else {
+      getUpdateFunction(operationName, idField, updateQuery, operationType)(cache, { data });
+    }
+  };
+
   return { mutation, variables, optimisticResponse, update };
 };
 
