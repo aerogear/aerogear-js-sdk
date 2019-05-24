@@ -36,9 +36,9 @@ export const createMutationOptions = (options: MutationHelperOptions): MutationO
 
   const update: MutationUpdaterFn = (cache, { data }) => {
     if (isArray(updateQuery)) {
-      updateQuery.forEach(query => {
+      for (const query of updateQuery) {
         getUpdateFunction(operationName, idField, query, operationType)(cache, { data });
-      });
+      }
     } else {
       getUpdateFunction(operationName, idField, updateQuery, operationType)(cache, { data });
     }
