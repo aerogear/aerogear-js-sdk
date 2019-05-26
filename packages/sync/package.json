@@ -42,7 +42,7 @@
     "del": "4.1.1",
     "fetch-mock": "7.3.3",
     "mocha": "6.1.4",
-    "ts-node": "8.1.0",
+    "ts-node": "8.2.0",
     "typescript": "3.4.5"
   },
   "dependencies": {
