@@ -1,6 +1,6 @@
 {
   "name": "@aerogear/push",
-  "version": "2.5.0-rc1",
+  "version": "2.5.0",
   "description": "AeroGear Unified Push Registration SDK",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -34,7 +34,7 @@
     "typescript": "3.4.5"
   },
   "dependencies": {
-    "@aerogear/core": "2.5.0-rc1",
+    "@aerogear/core": "2.5.0",
     "axios": "0.18.0"
   }
 }
