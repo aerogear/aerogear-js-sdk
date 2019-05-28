@@ -120,6 +120,80 @@ export class PushRegistration {
   }
 
   /**
+   * Register deviceToken for Android or IOS platforms
+   *
+   * @param deviceToken token that will be sent to Unified Push server
+   */
+  public unregister(deviceToken: string): Promise<void> {
+    if (!window || !window.device) {
+      return Promise.reject(new Error("Registration requires cordova plugin. Verify the " +
+        "@aerogear/cordova-plugin-aerogear-push plugin is installed."));
+    }
+
+    if (!this.pushConfig || !this.pushConfig.config || !this.pushConfig.url) {
+      return Promise.reject(new Error("UPS registration: configuration is invalid"));
+    }
+
+    if (!deviceToken) {
+      return Promise.reject(new Error("Device token should not be empty"));
+    }
+
+    let platformConfig;
+    const url = this.pushConfig.url;
+    if (isCordovaAndroid()) {
+      platformConfig = this.pushConfig.config.android;
+    } else if (isCordovaIOS()) {
+      platformConfig = this.pushConfig.config.ios;
+    } else {
+      return Promise.reject(new Error("UPS registration: Platform is not supported."));
+    }
+
+    if (!platformConfig) {
+      return Promise.reject(new Error("UPS registration: Platform is configured." +
+        "Please add UPS variant and generate mobile - config.json again"));
+    }
+
+    const variantId = platformConfig.variantId || platformConfig.variantID;
+    if (!variantId) {
+      return Promise.reject(new Error("UPS registration: variantId is not defined."));
+    }
+
+    const variantSecret = platformConfig.variantSecret;
+    if (!variantSecret) {
+      return Promise.reject(new Error("UPS registration: variantSecret is not defined."));
+    }
+
+    this._objectInstance = window.PushNotification.init(
+      {
+        android: {},
+        ios: {
+          alert: true,
+          badge: true,
+          sound: true
+        }
+      }
+    );
+
+    const authToken = window.btoa(`${variantId}:${variantSecret}`);
+
+    const instance = axios.create({
+      baseURL: url,
+      timeout: 5000,
+      headers: {"Authorization": `Basic ${authToken}`}
+    });
+
+    return new Promise((resolve, reject) => {
+      return instance.delete(PushRegistration.API_PATH, {})
+      .then(
+        () => {
+          resolve();
+        }
+      )
+      .catch(reject);
+    });
+  }
+
+  /**
    * Return the config used for the push service
    */
   public getConfig(): ServiceConfiguration | undefined {
