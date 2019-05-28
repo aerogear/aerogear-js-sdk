@@ -15,6 +15,8 @@ import { NetworkStatus, OfflineMutationsHandler, OfflineStore } from "../offline
 import { IDProcessor } from "../cache/IDProcessor";
 import { ConflictProcessor } from "../conflicts/ConflictProcesor";
 import { IResultProcessor } from "../offline/procesors/IResultProcessor";
+import { DiffLink } from "./DiffLink";
+import { InMemoryCache } from "apollo-cache-inmemory";
 
 /**
  * Method for creating "uber" composite Apollo Link implementation including:
@@ -26,8 +28,8 @@ import { IResultProcessor } from "../offline/procesors/IResultProcessor";
  * - Audit logging
  * - File uploads
  */
-export const createDefaultLink = async (config: DataSyncConfig, offlineLink: ApolloLink) => {
-  let link = await defaultHttpLinks(config, offlineLink);
+export const createDefaultLink = async (config: DataSyncConfig, offlineLink: ApolloLink, cache: InMemoryCache) => {
+  let link = await defaultHttpLinks(config, offlineLink, cache);
   if (config.wsUrl) {
     const wsLink = defaultWebSocketLink(config, { uri: config.wsUrl });
     link = ApolloLink.split(isSubscription, wsLink, link);
@@ -60,14 +62,15 @@ export const createOfflineLink = async (config: DataSyncConfig, store: OfflineSt
  * - Error handling
  * - Audit logging
  */
-export const defaultHttpLinks = async (config: DataSyncConfig, offlineLink: ApolloLink): Promise<ApolloLink> => {
+export const defaultHttpLinks = async (config: DataSyncConfig, offlineLink: ApolloLink,
+                                       cache: InMemoryCache): Promise<ApolloLink> => {
   // Enable offline link only for mutations and onlineOnly
   const mutationOfflineLink = ApolloLink.split((op: Operation) => {
     return isMutation(op) && !isOnlineOnly(op);
   }, offlineLink);
   const retryLink = ApolloLink.split(OfflineMutationsHandler.isMarkedOffline, new RetryLink(config.retryOptions));
   const localFilterLink = new LocalDirectiveFilterLink();
-  const links: ApolloLink[] = [mutationOfflineLink, retryLink, localFilterLink];
+  const links: ApolloLink[] = [new DiffLink(cache), mutationOfflineLink, retryLink, localFilterLink];
 
   if (config.auditLogging) {
     links.push(await createAuditLoggingLink());
