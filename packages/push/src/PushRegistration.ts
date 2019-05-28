@@ -37,7 +37,7 @@ export class PushRegistration {
    * @param categories array list of categories that device should be register to.
    */
   public register(deviceToken: string, alias: string = "", categories: string[] = []): Promise<void> {
-    if (!window || !window.device) {
+    if (!window || !window.device || !window.PushNotification) {
       return Promise.reject(new Error("Registration requires cordova plugin. Verify the " +
         "@aerogear/cordova-plugin-aerogear-push plugin is installed."));
     }
