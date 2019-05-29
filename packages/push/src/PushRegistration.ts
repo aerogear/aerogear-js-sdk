@@ -111,10 +111,8 @@ export class PushRegistration {
             for (const category of categories) {
               this.subscribeToFirebaseTopic(category);
             }
-            resolve();
-          } else {
-            resolve();
           }
+          resolve();
         }
       )
       .catch(reject);
