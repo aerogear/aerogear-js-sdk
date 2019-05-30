@@ -15,6 +15,8 @@ import { NetworkStatus, OfflineMutationsHandler, OfflineStore } from "../offline
 import { IDProcessor } from "../offline/procesors/IDProcessor";
 import { ConflictProcessor } from "../conflicts/ConflictProcesor";
 import { IResultProcessor } from "../offline/procesors/IResultProcessor";
+import { BaseStateLink } from "../conflicts/base/BaseStateLink";
+import { BaseStateStore } from "../conflicts/base/BaseStateStore";
 
 /**
  * Method for creating "uber" composite Apollo Link implementation including:
@@ -74,7 +76,9 @@ export const defaultHttpLinks = async (config: DataSyncConfig, offlineLink: Apol
   }
 
   if (config.conflictStrategy) {
-    links.push(conflictLink(config));
+    const provider = new BaseStateStore();
+    links.push(new BaseStateLink(provider));
+    links.push(conflictLink(config, provider));
   }
 
   if (config.authContextProvider) {
