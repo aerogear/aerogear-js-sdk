@@ -3,8 +3,11 @@ import { GraphQLError } from "graphql";
 import { DataSyncConfig } from "../config";
 import { ApolloLink } from "apollo-link";
 import { ConflictResolutionData } from "./ConflictResolutionData";
+import { BaseStateProvider } from "./base/BaseStateProvider";
 
-export const conflictLink = (config: DataSyncConfig): ApolloLink => {
+// TODO - make this actual link it is ackward to work with now
+export const conflictLink = (config: DataSyncConfig, baseState: BaseStateProvider): ApolloLink => {
+
   /**
   * Fetch conflict data from the errors returned from the server
   * @param graphQLErrors array of errors to retrieve conflicted data from
@@ -25,6 +28,7 @@ export const conflictLink = (config: DataSyncConfig): ApolloLink => {
     const data = getConflictData(graphQLErrors);
     if (data && config.conflictStrategy && config.conflictStateProvider) {
       let resolvedConflict;
+      // TODO use base state provider
       if (data.resolvedOnServer) {
         resolvedConflict = data.serverState;
         if (response) {
