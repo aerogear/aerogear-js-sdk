@@ -7,7 +7,7 @@ import { OfflineLink } from "./offline/OfflineLink";
 import { OfflineMutationsHandler } from "./offline/OfflineMutationsHandler";
 import { CompositeQueueListener } from "./offline/events/CompositeQueueListener";
 import { ListenerProvider } from "./offline/events/ListenerProvider";
-import { ApolloOfflineClient } from "./OfflineApolloClient";
+import { ApolloOfflineClient } from "./ApolloOfflineClient";
 import { buildCachePersistence } from "./offline/storage/defaultStorage";
 import { MutationHelperOptions, createMutationOptions } from "offix-cache";
 import { FetchResult } from "apollo-link";
@@ -17,7 +17,7 @@ import { FetchResult } from "apollo-link";
 *
 * @param userConfig options object used to build client
 * @deprecated use OfflineClient class directly:
-* ```javascript
+*  ```javascript
 *  const offlineClient = new OfflineClient(config);
 *  await offlineClient.init();
 *  ```
@@ -66,6 +66,7 @@ export class OfflineClient implements ListenerProvider {
     const client = new ApolloClient({
       link,
       cache
+
     }) as any;
     this.apolloClient = this.decorateApolloClient(client);
     await this.restoreOfflineOperations(offlineLink);
