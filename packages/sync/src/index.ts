@@ -1,5 +1,5 @@
 export * from "./OfflineClient";
-export * from "./OfflineApolloClient";
+export * from "./ApolloOfflineClient";
 export * from "./config";
 export * from "./conflicts";
 export * from "./links";
