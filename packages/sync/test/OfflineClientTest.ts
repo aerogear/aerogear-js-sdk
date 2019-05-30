@@ -38,15 +38,6 @@ describe("Top level api tests", () => {
   it("check direct cache read", async () => {
     const client = new OfflineClient({ httpUrl: url, storage, networkStatus });
     const initClient = await client.init();
-    // const data = {
-    //   data: {
-    //     'test:1': {
-    //       __typename: 'test',
-    //       value: 1
-    //     }
-    //   }
-    // };
-    // initClient.cache.writeData(data);
     initClient.restore({
       'test:1': {
         __typename: 'test',
