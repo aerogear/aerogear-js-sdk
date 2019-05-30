@@ -6,17 +6,22 @@ import { BaseStateProvider } from "./BaseStateProvider";
 export class BaseStateStore implements BaseStateProvider {
     public baseState: any = {};
 
-    save(base: any, key: string, persist: boolean): Promise<void> {
+    public save(base: any, key: string, persist: boolean = true): Promise<void> {
         this.baseState[key] = base;
         // TODO persist
         return Promise.resolve();
     }
 
-    read(key: string): Promise<any> {
+    public read(key: string): Promise<any> {
         return this.baseState[key];
     }
 
-    delete(key: string): void {
+    public delete(key: string): void {
        delete this.baseState[key];
+    }
+
+    public restore(): Promise<void> {
+       // TODO
+       return Promise.resolve();
     }
 }
