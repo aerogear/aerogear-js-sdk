@@ -10,7 +10,6 @@ import { ListenerProvider } from "./offline/events/ListenerProvider";
 import { ApolloOfflineClient } from "./ApolloOfflineClient";
 import { buildCachePersistence } from "./offline/storage/defaultStorage";
 import { MutationHelperOptions, createMutationOptions } from "./cache";
-import { Options } from "graphql/utilities/buildClientSchema";
 import { FetchResult } from "apollo-link";
 
 /**
