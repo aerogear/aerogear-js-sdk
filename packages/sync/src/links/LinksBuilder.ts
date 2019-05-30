@@ -77,6 +77,7 @@ export const defaultHttpLinks = async (config: DataSyncConfig, offlineLink: Apol
 
   if (config.conflictStrategy) {
     const provider = new BaseStateStore();
+    await provider.restore();
     links.push(new BaseStateLink(provider));
     links.push(conflictLink(config, provider));
   }
