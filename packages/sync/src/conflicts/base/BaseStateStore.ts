@@ -1,7 +1,7 @@
 import { BaseStateProvider } from "./BaseStateProvider";
 
 /**
- * TODO
+ * Store that provides access to base state along with local persistence.
  */
 export class BaseStateStore implements BaseStateProvider {
     public baseState: any = {};
