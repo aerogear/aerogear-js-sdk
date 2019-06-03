@@ -33,17 +33,23 @@ describe("Registration tests", () => {
 
   describe("#register", async () => {
     it("should fail to register in push server", async () => {
-      registration.register(undefined as unknown as string, "cordova", ["Test"]).then(() => {
+      try {
+        await registration.register(undefined as unknown as string, "cordova", ["Test"]);
         assert.fail();
-      }).catch(() => {
+      } catch (_) {
         return "ok";
-      });
+      }
     });
 
-    it("should register in push server", async () => {
-      return registration.register("token", "cordova", ["Test"]).catch((error) => {
+    it("should register in push server", async function() {
+      // in CI environment this test sometimes fails because of the default timeout 2s
+      // increase timeout to 10s
+      this.timeout(10000);
+      try {
+        await registration.register("token", "cordova", ["Test"]);
+      } catch (error) {
         assert.fail(error);
-      });
+      }
     });
   });
 });
