@@ -1,27 +1,41 @@
 import { BaseStateProvider } from "./BaseStateProvider";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { Store } from "idb-localstorage";
 
 /**
  * Store that provides access to base state along with local persistence.
  */
 export class BaseStateStore implements BaseStateProvider {
-    public baseState: any = {};
+  public baseState: any = {};
+  private storage: Store;
 
-    public save(base: any, key: string, persist: boolean = true): Promise<void> {
-        this.baseState[key] = base;
-        // TODO persist
-        return Promise.resolve();
-    }
+  constructor() {
+      this.storage = new Store("base-store", "base-data");
+  }
 
-    public read(key: string): Promise<any> {
-        return this.baseState[key];
+  public async save(base: any, key: string, persist: boolean = true): Promise<void> {
+    this.baseState[key] = base;
+    if (persist) {
+      await this.storage.setItem(key, base);
     }
+    return Promise.resolve();
+  }
 
-    public delete(key: string): void {
-       delete this.baseState[key];
-    }
+  public read(key: string): Promise<any> {
+    return this.baseState[key];
+  }
 
-    public restore(): Promise<void> {
-       // TODO
-       return Promise.resolve();
+  public async delete(key: string) {
+    delete this.baseState[key];
+    await this.storage.removeItem(key);
+  }
+
+  public async restore(): Promise<void> {
+    // TODO
+    const keys = await this.storage.keys() as any;
+    for (const key of keys) {
+      this.baseState[key] = keys[key];
     }
+    return Promise.resolve();
+  }
 }

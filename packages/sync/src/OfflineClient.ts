@@ -61,7 +61,7 @@ export class OfflineClient implements ListenerProvider {
     await this.store.init();
     const cache = await buildCachePersistence(this.config.cacheStorage);
     const offlineLink = await createOfflineLink(this.config, this.store);
-    const link = await createDefaultLink(this.config, offlineLink);
+    const link = await createDefaultLink(this.config, offlineLink, cache);
 
     const client = new ApolloClient({
       link,

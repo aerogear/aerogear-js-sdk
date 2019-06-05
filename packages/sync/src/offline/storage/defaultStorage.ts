@@ -19,10 +19,9 @@ export const createDefaultOfflineStorage = () => {
 export const dataIdFromObject = defaultDataIdFromObject;
 
 /**
- * 
+ *
  */
-export const getObjectFromCache = (client: ApolloClient<NormalizedCacheObject>, id: string, type: string) => {
-  const cache = client.cache;
+export const getObjectFromCache = (cache: InMemoryCache, id: string, type: string) => {
   const cacheData = cache.extract(false);
   const idKey = dataIdFromObject({ __typename: type, id });
   if (idKey && cacheData[idKey]) {
@@ -30,8 +29,7 @@ export const getObjectFromCache = (client: ApolloClient<NormalizedCacheObject>, 
     return cacheData[idKey];
   }
   return {};
-}
-
+};
 
 /**
  * Build storage that will be used for caching data
