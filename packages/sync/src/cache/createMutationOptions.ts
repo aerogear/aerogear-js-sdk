@@ -13,6 +13,7 @@ export interface MutationHelperOptions {
   typeName: string;
   operationType?: CacheOperation;
   idField?: string;
+  context?: any;
 }
 
 export const createMutationOptions = (options: MutationHelperOptions): MutationOptions => {
@@ -22,7 +23,8 @@ export const createMutationOptions = (options: MutationHelperOptions): MutationO
     updateQuery,
     typeName,
     operationType = CacheOperation.ADD,
-    idField = "id"
+    idField = "id",
+    context
   } = options;
   const operationName = getOperationFieldName(mutation);
   const optimisticResponse = createOptimisticResponse({
@@ -46,7 +48,12 @@ export const createMutationOptions = (options: MutationHelperOptions): MutationO
     }
   };
 
-  return { mutation, variables, optimisticResponse, update };
+  const contextWithType = {
+    ...context,
+    returnType: typeName
+  };
+
+  return { mutation, variables, optimisticResponse, update, context: contextWithType };
 };
 
 /**

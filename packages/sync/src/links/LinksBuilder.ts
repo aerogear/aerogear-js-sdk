@@ -17,6 +17,7 @@ import { ConflictProcessor } from "../conflicts/ConflictProcesor";
 import { IResultProcessor } from "../offline/procesors/IResultProcessor";
 import { BaseStateLink } from "../conflicts/base/BaseStateLink";
 import { BaseStateStore } from "../conflicts/base/BaseStateStore";
+import { InMemoryCache } from "apollo-cache-inmemory";
 
 /**
  * Method for creating "uber" composite Apollo Link implementation including:
@@ -28,8 +29,8 @@ import { BaseStateStore } from "../conflicts/base/BaseStateStore";
  * - Audit logging
  * - File uploads
  */
-export const createDefaultLink = async (config: DataSyncConfig, offlineLink: ApolloLink) => {
-  let link = await defaultHttpLinks(config, offlineLink);
+export const createDefaultLink = async (config: DataSyncConfig, offlineLink: ApolloLink, cache: InMemoryCache) => {
+  let link = await defaultHttpLinks(config, offlineLink, cache);
   if (config.wsUrl) {
     const wsLink = defaultWebSocketLink(config, { uri: config.wsUrl });
     link = ApolloLink.split(isSubscription, wsLink, link);
@@ -62,14 +63,15 @@ export const createOfflineLink = async (config: DataSyncConfig, store: OfflineSt
  * - Error handling
  * - Audit logging
  */
-export const defaultHttpLinks = async (config: DataSyncConfig, offlineLink: ApolloLink): Promise<ApolloLink> => {
+export const defaultHttpLinks = async (config: DataSyncConfig,
+                                       offlineLink: ApolloLink, cache: InMemoryCache): Promise<ApolloLink> => {
   // Enable offline link only for mutations and onlineOnly
   const mutationOfflineLink = ApolloLink.split((op: Operation) => {
     return isMutation(op) && !isOnlineOnly(op);
   }, offlineLink);
   const retryLink = ApolloLink.split(OfflineMutationsHandler.isMarkedOffline, new RetryLink(config.retryOptions));
   const localFilterLink = new LocalDirectiveFilterLink();
-  const links: ApolloLink[] = [mutationOfflineLink, retryLink, localFilterLink];
+  const links: ApolloLink[] = [mutationOfflineLink, retryLink];
 
   if (config.auditLogging) {
     links.push(await createAuditLoggingLink());
@@ -78,14 +80,16 @@ export const defaultHttpLinks = async (config: DataSyncConfig, offlineLink: Apol
   if (config.conflictStrategy) {
     const provider = new BaseStateStore();
     await provider.restore();
-    links.push(new BaseStateLink(provider));
+    const baseStateLink = new BaseStateLink(provider, cache, config.networkStatus as NetworkStatus);
+    await baseStateLink.init();
+    links.unshift(baseStateLink);
     links.push(conflictLink(config, provider));
   }
 
   if (config.authContextProvider) {
     links.push(createAuthLink(config));
   }
-
+  links.push(localFilterLink);
   if (config.fileUpload) {
     links.push(createUploadLink({
       uri: config.httpUrl,
