@@ -30,12 +30,12 @@ export class BaseStateStore implements BaseStateProvider {
     await this.storage.removeItem(key);
   }
 
-  public async restore(): Promise<void> {
+  public async restore() {
     // TODO
     const keys = await this.storage.keys() as any;
     for (const key of keys) {
       this.baseState[key] = keys[key];
+      this.storage.removeItem(key);
     }
-    return Promise.resolve();
   }
 }

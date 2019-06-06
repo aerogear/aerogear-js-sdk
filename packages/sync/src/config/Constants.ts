@@ -2,11 +2,10 @@
  * Client side defined directives
  */
 export enum localDirectives {
-  ONLINE_ONLY = "onlineOnly",
-  CONFLICT_DETECTION = "conflictDetection"
+  ONLINE_ONLY = "onlineOnly"
 }
 
-export const localDirectivesArray = [ localDirectives.ONLINE_ONLY, localDirectives.CONFLICT_DETECTION ];
+export const localDirectivesArray = [ localDirectives.ONLINE_ONLY ];
 
 // Feature loggers
 export const MUTATION_QUEUE_LOGGER = "AeroGearSync:OfflineMutations";

@@ -1,27 +1,28 @@
-import { MutationOptions, OperationVariables, MutationUpdaterFn } from "apollo-client";
-import { DocumentNode } from "graphql";
+import { MutationOptions, MutationUpdaterFn } from "apollo-client";
 import { CacheOperation } from "./CacheOperation";
 import { createOptimisticResponse } from "./createOptimisticResponse";
 import { Query } from "./CacheUpdates";
 import { getOperationFieldName, deconstructQuery } from "../utils/helpers";
 import { isArray } from "util";
 
-export interface MutationHelperOptions {
-  mutation: DocumentNode;
-  variables: OperationVariables;
+export interface MutationHelperOptions extends MutationOptions {
   updateQuery: Query | Query[];
-  typeName: string;
   operationType?: CacheOperation;
   idField?: string;
-  context?: any;
+  returnType?: string;
 }
 
+/**
+ * Creates a MutationOptions object which can be used with Apollo Client's mutate function
+ * Provides useful helpers for cache updates, optimistic responses, and context
+ * @param options see `MutationHelperOptions`
+ */
 export const createMutationOptions = (options: MutationHelperOptions): MutationOptions => {
   const {
     mutation,
     variables,
     updateQuery,
-    typeName,
+    returnType,
     operationType = CacheOperation.ADD,
     idField = "id",
     context
@@ -31,9 +32,9 @@ export const createMutationOptions = (options: MutationHelperOptions): MutationO
     mutation,
     variables,
     updateQuery,
+    returnType,
     operationType,
-    idField,
-    typeName
+    idField
   });
 
   const update: MutationUpdaterFn = (cache, { data }) => {
@@ -48,12 +49,7 @@ export const createMutationOptions = (options: MutationHelperOptions): MutationO
     }
   };
 
-  const contextWithType = {
-    ...context,
-    returnType: typeName
-  };
-
-  return { mutation, variables, optimisticResponse, update, context: contextWithType };
+  return { ...options, optimisticResponse, update, context: {...context, returnType} };
 };
 
 /**

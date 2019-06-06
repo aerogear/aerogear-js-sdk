@@ -15,7 +15,6 @@ import { NetworkStatus, OfflineMutationsHandler, OfflineStore } from "../offline
 import { IDProcessor } from "../cache/IDProcessor";
 import { ConflictProcessor } from "../conflicts/ConflictProcesor";
 import { IResultProcessor } from "../offline/procesors/IResultProcessor";
-import { BaseStateLink } from "../conflicts/base/BaseStateLink";
 import { BaseStateStore } from "../conflicts/base/BaseStateStore";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
@@ -29,8 +28,8 @@ import { InMemoryCache } from "apollo-cache-inmemory";
  * - Audit logging
  * - File uploads
  */
-export const createDefaultLink = async (config: DataSyncConfig, offlineLink: ApolloLink, cache: InMemoryCache) => {
-  let link = await defaultHttpLinks(config, offlineLink, cache);
+export const createDefaultLink = async (config: DataSyncConfig, offlineLink: ApolloLink) => {
+  let link = await defaultHttpLinks(config, offlineLink);
   if (config.wsUrl) {
     const wsLink = defaultWebSocketLink(config, { uri: config.wsUrl });
     link = ApolloLink.split(isSubscription, wsLink, link);
@@ -41,16 +40,20 @@ export const createDefaultLink = async (config: DataSyncConfig, offlineLink: Apo
 /**
  * Create offline link
  */
-export const createOfflineLink = async (config: DataSyncConfig, store: OfflineStore) => {
+export const createOfflineLink = async (config: DataSyncConfig, store: OfflineStore, cache: InMemoryCache) => {
   const resultProcessors: IResultProcessor[] = [
     new IDProcessor(),
     new ConflictProcessor(config.conflictStateProvider as ObjectState)
   ];
+  const baseProvider = new BaseStateStore();
+  await baseProvider.restore();
   return new OfflineLink({
     store,
     listener: config.offlineQueueListener,
     networkStatus: config.networkStatus as NetworkStatus,
-    resultProcessors
+    resultProcessors,
+    cache,
+    baseProvider
   });
 };
 
@@ -63,8 +66,7 @@ export const createOfflineLink = async (config: DataSyncConfig, store: OfflineSt
  * - Error handling
  * - Audit logging
  */
-export const defaultHttpLinks = async (config: DataSyncConfig,
-                                       offlineLink: ApolloLink, cache: InMemoryCache): Promise<ApolloLink> => {
+export const defaultHttpLinks = async (config: DataSyncConfig, offlineLink: ApolloLink): Promise<ApolloLink> => {
   // Enable offline link only for mutations and onlineOnly
   const mutationOfflineLink = ApolloLink.split((op: Operation) => {
     return isMutation(op) && !isOnlineOnly(op);
@@ -78,12 +80,7 @@ export const defaultHttpLinks = async (config: DataSyncConfig,
   }
 
   if (config.conflictStrategy) {
-    const provider = new BaseStateStore();
-    await provider.restore();
-    const baseStateLink = new BaseStateLink(provider, cache, config.networkStatus as NetworkStatus);
-    await baseStateLink.init();
-    links.unshift(baseStateLink);
-    links.push(conflictLink(config, provider));
+    links.push(conflictLink(config));
   }
 
   if (config.authContextProvider) {
