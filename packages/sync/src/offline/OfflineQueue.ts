@@ -5,6 +5,7 @@ import { Operation, NextLink, Observable, FetchResult } from "apollo-link";
 import { OfflineStore } from "./storage/OfflineStore";
 import { OfflineLinkOptions } from "../links";
 import { IResultProcessor } from "./procesors/IResultProcessor";
+import { BaseStateProvider } from "../conflicts/base/BaseStateProvider";
 
 export type OperationQueueChangeHandler = (entry: OperationQueueEntry) => void;
 
@@ -23,11 +24,13 @@ export class OfflineQueue {
   private readonly state?: ObjectState;
   private store: OfflineStore;
   private resultProcessors: IResultProcessor[] | undefined;
+  private baseProvider: BaseStateProvider;
 
   constructor(options: OfflineLinkOptions) {
     this.store = options.store;
     this.listener = options.listener;
     this.resultProcessors = options.resultProcessors;
+    this.baseProvider = options.baseProvider;
   }
 
   /**
@@ -76,6 +79,7 @@ export class OfflineQueue {
           complete: () => {
             if (op.observer) {
               op.observer.complete();
+              this.baseProvider.delete(op.operation.toKey());
             }
             return resolve();
           }
