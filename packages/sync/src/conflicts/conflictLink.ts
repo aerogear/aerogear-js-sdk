@@ -6,7 +6,7 @@ import { ConflictResolutionData } from "./ConflictResolutionData";
 import { BaseStateProvider } from "./base/BaseStateProvider";
 
 // TODO - make this actual link it is ackward to work with now
-export const conflictLink = (config: DataSyncConfig, baseState: BaseStateProvider): ApolloLink => {
+export const conflictLink = (config: DataSyncConfig): ApolloLink => {
 
   /**
   * Fetch conflict data from the errors returned from the server

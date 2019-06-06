@@ -37,7 +37,7 @@ export const generateId = (length = 8) => {
  * https://www.apollographql.com/docs/react/features/optimistic-ui.html
  *
  * @param operation operation that is being performed (update)
- * @param typeName type that is going to be returned
+ * @param returnType type that is going to be returned
  * @param data actual data passed to function
  * @param addId generate client id for response
  * @param idField name of id field (default:id)
@@ -45,7 +45,7 @@ export const generateId = (length = 8) => {
 export const createOptimisticResponse = (options: MutationHelperOptions) => {
     const operation = getOperationFieldName(options.mutation);
     const {
-      typeName,
+      returnType,
       variables,
       idField = "id",
       operationType
@@ -55,7 +55,7 @@ export const createOptimisticResponse = (options: MutationHelperOptions) => {
     };
 
     optimisticResponse[operation] = {
-      __typename: typeName,
+      __typename: returnType,
       ...variables,
       optimisticResponse: true
     };
