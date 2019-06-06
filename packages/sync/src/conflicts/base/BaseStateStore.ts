@@ -13,10 +13,10 @@ export class BaseStateStore implements BaseStateProvider {
       this.storage = new Store("base-store", "base-data");
   }
 
-  public async save(base: any, key: string, persist: boolean = true): Promise<void> {
+  public save(base: any, key: string, persist: boolean = true): Promise<void> {
     this.baseState[key] = base;
     if (persist) {
-      await this.storage.setItem(key, base);
+      this.storage.setItem(key, base);
     }
     return Promise.resolve();
   }
@@ -25,17 +25,17 @@ export class BaseStateStore implements BaseStateProvider {
     return this.baseState[key];
   }
 
-  public async delete(key: string) {
+  public async delete(key: string, persist: boolean = true) {
     delete this.baseState[key];
-    await this.storage.removeItem(key);
+    if (persist) {
+      await this.storage.removeItem(key);
+    }
   }
 
   public async restore() {
-    // TODO
     const keys = await this.storage.keys() as any;
     for (const key of keys) {
       this.baseState[key] = keys[key];
-      this.storage.removeItem(key);
     }
   }
 }
