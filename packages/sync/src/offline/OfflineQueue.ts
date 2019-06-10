@@ -1,6 +1,6 @@
 import { OperationQueueEntry } from "./OperationQueueEntry";
 import { OfflineQueueListener } from "./events/OfflineQueueListener";
-import { ObjectState } from "../conflicts/ObjectState";
+import { ObjectState } from "../conflicts/state/ObjectState";
 import { Operation, NextLink, Observable, FetchResult } from "apollo-link";
 import { OfflineStore } from "./storage/OfflineStore";
 import { OfflineLinkOptions } from "../links";
@@ -24,13 +24,11 @@ export class OfflineQueue {
   private readonly state?: ObjectState;
   private store: OfflineStore;
   private resultProcessors: IResultProcessor[] | undefined;
-  private baseProvider: BaseStateProvider;
 
   constructor(options: OfflineLinkOptions) {
     this.store = options.store;
     this.listener = options.listener;
     this.resultProcessors = options.resultProcessors;
-    this.baseProvider = options.baseProvider;
   }
 
   /**
@@ -79,7 +77,6 @@ export class OfflineQueue {
           complete: () => {
             if (op.observer) {
               op.observer.complete();
-              this.baseProvider.delete(op.operation.toKey());
             }
             return resolve();
           }

@@ -1,4 +1,4 @@
-import { ConflictResolutionData } from "./ConflictResolutionData";
+import { ConflictResolutionData } from "../strategies/ConflictResolutionData";
 import { ObjectState } from "./ObjectState";
 
 /**
@@ -12,12 +12,15 @@ import { ObjectState } from "./ObjectState";
  *   id: ID!
  *   version: String
  * }
- */
+ */ 
 export class VersionedState implements ObjectState {
 
   public nextState(currentObjectState: ConflictResolutionData) {
-    currentObjectState.version = currentObjectState.version + 1;
-    return currentObjectState;
+    if (currentObjectState.version) {
+      currentObjectState.version = currentObjectState.version + 1;
+      return currentObjectState;
+    }
+    return null;
   }
 
   public currentState(currentObjectState: ConflictResolutionData) {

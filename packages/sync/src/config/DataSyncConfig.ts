@@ -1,10 +1,10 @@
-import { ConflictResolutionStrategies } from "../conflicts/ConflictResolutionStrategy";
+import { ConflictResolutionStrategies } from "../conflicts/strategies/ConflictResolutionStrategy";
 import { PersistedData, PersistentStore } from "../offline/storage/PersistentStore";
 import { NetworkStatus } from "../offline";
 import { OfflineQueueListener } from "../offline/events/OfflineQueueListener";
 import { AuthContextProvider } from "../auth/AuthContextProvider";
-import { ObjectState } from "../conflicts/ObjectState";
-import { ConflictListener } from "../conflicts/ConflictListener";
+import { ObjectState } from "../conflicts/state/ObjectState";
+import { ConflictListener } from "../conflicts/strategies/ConflictListener";
 import { ConfigurationService } from "@aerogear/core";
 import { CacheUpdates } from "offix-cache";
 import { RetryLink } from "apollo-link-retry";
@@ -76,7 +76,7 @@ export interface DataSyncConfig {
    * Interface that defines how object state is progressed
    * This interface needs to match state provider supplied on server.
    */
-  conflictStateProvider?: ObjectState;
+  conflictProvider?: ObjectState;
 
   /**
    * Interface that can be implemented to receive information about the data conflict
@@ -86,17 +86,18 @@ export interface DataSyncConfig {
   conflictListener?: ConflictListener;
 
   /**
-   * OpenShift specific configuration that provides alternative way to setup
-   * http and websocket urls.
-   */
-  openShiftConfig?: ConfigurationService;
-
-  /**
    * [Modifier]
    *
    * The conflict resolution strategy your client should use. By default it takes client version.
    */
   conflictStrategy?: ConflictResolutionStrategies;
+
+  /**
+   * OpenShift specific configuration that provides alternative way to setup
+   * http and websocket urls.
+   */
+  openShiftConfig?: ConfigurationService;
+
 
   /**
    * [Modifier]

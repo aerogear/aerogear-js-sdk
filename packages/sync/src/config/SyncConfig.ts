@@ -3,8 +3,8 @@ import { PersistedData, PersistentStore } from "../offline/storage/PersistentSto
 import { ConfigError } from "./ConfigError";
 import { DataSyncConfig } from "./DataSyncConfig";
 import { CordovaNetworkStatus, NetworkStatus, WebNetworkStatus, OfflineQueueListener } from "../offline";
-import { clientWins } from "../conflicts/strategies";
-import { VersionedState } from "../conflicts/VersionedState";
+import { clientWins } from "../conflicts/strategies/strategies";
+import { VersionedState } from "../conflicts/state/VersionedState";
 import { ConflictResolutionStrategies } from "../conflicts";
 import { createDefaultCacheStorage, createDefaultOfflineStorage } from "../offline/storage/defaultStorage";
 import { AuthContextProvider } from ".";
@@ -27,7 +27,7 @@ export class SyncConfig implements DataSyncConfig {
   public openShiftConfig?: ConfigurationService;
   public auditLogging = false;
   public conflictStrategy: ConflictResolutionStrategies;
-  public conflictStateProvider = new VersionedState();
+  public conflictProvider = new VersionedState();
   public networkStatus: NetworkStatus;
 
   public cacheStorage: PersistentStore<PersistedData>;

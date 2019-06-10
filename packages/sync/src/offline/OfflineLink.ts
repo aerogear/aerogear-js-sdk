@@ -6,9 +6,6 @@ import * as debug from "debug";
 import { QUEUE_LOGGER } from "../config/Constants";
 import { OfflineError } from "./OfflineError";
 import { IResultProcessor } from "./procesors/IResultProcessor";
-import { getObjectFromCache } from "./storage/defaultStorage";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { BaseStateProvider } from "../conflicts/base/BaseStateProvider";
 
 export const logger = debug.default(QUEUE_LOGGER);
 
@@ -17,8 +14,6 @@ export interface OfflineLinkOptions {
   store: OfflineStore;
   listener?: OfflineQueueListener;
   resultProcessors?: IResultProcessor[];
-  cache: InMemoryCache;
-  baseProvider: BaseStateProvider;
 }
 
 /**
@@ -39,15 +34,12 @@ export class OfflineLink extends ApolloLink {
   private queue: OfflineQueue;
   private readonly networkStatus: NetworkStatus;
   private offlineMutationHandler?: OfflineMutationsHandler;
-  private cache: InMemoryCache;
-  private baseProvider: BaseStateProvider;
+ 
 
   constructor(options: OfflineLinkOptions) {
     super();
     this.networkStatus = options.networkStatus;
     this.queue = new OfflineQueue(options);
-    this.cache = options.cache;
-    this.baseProvider = options.baseProvider;
   }
 
   public request(operation: Operation, forward: NextLink) {
@@ -58,18 +50,9 @@ export class OfflineLink extends ApolloLink {
     }
     if (this.online) {
       logger("Online: Forwarding mutation", operation.variables);
-      // We are online and can skip this link;
-      // first time seeing this, need to save, no persist
-      this.saveToProvider(operation, false);
-      // need to then follow this observable and clean up once it lands
-      // return forward(operation);
-      return forward(operation).map(data => {
-        this.baseProvider.delete(operation.toKey());
-        return data;
-      });
+      // We are online and can skip this link
+      return forward(operation);
     }
-    // first time seeing this, need to persist as i am offline
-    this.saveToProvider(operation, true);
 
     if (!this.offlineMutationHandler) {
       logger("Error: Offline link setup method was not called");
@@ -113,15 +96,5 @@ export class OfflineLink extends ApolloLink {
 
   public setup(handler: OfflineMutationsHandler) {
     this.offlineMutationHandler = handler;
-  }
-
-  public saveToProvider(operation: Operation, persist: boolean) {
-    const context = operation.getContext();
-    const base = getObjectFromCache(this.cache, operation.variables.id, context.returnType);
-    if (persist) {
-      this.baseProvider.save(base, operation.toKey(), true);
-    } else {
-      this.baseProvider.save(base, operation.toKey(), false);
-    }
   }
 }

@@ -1,4 +1,4 @@
-import { ConflictResolutionData } from "./ConflictResolutionData";
+import { ConflictResolutionData } from "../strategies/ConflictResolutionData";
 
 /**
  * Interface for handling state of the object.
