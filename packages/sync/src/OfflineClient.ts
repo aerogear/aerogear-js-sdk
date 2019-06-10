@@ -1,7 +1,7 @@
 import { ApolloClient } from "apollo-client";
 import { DataSyncConfig } from "./config";
 import { SyncConfig } from "./config/SyncConfig";
-import { createDefaultLink, createOfflineLink } from "./links/LinksBuilder";
+import { createDefaultLink, createOfflineLink, createConflictLink } from "./links/LinksBuilder";
 import { OfflineStore, OfflineQueueListener } from "./offline";
 import { OfflineLink } from "./offline/OfflineLink";
 import { OfflineMutationsHandler } from "./offline/OfflineMutationsHandler";
@@ -60,8 +60,9 @@ export class OfflineClient implements ListenerProvider {
   public async init(): Promise<ApolloOfflineClient> {
     await this.store.init();
     const cache = await buildCachePersistence(this.config.cacheStorage);
-    const offlineLink = await createOfflineLink(this.config, this.store, cache);
-    const link = await createDefaultLink(this.config, offlineLink);
+    const offlineLink = await createOfflineLink(this.config, this.store);
+    const conflictLink = await createConflictLink(this.config, cache);
+    const link = await createDefaultLink(this.config, offlineLink, conflictLink);
 
     const client = new ApolloClient({
       link,

@@ -1,8 +1,7 @@
 import { Store } from "idb-localstorage";
 import { persistCache } from "apollo-cache-persist";
-import { InMemoryCache, defaultDataIdFromObject, NormalizedCacheObject } from "apollo-cache-inmemory";
+import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
 import { PersistedData, PersistentStore } from "./PersistentStore";
-import ApolloClient from "apollo-client";
 
 export const createDefaultCacheStorage = () => {
   return new Store("apollo-cache", "cache-store");
@@ -19,9 +18,10 @@ export const createDefaultOfflineStorage = () => {
 export const dataIdFromObject = defaultDataIdFromObject;
 
 /**
- *
+ * Reads object from cache
  */
 export const getObjectFromCache = (cache: InMemoryCache, id: string, type: string) => {
+  // FIXME test with cacheData.cache.cache[key]
   const cacheData = cache.extract(false);
   const idKey = dataIdFromObject({ __typename: type, id });
   if (idKey && cacheData[idKey]) {
@@ -38,6 +38,7 @@ export const buildCachePersistence = async (store: PersistentStore<PersistedData
   const cache = new InMemoryCache({
     dataIdFromObject
   });
+
   await persistCache({
     cache,
     serialize: false,
