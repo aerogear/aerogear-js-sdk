@@ -99,18 +99,16 @@ export class ConflictLink extends ApolloLink {
   private processBaseState(operation: Operation, forward: NextLink) {
     const context = operation.getContext();
     const base = getObjectFromCache(this.cache, operation.variables.id, context.returnType);
-    if (!base) {
-      throw new LocalConflictError(base, operation.variables);
+    if (base && Object.keys(base).length != 0) {
+      const currentChange = this.stater.currentState(base);
+      const userState = this.stater.currentState(operation.variables);
+      if (currentChange != userState) {
+        // 🙊 Input data is conflicted with the latest server projection
+        throw new LocalConflictError(base, operation.variables);
+      }
+      // FIME operation.toKey uniquenes
+      this.config.baseState.save(base, operation.toKey(), false);
     }
-    const currentChange = this.stater.currentState(base);
-    const userState = this.stater.currentState(operation.variables);
-    if (currentChange != userState) {
-      // 🙊 Input data is conflicted with the latest server projection
-      throw new LocalConflictError(base, operation.variables);
-    }
-    this.stater.currentState(base)
-    // FIME operation.toKey uniquenes
-    this.config.baseState.save(base, operation.toKey(), false);
   }
 
   private conflictErrorHandler(errorResponse: ErrorResponse) {
