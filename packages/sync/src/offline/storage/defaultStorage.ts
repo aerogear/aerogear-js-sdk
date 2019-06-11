@@ -25,8 +25,7 @@ export const getObjectFromCache = (cache: InMemoryCache, id: string, type: strin
   const cacheData = cache.extract(false);
   const idKey = dataIdFromObject({ __typename: type, id });
   if (idKey && cacheData[idKey]) {
-    delete cacheData[idKey].__typename;
-    return cacheData[idKey];
+    return Object.assign({}, cacheData[idKey])
   }
   return {};
 };
