@@ -102,8 +102,8 @@ export class ConflictLink extends ApolloLink {
     if (base && Object.keys(base).length != 0) {
       const currentChange = this.stater.currentState(base);
       const userState = this.stater.currentState(operation.variables);
-      if (currentChange != userState) {
-        // 🙊 Input data is conflicted with the latest server projection
+      if (currentChange !== userState) {
+         // 🙊 Input data is conflicted with the latest server projection
         throw new LocalConflictError(base, operation.variables);
       }
       // FIME operation.toKey uniquenes
@@ -116,7 +116,8 @@ export class ConflictLink extends ApolloLink {
     const data = this.getConflictData(graphQLErrors);
     if (data && this.strategy) {
       let resolvedConflict;
-      const base = getObjectFromCache(this.cache, operation.variables.id, data.returnType);
+      // FIXME Improve key (hasing toKey or something else)
+      const base = this.config.baseState.read(operation.toKey());
       // FIXME bad api
       if (this.strategy.strategies &&
         !!this.strategy.strategies[operation.operationName]) {
