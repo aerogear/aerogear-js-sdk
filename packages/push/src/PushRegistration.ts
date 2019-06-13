@@ -16,6 +16,7 @@ export class PushRegistration {
 
   public static readonly TYPE: string = "push";
   public static readonly API_PATH: string = "rest/registry/device";
+  private static readonly TOKEN_KEY = "UPS_DEVICE_TOKEN";
 
   private readonly pushConfig?: ServiceConfiguration;
   private _objectInstance: any;
@@ -96,22 +97,26 @@ export class PushRegistration {
       "categories": categories
     };
 
-    const instance = axios.create({
+    const http = axios.create({
       baseURL: url,
       timeout: 5000,
       headers: {"Authorization": `Basic ${authToken}`}
     });
 
     return new Promise((resolve, reject) => {
-      return instance.post(PushRegistration.API_PATH, postData)
+      return http.post(PushRegistration.API_PATH, postData)
       .then(
         () => {
+          const storage = window.localStorage;
+          storage.setItem(PushRegistration.TOKEN_KEY, deviceToken);
+
           if (isCordovaAndroid()) {
             this.subscribeToFirebaseTopic(variantId);
             for (const category of categories) {
               this.subscribeToFirebaseTopic(category);
             }
           }
+
           resolve();
         }
       )
@@ -121,10 +126,8 @@ export class PushRegistration {
 
   /**
    * Register deviceToken for Android or IOS platforms
-   *
-   * @param deviceToken token that will be sent to Unified Push server
    */
-  public unregister(deviceToken: string): Promise<void> {
+  public unregister(): Promise<void> {
     if (!window || !window.device) {
       return Promise.reject(new Error("Registration requires cordova plugin. Verify the " +
         "@aerogear/cordova-plugin-aerogear-push plugin is installed."));
@@ -133,6 +136,9 @@ export class PushRegistration {
     if (!this.pushConfig || !this.pushConfig.config || !this.pushConfig.url) {
       return Promise.reject(new Error("UPS registration: configuration is invalid"));
     }
+
+    const storage = window.localStorage;
+    const deviceToken = storage.getItem(PushRegistration.TOKEN_KEY);
 
     if (!deviceToken) {
       return Promise.reject(new Error("Device token should not be empty"));
@@ -176,14 +182,15 @@ export class PushRegistration {
 
     const authToken = window.btoa(`${variantId}:${variantSecret}`);
 
-    const instance = axios.create({
+    const http = axios.create({
       baseURL: url,
       timeout: 5000,
       headers: {"Authorization": `Basic ${authToken}`}
     });
 
     return new Promise((resolve, reject) => {
-      return instance.delete(PushRegistration.API_PATH, {})
+      const endpoint = PushRegistration.API_PATH + "/" + deviceToken;
+      return http.delete(endpoint, {})
       .then(
         () => {
           resolve();
