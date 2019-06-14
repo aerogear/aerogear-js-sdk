@@ -125,7 +125,7 @@ export class PushRegistration {
   }
 
   /**
-   * Register deviceToken for Android or IOS platforms
+   * Unregister device for Android or IOS platforms
    */
   public unregister(): Promise<void> {
     if (!window || !window.device) {
