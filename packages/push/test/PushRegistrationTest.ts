@@ -7,6 +7,7 @@ declare var global: any;
 
 global.window = { btoa: () => "dGVzdA==" };
 global.window.PushNotification = { init: () => "" };
+global.window.localStorage = { setItem: () => "" };
 window.device = { platform: "iOS" };
 
 describe("Registration tests", () => {
