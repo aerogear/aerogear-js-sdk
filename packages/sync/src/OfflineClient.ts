@@ -11,6 +11,7 @@ import { ApolloOfflineClient } from "./ApolloOfflineClient";
 import { buildCachePersistence } from "./offline/storage/defaultStorage";
 import { MutationHelperOptions, createMutationOptions } from "offix-cache";
 import { FetchResult } from "apollo-link";
+import { BaseLink } from "./links/BaseLink";
 
 /**
 * Factory for creating Apollo Offline Client
@@ -61,8 +62,8 @@ export class OfflineClient implements ListenerProvider {
     await this.store.init();
     const cache = await buildCachePersistence(this.config.cacheStorage);
     const offlineLink = await createOfflineLink(this.config, this.store);
-    const conflictLink = await createConflictLink(this.config, cache);
-    const link = await createDefaultLink(this.config, offlineLink, conflictLink);
+    const conflictLink = await createConflictLink(this.config);
+    const link = await createDefaultLink(this.config, offlineLink, conflictLink, cache);
 
     const client = new ApolloClient({
       link,

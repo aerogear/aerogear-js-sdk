@@ -1,4 +1,4 @@
-import { ConflictResolutionStrategies } from "../conflicts/strategies/ConflictResolutionStrategy";
+import { ConflictResolutionStrategy } from "../conflicts/strategies/ConflictResolutionStrategy";
 import { PersistedData, PersistentStore } from "../offline/storage/PersistentStore";
 import { NetworkStatus } from "../offline";
 import { OfflineQueueListener } from "../offline/events/OfflineQueueListener";
@@ -90,14 +90,13 @@ export interface DataSyncConfig {
    *
    * The conflict resolution strategy your client should use. By default it takes client version.
    */
-  conflictStrategy?: ConflictResolutionStrategies;
+  conflictStrategy?: ConflictResolutionStrategy;
 
   /**
    * OpenShift specific configuration that provides alternative way to setup
    * http and websocket urls.
    */
   openShiftConfig?: ConfigurationService;
-
 
   /**
    * [Modifier]

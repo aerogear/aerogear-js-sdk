@@ -5,8 +5,7 @@ import { storage } from "./mock/Storage";
 import { networkStatus } from "./mock/NetworkState";
 import { CompositeQueueListener } from "../src/offline/events/CompositeQueueListener";
 import { getObjectFromCache } from "../src/offline/storage/defaultStorage";
-import { NormalizedCacheObject } from "apollo-cache-inmemory";
-import ApolloClient from "apollo-client";
+import { InMemoryCache } from "apollo-cache-inmemory";
 
 const url = "http://test";
 
@@ -39,12 +38,12 @@ describe("Top level api tests", () => {
     const client = new OfflineClient({ httpUrl: url, storage, networkStatus });
     const initClient = await client.init();
     initClient.restore({
-      'test:1': {
-        __typename: 'test',
+      "test:1": {
+        __typename: "test",
         value: 1
       }
     });
-    const cacheObj = getObjectFromCache(initClient, '1', 'test');
-    should().equal(cacheObj.value, 1)
+    const cacheObj = getObjectFromCache(initClient.cache as InMemoryCache, "1", "test");
+    should().equal(cacheObj.value, 1);
   });
 });

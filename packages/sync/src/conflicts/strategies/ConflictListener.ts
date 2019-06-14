@@ -16,4 +16,11 @@ export interface ConflictListener {
                    server: ConflictResolutionData,
                    client: ConflictResolutionData
   ): void;
+
+  mergeOccurred?(operationName: string,
+                 resolvedData: ConflictResolutionData,
+                 server: ConflictResolutionData,
+                 client: ConflictResolutionData
+  ): void;
+
 }

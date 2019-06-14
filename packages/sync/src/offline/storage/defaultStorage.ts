@@ -23,9 +23,10 @@ export const dataIdFromObject = defaultDataIdFromObject;
 export const getObjectFromCache = (cache: InMemoryCache, id: string, type: string) => {
   // FIXME test with cacheData.cache.cache[key]
   const cacheData = cache.extract(false);
+  // TODO use context.getCacheKey()
   const idKey = dataIdFromObject({ __typename: type, id });
   if (idKey && cacheData[idKey]) {
-    return Object.assign({}, cacheData[idKey])
+    return Object.assign({}, cacheData[idKey]);
   }
   return {};
 };

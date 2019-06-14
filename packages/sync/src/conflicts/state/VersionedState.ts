@@ -12,7 +12,7 @@ import { ObjectState } from "./ObjectState";
  *   id: ID!
  *   version: String
  * }
- */ 
+ */
 export class VersionedState implements ObjectState {
 
   public nextState(currentObjectState: ConflictResolutionData) {
