@@ -89,7 +89,7 @@ export const defaultHttpLinks = async (config: DataSyncConfig,
   links.push(mutationOfflineLink);
   const retryLink = ApolloLink.split(OfflineMutationsHandler.isMarkedOffline, new RetryLink(config.retryOptions));
   links.push(retryLink);
-  
+
   if (config.auditLogging) {
     links.push(await createAuditLoggingLink());
   }

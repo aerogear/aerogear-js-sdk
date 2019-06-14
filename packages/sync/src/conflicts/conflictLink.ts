@@ -8,6 +8,7 @@ import { getObjectFromCache } from "../offline/storage/defaultStorage";
 import { isMutation } from "../utils/helpers";
 import { BaseStateProvider } from "./base/BaseStateProvider";
 import { ObjectState, ConflictListener, ConflictResolutionStrategies } from ".";
+import { ConflictHandler } from "./strategies/ConflictHandler";
 
 
 /**
@@ -24,10 +25,10 @@ export class LocalConflictError extends Error {
  * Represents conflict information that was returned from server
  */
 export interface ConflictInfo {
-  serverState: ConflictResolutionData
-  clientState: ConflictResolutionData
+  serverState: ConflictResolutionData;
+  clientState: ConflictResolutionData;
   // Expected return type of the mutation
-  returnType: string
+  returnType: string;
 }
 
 /**
@@ -55,11 +56,11 @@ export interface ConflictConfig {
   /**
    * Base state provider gives ability to save base state
    */
-  baseState: BaseStateProvider
+  baseState: BaseStateProvider;
 }
 
 /**
- * Conflict handling link implementation that provides ability to determine 
+ * Conflict handling link implementation that provides ability to determine
  */
 export class ConflictLink extends ApolloLink {
   private link: ApolloLink;
@@ -70,7 +71,7 @@ export class ConflictLink extends ApolloLink {
   constructor(private config: ConflictConfig, private cache: InMemoryCache) {
     super();
     this.link = onError((errorResponse) => {
-      this.conflictErrorHandler(errorResponse);
+      this.conflictHandler(errorResponse);
     });
     this.stater = this.config.conflictProvider;
     this.strategy = this.config.conflictStrategy;
@@ -79,10 +80,10 @@ export class ConflictLink extends ApolloLink {
 
   public request(
     operation: Operation,
-    forward: NextLink,
+    forward: NextLink
   ): Observable<FetchResult> | null {
     if (!isMutation(operation)) {
-      // 🙈 Nothing to do here 
+      // 🙈 Nothing to do here
       return forward(operation);
     }
     const currentState = this.stater.currentState(operation.variables);
@@ -99,11 +100,11 @@ export class ConflictLink extends ApolloLink {
   private processBaseState(operation: Operation, forward: NextLink) {
     const context = operation.getContext();
     const base = getObjectFromCache(this.cache, operation.variables.id, context.returnType);
-    if (base && Object.keys(base).length != 0) {
+    if (base && Object.keys(base).length !== 0) {
       const currentChange = this.stater.currentState(base);
       const userState = this.stater.currentState(operation.variables);
       if (currentChange !== userState) {
-         // 🙊 Input data is conflicted with the latest server projection
+        // 🙊 Input data is conflicted with the latest server projection
         throw new LocalConflictError(base, operation.variables);
       }
       // FIME operation.toKey uniquenes
@@ -111,34 +112,29 @@ export class ConflictLink extends ApolloLink {
     }
   }
 
-  private conflictErrorHandler(errorResponse: ErrorResponse) {
+  private conflictHandler(errorResponse: ErrorResponse) {
     const { response, operation, forward, graphQLErrors } = errorResponse;
     const data = this.getConflictData(graphQLErrors);
-    if (data && this.strategy) {
+    if (data && this.strategy && operation.getContext().returnType) {
       let resolvedConflict;
       // FIXME Improve key (hasing toKey or something else)
       const base = this.config.baseState.read(operation.toKey());
       // FIXME bad api
-      if (this.strategy.strategies &&
-        !!this.strategy.strategies[operation.operationName]) {
-        const individualStrategy = this.strategy.strategies[operation.operationName];
-        resolvedConflict = individualStrategy(base, data.serverState, data.clientState);
-      } else if (this.strategy.default) {
-        resolvedConflict = this.strategy.default(base, data.serverState, data.clientState);
+      const individualStrategy = operation.getContext().strategy || this.strategy.default;
+      const conflictHandler = new ConflictHandler(base,
+                                                  data.clientState,
+                                                  data.serverState,
+                                                  individualStrategy,
+                                                  this.config.conflictListener);
+      resolvedConflict = conflictHandler.executeStrategy(operation.operationName);
+      if (!conflictHandler.conflicted) {
+        operation.variables = this.stater.nextState(resolvedConflict);
+        if (response) {
+          // 🍴 eat error
+          response.errors = undefined;
+        }
+        return forward(operation);
       }
-      // FIXME Do not notify when conflict was resolved without issues
-      if (this.listener) {
-        this.listener.conflictOccurred(operation.operationName,
-          resolvedConflict, data.serverState, data.clientState);
-      }
-      operation.variables = this.stater.nextState(resolvedConflict);
-      if (response) {
-        // 🍴 eat error
-        response.errors = undefined;
-      }
-      // FIXME at this point offline operation is removed from queue
-      // If forward fails data will be lost!
-      return forward(operation);
     }
   }
 
@@ -158,6 +154,4 @@ export class ConflictLink extends ApolloLink {
     }
   }
 
-
 }
-

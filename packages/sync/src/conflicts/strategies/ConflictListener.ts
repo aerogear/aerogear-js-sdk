@@ -1,4 +1,5 @@
 import { ConflictResolutionData } from "./ConflictResolutionData";
+import { ConflictResolutionStrategy, ConflictResolutionStrategies } from "./ConflictResolutionStrategy";
 
 /**
  * Listener that allows users to track conflict information
@@ -16,4 +17,11 @@ export interface ConflictListener {
                    server: ConflictResolutionData,
                    client: ConflictResolutionData
   ): void;
+
+  mergeOccurred?(operationName: string,
+                 resolvedData: ConflictResolutionData,
+                 server: ConflictResolutionData,
+                 client: ConflictResolutionData
+  ): void;
+
 }
