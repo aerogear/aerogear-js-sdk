@@ -8,8 +8,8 @@ import { getObjectFromCache } from "../offline/storage/defaultStorage";
 import { isMutation } from "../utils/helpers";
 import { BaseStateProvider } from "./base/BaseStateProvider";
 import { ObjectState, ConflictListener, ConflictResolutionStrategies } from ".";
-import { ConflictHandler } from "./strategies/ConflictHandler";
-
+import { ConflictHandlerVersioned as ConflictHandler } from "./ConflictHandlerVersioned";
+import { HandlerOptions } from "./ConflictHandler";
 
 /**
  * Local conflict thrown when data outdates even before sending it to the server.
@@ -121,11 +121,15 @@ export class ConflictLink extends ApolloLink {
       const base = this.config.baseState.read(operation.toKey());
       // FIXME bad api
       const individualStrategy = operation.getContext().strategy || this.strategy.default;
-      const conflictHandler = new ConflictHandler(base,
-                                                  data.clientState,
-                                                  data.serverState,
-                                                  individualStrategy,
-                                                  this.config.conflictListener);
+      const ignoredKeys: string[] = ["version", "id"];
+      const conflictHandler = new ConflictHandler({
+        base,
+        client: data.clientState,
+        server: data.serverState,
+        strategy: individualStrategy,
+        listener: this.config.conflictListener,
+        ignoredKeys
+      });
       resolvedConflict = conflictHandler.executeStrategy(operation.operationName);
       if (!conflictHandler.conflicted) {
         operation.variables = this.stater.nextState(resolvedConflict);
