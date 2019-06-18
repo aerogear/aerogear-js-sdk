@@ -1,4 +1,4 @@
-import { IResultProcessor } from "../offline/procesors/IResultProcessor";
+import { IResultProcessor } from "../offline/processors/IResultProcessor";
 import { OperationQueueEntry } from "../offline/OperationQueueEntry";
 import { ObjectState } from "./state/ObjectState";
 import { FetchResult } from "apollo-link";

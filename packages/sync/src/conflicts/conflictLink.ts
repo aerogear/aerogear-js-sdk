@@ -3,13 +3,11 @@ import { GraphQLError } from "graphql";
 import { DataSyncConfig } from "../config";
 import { ApolloLink, Operation, NextLink, Observable, FetchResult } from "apollo-link";
 import { ConflictResolutionData } from "./strategies/ConflictResolutionData";
-import { InMemoryCache } from "apollo-cache-inmemory";
 import { getObjectFromCache } from "../offline/storage/defaultStorage";
 import { isMutation } from "../utils/helpers";
 import { BaseStateProvider } from "./base/BaseStateProvider";
 import { ObjectState, ConflictListener, ConflictResolutionStrategies } from ".";
 import { ConflictHandlerVersioned as ConflictHandler } from "./ConflictHandlerVersioned";
-import { HandlerOptions } from "./ConflictHandler";
 
 /**
  * Local conflict thrown when data outdates even before sending it to the server.
@@ -68,7 +66,7 @@ export class ConflictLink extends ApolloLink {
   private strategy: ConflictResolutionStrategies | undefined;
   private listener: ConflictListener | undefined;
 
-  constructor(private config: ConflictConfig, private cache: InMemoryCache) {
+  constructor(private config: ConflictConfig) {
     super();
     this.link = onError((errorResponse) => {
       this.conflictHandler(errorResponse);
@@ -92,24 +90,8 @@ export class ConflictLink extends ApolloLink {
       // No action here
       return forward(operation);
     }
-    this.processBaseState(operation, forward);
     // FIXME removing base state
     return this.link.request(operation, forward);
-  }
-
-  private processBaseState(operation: Operation, forward: NextLink) {
-    const context = operation.getContext();
-    const base = getObjectFromCache(this.cache, operation.variables.id, context.returnType);
-    if (base && Object.keys(base).length !== 0) {
-      const currentChange = this.stater.currentState(base);
-      const userState = this.stater.currentState(operation.variables);
-      if (currentChange !== userState) {
-        // 🙊 Input data is conflicted with the latest server projection
-        throw new LocalConflictError(base, operation.variables);
-      }
-      // FIME operation.toKey uniquenes
-      this.config.baseState.save(base, operation.toKey(), false);
-    }
   }
 
   private conflictHandler(errorResponse: ErrorResponse) {
@@ -118,16 +100,16 @@ export class ConflictLink extends ApolloLink {
     if (data && this.strategy && operation.getContext().returnType) {
       let resolvedConflict;
       // FIXME Improve key (hasing toKey or something else)
-      const base = this.config.baseState.read(operation.toKey());
-      // FIXME bad api
+      const base = operation.getContext().base;
       const individualStrategy = operation.getContext().strategy || this.strategy.default;
+      // TODO do not hardcode this
       const ignoredKeys: string[] = ["version", "id"];
       const conflictHandler = new ConflictHandler({
         base,
         client: data.clientState,
         server: data.serverState,
         strategy: individualStrategy,
-        listener: this.config.conflictListener,
+        listener: this.listener,
         ignoredKeys
       });
       resolvedConflict = conflictHandler.executeStrategy(operation.operationName);
@@ -137,6 +119,7 @@ export class ConflictLink extends ApolloLink {
           // 🍴 eat error
           response.errors = undefined;
         }
+
         return forward(operation);
       }
     }

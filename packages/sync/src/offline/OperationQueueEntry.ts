@@ -8,6 +8,8 @@ export interface OfflineItem {
   operation: Operation;
   optimisticResponse?: any;
   id: string;
+  returnType?: string;
+  base: any;
 }
 
 /**
@@ -20,6 +22,8 @@ export class OperationQueueEntry implements OfflineItem {
   public readonly operation: Operation;
   public readonly optimisticResponse?: any;
   public id: string;
+  public returnType?: string;
+  public base: any;
   public forward?: NextLink;
   public result?: FetchResult;
   public networkError: any;
@@ -53,7 +57,9 @@ export class OperationQueueEntry implements OfflineItem {
     return {
       operation: this.operation,
       optimisticResponse: this.optimisticResponse,
-      id: this.id
+      id: this.id,
+      returnType: this.returnType,
+      base: this.base
     };
   }
 }

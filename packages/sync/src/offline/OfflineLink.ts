@@ -5,7 +5,7 @@ import { OfflineQueue } from "./OfflineQueue";
 import * as debug from "debug";
 import { QUEUE_LOGGER } from "../config/Constants";
 import { OfflineError } from "./OfflineError";
-import { IResultProcessor } from "./procesors/IResultProcessor";
+import { IResultProcessor } from "./processors/IResultProcessor";
 
 export const logger = debug.default(QUEUE_LOGGER);
 
@@ -34,7 +34,6 @@ export class OfflineLink extends ApolloLink {
   private queue: OfflineQueue;
   private readonly networkStatus: NetworkStatus;
   private offlineMutationHandler?: OfflineMutationsHandler;
- 
 
   constructor(options: OfflineLinkOptions) {
     super();

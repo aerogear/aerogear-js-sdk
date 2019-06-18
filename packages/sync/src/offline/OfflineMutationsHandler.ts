@@ -53,6 +53,11 @@ export class OfflineMutationsHandler {
     if (this.mutationCacheUpdates && mutationName) {
       updateFunction = this.mutationCacheUpdates[mutationName];
     }
+    let previousContext;
+    if (item.operation.getContext) {
+      previousContext = item.operation.getContext();
+    }
+    const newContext = this.getOfflineContext(item.id);
     const mutationOptions = {
       variables: item.operation.variables,
       mutation: item.operation.query,
@@ -61,7 +66,7 @@ export class OfflineMutationsHandler {
       // Pass client update functions
       update: updateFunction,
       // Pass extensions as part of the context
-      context: this.getOfflineContext(item.id)
+      context: {...previousContext, ...newContext}
     };
     await this.apolloClient.mutate(mutationOptions);
   }

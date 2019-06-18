@@ -4,7 +4,7 @@ import { ObjectState } from "../conflicts/state/ObjectState";
 import { Operation, NextLink, Observable, FetchResult } from "apollo-link";
 import { OfflineStore } from "./storage/OfflineStore";
 import { OfflineLinkOptions } from "../links";
-import { IResultProcessor } from "./procesors/IResultProcessor";
+import { IResultProcessor } from "./processors";
 import { BaseStateProvider } from "../conflicts/base/BaseStateProvider";
 
 export type OperationQueueChangeHandler = (entry: OperationQueueEntry) => void;

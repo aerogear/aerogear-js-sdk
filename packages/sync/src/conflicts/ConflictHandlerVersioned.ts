@@ -43,9 +43,9 @@ export class ConflictHandlerVersioned implements ConflictHandler {
       }
     }
     const filteredData: any = {};
-    for (const field of resolvedData) {
-      if (this.options.client[field]) {
-        filteredData[field] = this.options.client[field];
+    for (const key of Object.keys(resolvedData)) {
+      if (this.options.client[key]) {
+        filteredData[key] = resolvedData[key];
       }
     }
     return filteredData;
