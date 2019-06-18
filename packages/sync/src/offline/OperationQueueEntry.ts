@@ -38,6 +38,8 @@ export class OperationQueueEntry implements OfflineItem {
       this.id = generateClientId();
     }
     if (typeof operation.getContext === "function") {
+      this.base = operation.getContext().base;
+      this.returnType = operation.getContext().returnType;
       this.optimisticResponse = operation.getContext().optimisticResponse;
     }
   }
