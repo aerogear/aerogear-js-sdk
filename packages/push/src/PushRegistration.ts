@@ -1,5 +1,9 @@
-import { isCordovaAndroid, isCordovaIOS, ServiceConfiguration, ConfigurationService } from "@aerogear/core";
-import axios from "axios";
+import {
+  ConfigurationService,
+  isCordovaAndroid,
+  isCordovaIOS
+} from "@aerogear/core";
+import axios, { AxiosInstance } from "axios";
 
 declare var window: any;
 
@@ -15,16 +19,85 @@ declare var window: any;
 export class PushRegistration {
 
   public static readonly TYPE: string = "push";
-  public static readonly API_PATH: string = "rest/registry/device";
+
+  private static readonly API_PATH: string = "rest/registry/device";
   private static readonly TOKEN_KEY = "UPS_DEVICE_TOKEN";
 
-  private readonly pushConfig?: ServiceConfiguration;
-  private _objectInstance: any;
+  private readonly validationError?: string;
+  private readonly variantId?: string;
+  private readonly http?: AxiosInstance;
+  private readonly push?: any;
 
   constructor(config: ConfigurationService) {
     const configuration = config.getConfigByType(PushRegistration.TYPE);
+
     if (configuration && configuration.length > 0) {
-      this.pushConfig = configuration[0];
+      const pushConfig = configuration[0];
+
+      if (!window || !window.device || !window.PushNotification) {
+        const errorMessage = "@aerogear/cordova-plugin-aerogear-push plugin not installed.";
+        this.validationError = errorMessage;
+        console.warn(errorMessage);
+      }
+
+      if (!pushConfig || !pushConfig.config) {
+        const errorMessage = "UnifiedPush server configuration not found";
+        this.validationError = errorMessage;
+        console.warn(errorMessage);
+      }
+
+      const unifiedPushServerURL = pushConfig.url;
+      if (!pushConfig.url) {
+        const errorMessage = "UnifiedPush server URL not found";
+        this.validationError = errorMessage;
+        console.warn(errorMessage);
+      }
+
+      let platformConfig;
+      if (isCordovaAndroid()) {
+        platformConfig = pushConfig.config.android;
+      } else if (isCordovaIOS()) {
+        platformConfig = pushConfig.config.ios;
+      } else {
+        const errorMessage = "Platform is not supported by UnifiedPush";
+        this.validationError = errorMessage;
+        console.warn(errorMessage);
+      }
+
+      this.variantId = platformConfig.variantId || platformConfig.variantID;
+      if (!this.variantId) {
+        const errorMessage = "UnifiedPush VariantId is not defined";
+        this.validationError = errorMessage;
+        console.warn(errorMessage);
+      }
+
+      const variantSecret = platformConfig.variantSecret;
+      if (!variantSecret) {
+        const errorMessage = "UnifiedPush VariantSecret is not defined";
+        this.validationError = errorMessage;
+        console.warn(errorMessage);
+      }
+
+      if (!this.validationError) {
+        const token = window.btoa(`${this.variantId}:${variantSecret}`);
+        this.http = axios.create({
+          baseURL: unifiedPushServerURL,
+          timeout: 5000,
+          headers: {"Authorization": `Basic ${token}`}
+        });
+      }
+
+      this.push = window.PushNotification.init(
+        {
+          android: {},
+          ios: {
+            alert: true,
+            badge: true,
+            sound: true
+          }
+        }
+      );
+
     } else {
       console.warn("Push configuration is missing. UPS server registration will not work.");
     }
@@ -38,56 +111,15 @@ export class PushRegistration {
    * @param categories array list of categories that device should be register to.
    */
   public register(deviceToken: string, alias: string = "", categories: string[] = []): Promise<void> {
-    if (!window || !window.device || !window.PushNotification) {
-      return Promise.reject(new Error("Registration requires cordova plugin. Verify the " +
-        "@aerogear/cordova-plugin-aerogear-push plugin is installed."));
-    }
-
-    if (!this.pushConfig || !this.pushConfig.config || !this.pushConfig.url) {
-      return Promise.reject(new Error("UPS registration: configuration is invalid"));
-    }
 
     if (!deviceToken) {
       return Promise.reject(new Error("Device token should not be empty"));
     }
 
-    let platformConfig;
-    const url = this.pushConfig.url;
-    if (isCordovaAndroid()) {
-      platformConfig = this.pushConfig.config.android;
-    } else if (isCordovaIOS()) {
-      platformConfig = this.pushConfig.config.ios;
-    } else {
-      return Promise.reject(new Error("UPS registration: Platform is not supported."));
+    if (this.validationError) {
+      return Promise.reject(new Error(this.validationError));
     }
 
-    if (!platformConfig) {
-      return Promise.reject(new Error("UPS registration: Platform is configured." +
-        "Please add UPS variant and generate mobile - config.json again"));
-    }
-
-    const variantId = platformConfig.variantId || platformConfig.variantID;
-    if (!variantId) {
-      return Promise.reject(new Error("UPS registration: variantId is not defined."));
-    }
-
-    const variantSecret = platformConfig.variantSecret;
-    if (!variantSecret) {
-      return Promise.reject(new Error("UPS registration: variantSecret is not defined."));
-    }
-
-    this._objectInstance = window.PushNotification.init(
-      {
-        android: {},
-        ios: {
-          alert: true,
-          badge: true,
-          sound: true
-        }
-      }
-    );
-
-    const authToken = window.btoa(`${variantId}:${variantSecret}`);
     const postData = {
       "deviceToken": deviceToken,
       "deviceType": window.device.model,
@@ -97,30 +129,29 @@ export class PushRegistration {
       "categories": categories
     };
 
-    const http = axios.create({
-      baseURL: url,
-      timeout: 5000,
-      headers: {"Authorization": `Basic ${authToken}`}
-    });
-
     return new Promise((resolve, reject) => {
-      return http.post(PushRegistration.API_PATH, postData)
-      .then(
-        () => {
-          const storage = window.localStorage;
-          storage.setItem(PushRegistration.TOKEN_KEY, deviceToken);
+      if (this.http) {
+        return this.http.post(PushRegistration.API_PATH, postData)
+        .then(
+          () => {
+            const storage = window.localStorage;
+            storage.setItem(PushRegistration.TOKEN_KEY, deviceToken);
 
-          if (isCordovaAndroid()) {
-            this.subscribeToFirebaseTopic(variantId);
-            for (const category of categories) {
-              this.subscribeToFirebaseTopic(category);
+            if (isCordovaAndroid() && this.variantId) {
+              this.subscribeToFirebaseTopic(this.variantId);
+              for (const category of categories) {
+                this.subscribeToFirebaseTopic(category);
+              }
             }
-          }
 
-          resolve();
-        }
-      )
-      .catch(reject);
+            resolve();
+          }
+        )
+        .catch(reject);
+      } else {
+        // It should never happend but...
+        return Promise.reject(new Error("Push is not properly configured"));
+      }
     });
   }
 
@@ -128,14 +159,6 @@ export class PushRegistration {
    * Unregister device for Android or IOS platforms
    */
   public unregister(): Promise<void> {
-    if (!window || !window.device) {
-      return Promise.reject(new Error("Registration requires cordova plugin. Verify the " +
-        "@aerogear/cordova-plugin-aerogear-push plugin is installed."));
-    }
-
-    if (!this.pushConfig || !this.pushConfig.config || !this.pushConfig.url) {
-      return Promise.reject(new Error("UPS registration: configuration is invalid"));
-    }
 
     const storage = window.localStorage;
     const deviceToken = storage.getItem(PushRegistration.TOKEN_KEY);
@@ -144,78 +167,25 @@ export class PushRegistration {
       return Promise.reject(new Error("Device token should not be empty"));
     }
 
-    let platformConfig;
-    const url = this.pushConfig.url;
-    if (isCordovaAndroid()) {
-      platformConfig = this.pushConfig.config.android;
-    } else if (isCordovaIOS()) {
-      platformConfig = this.pushConfig.config.ios;
-    } else {
-      return Promise.reject(new Error("UPS registration: Platform is not supported."));
+    if (this.validationError) {
+      return Promise.reject(new Error(this.validationError));
     }
-
-    if (!platformConfig) {
-      return Promise.reject(new Error("UPS registration: Platform is configured." +
-        "Please add UPS variant and generate mobile - config.json again"));
-    }
-
-    const variantId = platformConfig.variantId || platformConfig.variantID;
-    if (!variantId) {
-      return Promise.reject(new Error("UPS registration: variantId is not defined."));
-    }
-
-    const variantSecret = platformConfig.variantSecret;
-    if (!variantSecret) {
-      return Promise.reject(new Error("UPS registration: variantSecret is not defined."));
-    }
-
-    this._objectInstance = window.PushNotification.init(
-      {
-        android: {},
-        ios: {
-          alert: true,
-          badge: true,
-          sound: true
-        }
-      }
-    );
-
-    const authToken = window.btoa(`${variantId}:${variantSecret}`);
-
-    const http = axios.create({
-      baseURL: url,
-      timeout: 5000,
-      headers: {"Authorization": `Basic ${authToken}`}
-    });
 
     return new Promise((resolve, reject) => {
-      const endpoint = PushRegistration.API_PATH + "/" + deviceToken;
-      return http.delete(endpoint, {})
-      .then(
-        () => {
-          resolve();
-        }
-      )
-      .catch(reject);
+      if (this.http) {
+        const endpoint = PushRegistration.API_PATH + "/" + deviceToken;
+        return this.http.delete(endpoint, {})
+        .then(() => resolve())
+        .catch(reject);
+      } else {
+        // It should never happend but...
+        return Promise.reject(new Error("Push is not properly configured"));
+      }
     });
-  }
-
-  /**
-   * Return the config used for the push service
-   */
-  public getConfig(): ServiceConfiguration | undefined {
-    return this.pushConfig;
-  }
-
-  /**
-   * Return true if config is present
-   */
-  public hasConfig(): boolean {
-    return !!this.pushConfig;
   }
 
   private subscribeToFirebaseTopic(topic: string) {
-    this._objectInstance.subscribe(
+    this.push.subscribe(
       topic,
       () => {
         console.warn("FCM topic: " + topic + " subscribed");
