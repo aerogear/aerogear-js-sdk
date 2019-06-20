@@ -25,7 +25,7 @@ export class PushRegistration {
 
   private readonly validationError?: string;
   private readonly variantId?: string;
-  private readonly http?: AxiosInstance;
+  private readonly httpClient?: AxiosInstance;
   private readonly push?: any;
 
   constructor(config: ConfigurationService) {
@@ -80,7 +80,7 @@ export class PushRegistration {
 
       if (!this.validationError) {
         const token = window.btoa(`${this.variantId}:${variantSecret}`);
-        this.http = axios.create({
+        this.httpClient = axios.create({
           baseURL: unifiedPushServerURL,
           timeout: 5000,
           headers: {"Authorization": `Basic ${token}`}
@@ -130,8 +130,8 @@ export class PushRegistration {
     };
 
     return new Promise((resolve, reject) => {
-      if (this.http) {
-        return this.http.post(PushRegistration.API_PATH, postData)
+      if (this.httpClient) {
+        return this.httpClient.post(PushRegistration.API_PATH, postData)
         .then(
           () => {
             const storage = window.localStorage;
@@ -172,9 +172,9 @@ export class PushRegistration {
     }
 
     return new Promise((resolve, reject) => {
-      if (this.http) {
+      if (this.httpClient) {
         const endpoint = PushRegistration.API_PATH + "/" + deviceToken;
-        return this.http.delete(endpoint, {})
+        return this.httpClient.delete(endpoint, {})
         .then(() => resolve())
         .catch(reject);
       } else {
