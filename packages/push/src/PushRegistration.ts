@@ -85,18 +85,18 @@ export class PushRegistration {
           timeout: 5000,
           headers: {"Authorization": `Basic ${token}`}
         });
-      }
 
-      this.push = window.PushNotification.init(
-        {
-          android: {},
-          ios: {
-            alert: true,
-            badge: true,
-            sound: true
+        this.push = window.PushNotification.init(
+          {
+            android: {},
+            ios: {
+              alert: true,
+              badge: true,
+              sound: true
+            }
           }
-        }
-      );
+        );
+      }
 
     } else {
       console.warn("Push configuration is missing. UPS server registration will not work.");
