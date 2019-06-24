@@ -7,6 +7,7 @@ declare var global: any;
 
 global.window = { btoa: () => "dGVzdA==" };
 global.window.PushNotification = { init: () => "" };
+global.window.localStorage = { setItem: () => "" };
 window.device = { platform: "iOS" };
 
 describe("Registration tests", () => {
@@ -47,6 +48,29 @@ describe("Registration tests", () => {
       this.timeout(10000);
       try {
         await registration.register("token", "cordova", ["Test"]);
+      } catch (error) {
+        assert.fail(error);
+      }
+    });
+  });
+
+  describe("#unregister", async () => {
+    it("should fail to unregister in push server", async () => {
+      try {
+        await registration.unregister();
+        assert.fail();
+      } catch (_) {
+        return "ok";
+      }
+    });
+
+    it("should unregister in push server", async function() {
+      // in CI environment this test sometimes fails because of the default timeout 2s
+      // increase timeout to 10s
+      this.timeout(10000);
+      try {
+        global.window.localStorage = { getItem: () => "deviceToken" };
+        await registration.unregister();
       } catch (error) {
         assert.fail(error);
       }
