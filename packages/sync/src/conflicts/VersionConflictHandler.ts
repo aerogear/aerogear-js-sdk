@@ -2,39 +2,41 @@ import { ConflictResolutionData } from "./strategies/ConflictResolutionData";
 import { ConflictListener } from "./strategies/ConflictListener";
 import { ConflictResolutionStrategy } from "./strategies/ConflictResolutionStrategy";
 import { ConflictHandler, HandlerOptions } from "./ConflictHandler";
+import { ObjectState } from "./state/ObjectState";
 
-export class ConflictHandlerVersioned implements ConflictHandler {
+export class VersionConflictHandler implements ConflictHandler {
   public conflicted: boolean;
   public clientDiff: any = {};
   public serverDiff: any = {};
   public options: HandlerOptions;
+  private ignoredKeys: string[];
 
   constructor(options: HandlerOptions) {
     this.options = options;
     this.conflicted = false;
+    this.ignoredKeys = this.options.ignoredKeys || ["version", "id"];
     this.checkConflict(this.options.base, this.options.client, this.options.server);
   }
 
   public checkConflict(base: ConflictResolutionData, client: ConflictResolutionData, server: ConflictResolutionData) {
     for (const key of Object.keys(client)) {
-      if (base[key] && base[key] !== client[key]
-      && !this.options.ignoredKeys.includes(key)) {
-        this.clientDiff[key] = client[key];
-      }
+      if (base[key] && base[key] !== client[key] && !this.ignoredKeys.includes(key)) {
+          this.clientDiff[key] = client[key];
+        }
     }
     for (const key of Object.keys(this.options.client)) {
-      if (base[key] && base[key] !== server[key]
-      && !this.options.ignoredKeys.includes(key)) {
-        this.serverDiff[key] = server[key];
-        if (this.clientDiff[key]) {
-          this.conflicted = true;
+      if (base[key] && base[key] !== server[key] && !this.ignoredKeys.includes(key)) {
+          this.serverDiff[key] = server[key];
+          if (this.clientDiff[key]) {
+            this.conflicted = true;
+          }
         }
-      }
     }
   }
 
   public executeStrategy(operationName: string) {
     const resolvedData = this.options.strategy(this.options.base, this.serverDiff, this.clientDiff);
+    resolvedData.version = this.options.server.version;
     if (this.options.listener) {
       if (this.conflicted) {
         this.options.listener.conflictOccurred(operationName, resolvedData, this.options.server, this.options.client);

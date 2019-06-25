@@ -14,6 +14,7 @@ export class BaseLink extends ApolloLink {
       // Nothing to do here
       return forward(operation);
     } else {
+      // TODO disable when no strategy applied
       const context = operation.getContext();
       const base = getObjectFromCache(this.cache, operation.variables.id, context.returnType);
       if (base && Object.keys(base).length !== 0) {

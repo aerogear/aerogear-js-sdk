@@ -16,5 +16,5 @@ export interface HandlerOptions {
   server: ConflictResolutionData;
   strategy: ConflictResolutionStrategy;
   listener?: ConflictListener;
-  ignoredKeys: string[];
+  ignoredKeys?: string[];
 }

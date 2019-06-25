@@ -4,7 +4,7 @@ import { ApolloLink, Operation, NextLink, Observable, FetchResult } from "apollo
 import { ConflictResolutionData } from "./strategies/ConflictResolutionData";
 import { isMutation } from "../utils/helpers";
 import { ObjectState, ConflictListener } from ".";
-import { ConflictHandlerVersioned as ConflictHandler } from "./ConflictHandlerVersioned";
+import { VersionConflictHandler as ConflictHandler } from "./VersionConflictHandler";
 import { ConflictResolutionStrategy } from "./strategies/ConflictResolutionStrategy";
 
 /**
@@ -93,19 +93,16 @@ export class ConflictLink extends ApolloLink {
       let resolvedConflict;
       const base = operation.getContext().base;
       const individualStrategy = operation.getContext().strategy || this.strategy;
-      // TODO do not hardcode this
-      const ignoredKeys: string[] = ["version", "id"];
       const conflictHandler = new ConflictHandler({
         base,
         client: data.clientState,
         server: data.serverState,
         strategy: individualStrategy,
-        listener: this.listener,
-        ignoredKeys
+        listener: this.listener
       });
       resolvedConflict = conflictHandler.executeStrategy(operation.operationName);
       if (!conflictHandler.conflicted) {
-        operation.variables = this.stater.nextState(resolvedConflict);
+        operation.variables = resolvedConflict;
         if (response) {
           // 🍴 eat error
           response.errors = undefined;
