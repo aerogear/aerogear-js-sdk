@@ -11,7 +11,6 @@ import { ApolloOfflineClient } from "./ApolloOfflineClient";
 import { buildCachePersistence } from "./offline/storage/defaultStorage";
 import { MutationHelperOptions, createMutationOptions } from "offix-cache";
 import { FetchResult } from "apollo-link";
-import { BaseLink } from "./links/BaseLink";
 
 /**
 * Factory for creating Apollo Offline Client

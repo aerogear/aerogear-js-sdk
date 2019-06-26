@@ -16,7 +16,7 @@ import { IDProcessor } from "../offline/processors/IDProcessor";
 import { ConflictProcessor } from "../conflicts/ConflictProcesor";
 import { IResultProcessor } from "../offline/processors";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { BaseLink } from "./BaseLink";
+import { BaseLink } from "../conflicts/BaseLink";
 
 /**
  * Method for creating "uber" composite Apollo Link implementation including:
@@ -81,7 +81,7 @@ export const defaultHttpLinks = async (config: DataSyncConfig, offlineLink: Apol
   const mutationOfflineLink = ApolloLink.split((op: Operation) => {
     return isMutation(op) && !isOnlineOnly(op);
   }, offlineLink);
-  const baseLink = new BaseLink(cache);
+  const baseLink = new BaseLink(config.conflictProvider as ObjectState, cache);
   const links: ApolloLink[] = [baseLink, mutationOfflineLink];
   links.push(conflictLink);
   const retryLink = ApolloLink.split(OfflineMutationsHandler.isMarkedOffline, new RetryLink(config.retryOptions));
