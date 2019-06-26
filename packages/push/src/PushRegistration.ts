@@ -150,7 +150,7 @@ export class PushRegistration {
 
         } else {
           // It should never happend but...
-          return Promise.reject(new Error("Push is not properly configured"));
+          return reject(new Error("Push is not properly configured"));
         }
 
       });
@@ -203,7 +203,7 @@ export class PushRegistration {
         .catch(reject);
       } else {
         // It should never happend but...
-        return Promise.reject(new Error("Push is not properly configured"));
+        return reject(new Error("Push is not properly configured"));
       }
     });
   }
