@@ -27,8 +27,8 @@ export class BaseLink extends ApolloLink {
       // Nothing to do here
       return forward(operation);
     } else {
-      this.processBaseState(operation, forward);
-      return forward(operation);
+      return this.processBaseState(operation, forward);
+ 
     }
   }
 
@@ -45,6 +45,7 @@ export class BaseLink extends ApolloLink {
       return this.createLocalConflict(base, operation.variables);
     }
     this.stater.currentState(base);
+    return forward(operation);
   }
 
   /**
