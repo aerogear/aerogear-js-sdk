@@ -106,53 +106,54 @@ export class PushRegistration {
   /**
    * Register deviceToken for Android or IOS platforms
    *
-   * @param deviceToken token that will be sent to Unified Push server
    * @param alias device alias used for registration
    * @param categories array list of categories that device should be register to.
    */
-  public register(deviceToken: string, alias: string = "", categories: string[] = []): Promise<void> {
-
-    if (!deviceToken) {
-      return Promise.reject(new Error("Device token should not be empty"));
-    }
+  public register(alias: string = "", categories: string[] = []): Promise<void> {
 
     if (this.validationError) {
       return Promise.reject(new Error(this.validationError));
     }
 
-    const postData = {
-      "deviceToken": deviceToken,
-      "deviceType": window.device.model,
-      "operatingSystem": window.device.platform,
-      "osVersion": window.device.version,
-      "alias": alias,
-      "categories": categories
-    };
-
     return new Promise((resolve, reject) => {
-      if (this.httpClient) {
-        return this.httpClient.post(PushRegistration.API_PATH, postData)
-        .then(
-          () => {
 
-            if (isCordovaAndroid() && this.variantId) {
-              this.subscribeToFirebaseTopic(this.variantId);
-              for (const category of categories) {
-                this.subscribeToFirebaseTopic(category);
+      setTimeout(() => reject(), 5000);
+
+      this.push.on("registration", (data: any) => {
+
+        if (this.httpClient) {
+          const postData = {
+            "deviceToken": data.registrationId,
+            "deviceType": window.device.model,
+            "operatingSystem": window.device.platform,
+            "osVersion": window.device.version,
+            "alias": alias,
+            "categories": categories
+          };
+
+          return this.httpClient.post(PushRegistration.API_PATH, postData)
+          .then(() => {
+              if (isCordovaAndroid() && this.variantId) {
+                this.subscribeToFirebaseTopic(this.variantId);
+                for (const category of categories) {
+                  this.subscribeToFirebaseTopic(category);
+                }
               }
+
+              const storage = window.localStorage;
+              storage.setItem(PushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(postData));
+
+              resolve();
             }
+          )
+          .catch(reject);
 
-            const storage = window.localStorage;
-            storage.setItem(PushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(postData));
+        } else {
+          // It should never happend but...
+          return Promise.reject(new Error("Push is not properly configured"));
+        }
 
-            resolve();
-          }
-        )
-        .catch(reject);
-      } else {
-        // It should never happend but...
-        return Promise.reject(new Error("Push is not properly configured"));
-      }
+      });
     });
   }
 

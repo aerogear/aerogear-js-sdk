@@ -6,9 +6,21 @@ declare var window: any;
 declare var global: any;
 
 global.window = { btoa: () => "dGVzdA==" };
-global.window.PushNotification = { init: () => "" };
+global.window.PushNotification = pushMock();
 window.localStorage = storageMock();
 window.device = { platform: "iOS" };
+
+function pushMock() {
+  return {
+    init() {
+      return {
+        on(key: string, callback: (registrationId: string) => void) {
+          callback("dummyDeviceToken");
+        }
+      };
+    }
+  };
+}
 
 function storageMock() {
   const storage: any = {};
@@ -54,7 +66,7 @@ describe("Registration tests", () => {
   describe("#register", async () => {
     it("should fail to register in push server", async () => {
       try {
-        await registration.register(undefined as unknown as string, "cordova", ["Test"]);
+        await registration.register("cordova", ["Test"]);
         assert.fail();
       } catch (_) {
         return "ok";
@@ -66,7 +78,7 @@ describe("Registration tests", () => {
       // increase timeout to 10s
       this.timeout(10000);
       try {
-        await registration.register("token", "cordova", ["Test"]);
+        await registration.register("cordova", ["Test"]);
       } catch (error) {
         assert.fail(error);
       }
@@ -77,7 +89,7 @@ describe("Registration tests", () => {
       // increase timeout to 10s
       this.timeout(10000);
       try {
-        await registration.register("token", "cordova", ["Test"]);
+        await registration.register("cordova", ["Test"]);
         assert.equal(window.localStorage.length, 1);
       } catch (error) {
         assert.fail(error);
