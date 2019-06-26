@@ -11,6 +11,10 @@ import { ConflictResolutionData } from "./strategies/ConflictResolutionData";
  * Can be used to correct any data in flight or shown user another UI to visualize new state
  */
 export class LocalConflictError extends Error {
+  /**
+   * Flag used to recognize this type of error
+   */
+  public localConflict = true;
   constructor(public base: any, public variables: any) {
     super();
   }
@@ -23,12 +27,11 @@ export class BaseLink extends ApolloLink {
   }
 
   public request(operation: Operation, forward: NextLink) {
-    if (!isMutation(operation)) {
-      // Nothing to do here
-      return forward(operation);
-    } else {
+    if (isMutation(operation)) {
       return this.processBaseState(operation, forward);
- 
+      // Nothing to do here
+    } else {
+      return forward(operation);
     }
   }
 
@@ -60,7 +63,6 @@ export class BaseLink extends ApolloLink {
       observer.error(new LocalConflictError(base, variables));
       return () => { return; };
     });
-    
   }
 
 }
