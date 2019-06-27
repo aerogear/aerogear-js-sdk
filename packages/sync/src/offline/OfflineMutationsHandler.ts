@@ -20,8 +20,8 @@ export class OfflineMutationsHandler {
   private mutationCacheUpdates?: CacheUpdates;
 
   constructor(private store: OfflineStore,
-    private apolloClient: ApolloClient<NormalizedCacheObject>,
-    clientConfig: DataSyncConfig) {
+              private apolloClient: ApolloClient<NormalizedCacheObject>,
+              clientConfig: DataSyncConfig) {
     this.mutationCacheUpdates = clientConfig.mutationCacheUpdates;
   }
 
@@ -34,7 +34,6 @@ export class OfflineMutationsHandler {
     const offlineData = await this.store.getOfflineData();
     // if there is no offline data  then just exit
     if (offlineData && offlineData.length === 0) { return; }
-
 
     logger("Replying offline mutations after application restart");
     for (const item of offlineData) {

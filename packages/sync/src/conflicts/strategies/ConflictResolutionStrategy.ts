@@ -18,7 +18,7 @@ export interface ConflictResolutionStrategy {
    * @param client - client data
    */
   resolve: (base: ConflictResolutionData,
-    server: ConflictResolutionData,
-    client: ConflictResolutionData) => ConflictResolutionData;
+            server: ConflictResolutionData,
+            client: ConflictResolutionData) => ConflictResolutionData;
 
 }
