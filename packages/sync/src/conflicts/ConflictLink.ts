@@ -4,8 +4,8 @@ import { ApolloLink, Operation, NextLink, Observable, FetchResult } from "apollo
 import { ConflictResolutionData } from "./strategies/ConflictResolutionData";
 import { isMutation } from "../utils/helpers";
 import { ObjectState, ConflictListener } from ".";
-import { VersionConflictHandler as ConflictHandler } from "./VersionConflictHandler";
 import { ConflictResolutionStrategy } from "./strategies/ConflictResolutionStrategy";
+import { ConflictHandler } from "./handler/ConflictHandler";
 
 /**
  * Local conflict thrown when data outdates even before sending it to the server.
@@ -73,17 +73,13 @@ export class ConflictLink extends ApolloLink {
     operation: Operation,
     forward: NextLink
   ): Observable<FetchResult> | null {
-    if (!isMutation(operation)) {
-      // Nothing to do here
-      return forward(operation);
+    if (isMutation(operation)) {
+      const currentState = this.stater.currentState(operation.variables);
+      if (currentState) {
+        return this.link.request(operation, forward);
+      }
     }
-    const currentState = this.stater.currentState(operation.variables);
-    if (!currentState) {
-      // Missing state information in request.
-      // No action here
-      return forward(operation);
-    }
-    return this.link.request(operation, forward);
+    return forward(operation);
   }
 
   private conflictHandler(errorResponse: ErrorResponse) {
@@ -98,9 +94,11 @@ export class ConflictLink extends ApolloLink {
         client: data.clientState,
         server: data.serverState,
         strategy: individualStrategy,
-        listener: this.listener
+        listener: this.listener,
+        objectState: this.config.conflictProvider as ObjectState,
+        operationName: operation.operationName
       });
-      resolvedConflict = conflictHandler.executeStrategy(operation.operationName);
+      resolvedConflict = conflictHandler.executeStrategy();
       if (!conflictHandler.conflicted) {
         operation.variables = resolvedConflict;
         if (response) {

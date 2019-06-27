@@ -42,9 +42,9 @@ export class BaseLink extends ApolloLink {
     if (!base) {
       return this.createLocalConflict(base, operation.variables);
     }
-    const currentChange = this.stater.currentState(base);
-    const userState = this.stater.currentState(operation.variables);
-    if (currentChange != userState) {
+   
+  
+    if (  this.stater.hasConflict(operation.variables, base)) {
       // 🙊 Input data is conflicted with the latest server projection
       return this.createLocalConflict(base, operation.variables);
     }
@@ -53,7 +53,7 @@ export class BaseLink extends ApolloLink {
   }
 
   /**
-   * Local conflict happens when user opens view with cached data and in the mean time 
+   * Local conflict happens when user opens view with cached data and in the mean time
    * cache gets updated by subscriptions. In this case it makes no sense to send request to server as we know
    * that data was outdated. Developers need to handle this use case instantly
    * (instead enqueuing data for offline processing)

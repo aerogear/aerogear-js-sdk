@@ -15,6 +15,17 @@ import { ObjectState } from "./ObjectState";
  */
 export class VersionedState implements ObjectState {
 
+  public assignServerState(client: any, server: any): void {
+    client.version = server.version;
+  }
+  public hasConflict(client: any, server: any): boolean {
+    return client.version !== server.version;
+  }
+  public getStateFields(): string[] {
+    return  ["version", "id"];
+  }
+
+  // FIXME - remove those methods after migration
   public nextState(currentObjectState: ConflictResolutionData) {
     if (currentObjectState.version) {
       currentObjectState.version = currentObjectState.version + 1;

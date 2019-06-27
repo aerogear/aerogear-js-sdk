@@ -25,7 +25,9 @@ export class ConflictProcessor implements IResultProcessor {
                     && op.operationName === entry.operation.operationName) {
                     const opVersion = this.state.currentState(op.variables);
                     const prevOpVersion = this.state.currentState(entry.operation.variables);
+                    // FIXME why we need this check? remove it
                     if (opVersion === prevOpVersion) {
+                        // FIXME bug when server has more than single change next state will not work
                         op.variables = this.state.nextState(op.variables);
                         break;
                     }
