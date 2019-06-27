@@ -15,6 +15,7 @@ export class LocalConflictError extends Error {
    * Flag used to recognize this type of error
    */
   public localConflict = true;
+
   constructor(public base: any, public variables: any) {
     super();
   }
