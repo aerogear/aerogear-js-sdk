@@ -36,8 +36,7 @@ export class BaseLink extends ApolloLink {
   }
 
   private processBaseState(operation: Operation, forward: NextLink) {
-    const context = operation.getContext();
-    const base = getObjectFromCache(this.cache, operation.variables.id, context.returnType);
+    const base = getObjectFromCache(operation, operation.variables.id);
     if (!base) {
       return this.createLocalConflict(base, operation.variables);
     }

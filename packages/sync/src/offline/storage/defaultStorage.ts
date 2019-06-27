@@ -2,6 +2,10 @@ import { Store } from "idb-localstorage";
 import { persistCache } from "apollo-cache-persist";
 import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
 import { PersistedData, PersistentStore } from "./PersistentStore";
+import { Operation } from "apollo-link";
+import debug from "debug";
+
+export const logger = debug.default("AeroGearSync:Storage");
 
 export const createDefaultCacheStorage = () => {
   return new Store("apollo-cache", "cache-store");
@@ -20,13 +24,18 @@ export const dataIdFromObject = defaultDataIdFromObject;
 /**
  * Reads object from cache
  */
-export const getObjectFromCache = (cache: InMemoryCache, id: string, type: string) => {
-  // FIXME test with cacheData.cache.cache[key]
-  const cacheData = cache.extract(false);
-  // TODO use context.getCacheKey()
-  const idKey = dataIdFromObject({ __typename: type, id });
-  if (idKey && cacheData[idKey]) {
-    return Object.assign({}, cacheData[idKey]);
+export const getObjectFromCache = (operation: Operation, id: string) => {
+  const context = operation.getContext();
+
+  if (context.cache) {
+    const cacheData = context.cache.data.data;
+    // TODO use context.getCacheKey()
+    const idKey = dataIdFromObject({ __typename: context.returnType, id });
+    if (idKey && cacheData[idKey]) {
+      return Object.assign({}, cacheData[idKey]);
+    }
+  } else {
+    logger("Client is missing cache implementation. Conflict features will not work properly");
   }
   return {};
 };
