@@ -70,9 +70,9 @@ export class AppSecurity {
    *
    * @param baseUrl
    */
-  getInitUrl(baseUrl: string): string {
+  private getInitUrl(baseUrl: string): string {
     const url = new URL(baseUrl);
-    url.pathname = '/api/init';
+    url.pathname = "/api/init";
     return url.href;
   }
 }
