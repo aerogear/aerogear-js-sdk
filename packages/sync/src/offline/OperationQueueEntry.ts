@@ -1,5 +1,6 @@
 import { FetchResult, NextLink, Operation } from "apollo-link";
 import { isClientGeneratedId, generateClientId } from "offix-cache";
+import { runInThisContext } from "vm";
 
 /**
  * Represents data that is being saved to the offlien store
@@ -10,6 +11,7 @@ export interface OfflineItem {
   id: string;
   returnType?: string;
   base: any;
+  conflictStrategy: string;
 }
 
 /**
@@ -21,9 +23,11 @@ export class OperationQueueEntry implements OfflineItem {
 
   public readonly operation: Operation;
   public readonly optimisticResponse?: any;
-  public id: string;
-  public returnType?: string;
-  public base: any;
+  public readonly id: string;
+  public readonly returnType?: string;
+  public readonly base: any;
+  public readonly conflictStrategy: string;
+
   public forward?: NextLink;
   public result?: FetchResult;
   public networkError: any;
@@ -38,10 +42,11 @@ export class OperationQueueEntry implements OfflineItem {
       this.id = generateClientId();
     }
     if (typeof operation.getContext === "function") {
-      // FIXME store strategyID from context (it fails after app restart)
-      this.base = operation.getContext().base;
-      this.returnType = operation.getContext().returnType;
-      this.optimisticResponse = operation.getContext().optimisticResponse;
+      const context = operation.getContext();
+      this.base = context.base;
+      this.returnType = context.returnType;
+      this.optimisticResponse = context.optimisticResponse;
+      this.conflictStrategy = context.conflictStrategy.id;
     }
   }
 

@@ -20,8 +20,8 @@ export class OfflineMutationsHandler {
   private mutationCacheUpdates?: CacheUpdates;
 
   constructor(private store: OfflineStore,
-              private apolloClient: ApolloClient<NormalizedCacheObject>,
-              clientConfig: DataSyncConfig) {
+    private apolloClient: ApolloClient<NormalizedCacheObject>,
+    clientConfig: DataSyncConfig) {
     this.mutationCacheUpdates = clientConfig.mutationCacheUpdates;
   }
 
@@ -37,8 +37,12 @@ export class OfflineMutationsHandler {
 
     logger("Replying offline mutations after application restart");
     for (const item of offlineData) {
-      // FIXME XXX TODO reapply stategyID to context after restart.
-      item.operation.setContext({ base: item.base, returnType: item.returnType });
+      item.operation.setContext({
+        // FIXME XXX TODO reapply stategyID to context after restart.
+        conflictStrategy: item.conflictStrategy,
+        base: item.base,
+        returnType: item.returnType
+      });
       this.mutateOfflineElement(item);
     }
   }
