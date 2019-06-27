@@ -1,17 +1,16 @@
 import { FetchResult, NextLink, Operation } from "apollo-link";
 import { isClientGeneratedId, generateClientId } from "offix-cache";
-import { runInThisContext } from "vm";
 
 /**
  * Represents data that is being saved to the offlien store
  */
 export interface OfflineItem {
   operation: Operation;
-  optimisticResponse?: any;
   id: string;
+  base?: any;
   returnType?: string;
-  base: any;
-  conflictStrategy: string;
+  optimisticResponse?: any;
+  conflictStrategy?: string;
 }
 
 /**
@@ -20,13 +19,12 @@ export interface OfflineItem {
  * It exposes method for forwarding the operation.
  */
 export class OperationQueueEntry implements OfflineItem {
-
   public readonly operation: Operation;
   public readonly optimisticResponse?: any;
   public readonly id: string;
   public readonly returnType?: string;
   public readonly base: any;
-  public readonly conflictStrategy: string;
+  public conflictStrategy?: string;
 
   public forward?: NextLink;
   public result?: FetchResult;
@@ -46,7 +44,9 @@ export class OperationQueueEntry implements OfflineItem {
       this.base = context.base;
       this.returnType = context.returnType;
       this.optimisticResponse = context.optimisticResponse;
-      this.conflictStrategy = context.conflictStrategy.id;
+      if (context.conflictStrategy) {
+        this.conflictStrategy = context.conflictStrategy.id;
+      }
     }
   }
 
@@ -67,7 +67,8 @@ export class OperationQueueEntry implements OfflineItem {
       optimisticResponse: this.optimisticResponse,
       id: this.id,
       returnType: this.returnType,
-      base: this.base
+      base: this.base,
+      conflictStrategy: this.conflictStrategy
     };
   }
 }

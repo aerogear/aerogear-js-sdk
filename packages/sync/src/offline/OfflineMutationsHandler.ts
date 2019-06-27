@@ -38,7 +38,7 @@ export class OfflineMutationsHandler {
     logger("Replying offline mutations after application restart");
     for (const item of offlineData) {
       item.operation.setContext({
-        // FIXME XXX TODO reapply stategyID to context after restart.
+        // FIXME XXX TODO reapply right object to context after restart.
         conflictStrategy: item.conflictStrategy,
         base: item.base,
         returnType: item.returnType

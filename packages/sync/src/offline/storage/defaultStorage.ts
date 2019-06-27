@@ -27,7 +27,7 @@ export const dataIdFromObject = defaultDataIdFromObject;
 export const getObjectFromCache = (operation: Operation, id: string) => {
   const context = operation.getContext();
 
-  if (context.cache) {
+  if (context.cache && context.cache.data) {
     const cacheData = context.cache.data.data;
     // TODO use context.getCacheKey()
     const idKey = dataIdFromObject({ __typename: context.returnType, id });
