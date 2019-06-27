@@ -1,6 +1,5 @@
 import { OperationQueueEntry } from "./OperationQueueEntry";
 import { OfflineQueueListener } from "./events/OfflineQueueListener";
-import { ObjectState } from "../conflicts/state/ObjectState";
 import { Operation, NextLink, Observable, FetchResult } from "apollo-link";
 import { OfflineStore } from "./storage/OfflineStore";
 import { OfflineLinkOptions } from "../links";
@@ -20,7 +19,6 @@ export type OperationQueueChangeHandler = (entry: OperationQueueEntry) => void;
 export class OfflineQueue {
   public queue: OperationQueueEntry[] = [];
   private readonly listener?: OfflineQueueListener;
-  private readonly state?: ObjectState;
   private store: OfflineStore;
   private resultProcessors: IResultProcessor[] | undefined;
 

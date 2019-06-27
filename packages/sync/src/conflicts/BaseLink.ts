@@ -30,7 +30,6 @@ export class BaseLink extends ApolloLink {
   public request(operation: Operation, forward: NextLink) {
     if (isMutation(operation)) {
       return this.processBaseState(operation, forward);
-      // Nothing to do here
     } else {
       return forward(operation);
     }
@@ -42,13 +41,11 @@ export class BaseLink extends ApolloLink {
     if (!base) {
       return this.createLocalConflict(base, operation.variables);
     }
-   
-  
-    if (  this.stater.hasConflict(operation.variables, base)) {
+
+    if (this.stater.hasConflict(operation.variables, base)) {
       // 🙊 Input data is conflicted with the latest server projection
       return this.createLocalConflict(base, operation.variables);
     }
-    this.stater.currentState(base);
     return forward(operation);
   }
 

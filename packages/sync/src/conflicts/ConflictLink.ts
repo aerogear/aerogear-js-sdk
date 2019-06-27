@@ -87,7 +87,9 @@ export class ConflictLink extends ApolloLink {
     const data = this.getConflictData(graphQLErrors);
     if (data && this.strategy && operation.getContext().returnType) {
       let resolvedConflict;
+      // FIXME Use offline base instead of context as this will be empty after restart
       const base = operation.getContext().base;
+      // FIXME operation.getContext().strategy will be empty. We need to use id's
       const individualStrategy = operation.getContext().strategy || this.strategy;
       const conflictHandler = new ConflictHandler({
         base,

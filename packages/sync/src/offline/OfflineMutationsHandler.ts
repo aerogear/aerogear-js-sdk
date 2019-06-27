@@ -20,8 +20,8 @@ export class OfflineMutationsHandler {
   private mutationCacheUpdates?: CacheUpdates;
 
   constructor(private store: OfflineStore,
-              private apolloClient: ApolloClient<NormalizedCacheObject>,
-              clientConfig: DataSyncConfig) {
+    private apolloClient: ApolloClient<NormalizedCacheObject>,
+    clientConfig: DataSyncConfig) {
     this.mutationCacheUpdates = clientConfig.mutationCacheUpdates;
   }
 
@@ -35,8 +35,11 @@ export class OfflineMutationsHandler {
     // if there is no offline data  then just exit
     if (offlineData && offlineData.length === 0) { return; }
 
+
     logger("Replying offline mutations after application restart");
     for (const item of offlineData) {
+      // FIXME XXX TODO reapply stategyID to context after restart.
+      item.operation.setContext({ base: item.base, returnType: item.returnType });
       this.mutateOfflineElement(item);
     }
   }
@@ -66,7 +69,7 @@ export class OfflineMutationsHandler {
       // Pass client update functions
       update: updateFunction,
       // Pass extensions as part of the context
-      context: {...previousContext, ...newContext}
+      context: { ...previousContext, ...newContext }
     };
     await this.apolloClient.mutate(mutationOptions);
   }

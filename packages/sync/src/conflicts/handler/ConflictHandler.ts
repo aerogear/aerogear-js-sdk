@@ -26,7 +26,7 @@ export class ConflictHandler {
    * @param operationName - name of operation that triggered that conflict
    */
   public executeStrategy() {
-    const resolvedData = this.options.strategy(this.options.base, this.serverDiff, this.clientDiff);
+    const resolvedData = this.options.strategy.resolve(this.options.base, this.serverDiff, this.clientDiff);
     this.options.objectState.assignServerState(resolvedData, this.options.server);
     if (this.options.listener) {
       if (this.conflicted) {
