@@ -50,7 +50,7 @@ export class AppSecurity {
       version: defaultMetricsPayload.data.app.appVersion
     };
 
-    return axios.post(`${this.internalConfig.url}/api/init`, initPayload);
+    return axios.post(`${this.internalConfig.url}api/init`, initPayload);
   }
 
   /**

@@ -65,7 +65,7 @@ describe("AppSecurity", () => {
 
   before(async () => {
     await mockServer.start();
-    await mockServer.post("/api/init").thenReply(204);
+    await mockServer.post("api/init").thenReply(204);
 
     testAerogearConfig = {
       "version": 1.0,
@@ -91,7 +91,7 @@ describe("AppSecurity", () => {
 
     it("should return 204 if clientInit POST successful", async () => {
       const configService = new ConfigurationService(testAerogearConfig);
-      const appSecurity = new AppSecurity(configService, { metricsBuilder: new MockMetricsBuilder(validMetrics)});
+      const appSecurity = new AppSecurity(configService, { metricsBuilder: new MockMetricsBuilder(validMetrics) });
       const res = await appSecurity.clientInit();
 
       assert.equal(res.status, 204);
