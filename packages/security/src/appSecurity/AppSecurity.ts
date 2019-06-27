@@ -6,10 +6,10 @@ import {
   MetricsBuilder,
   DefaultMetricsBuilder,
   isMobileCordova
- } from "@aerogear/core";
+} from "@aerogear/core";
 
 export interface AppSecurityOptions {
-   metricsBuilder?: MetricsBuilder;
+  metricsBuilder?: MetricsBuilder;
 }
 
 export class AppSecurity {
@@ -27,9 +27,7 @@ export class AppSecurity {
     const configuration = config.getConfigByType(AppSecurity.TYPE);
     if (configuration && configuration.length > 0) {
       const serviceConfiguration: ServiceConfiguration = configuration[0];
-      this.internalConfig = serviceConfiguration.config;
-      // use the configuration url in the from the incoming config file
-      this.internalConfig.url = serviceConfiguration.url;
+      this.internalConfig = serviceConfiguration;
     } else {
       console.warn("Security configuration is missing. The Security module will not work properly.");
     }
@@ -42,7 +40,7 @@ export class AppSecurity {
     const defaultMetrics = this.metricsBuilder.buildDefaultMetrics();
     const defaultMetricsPayload = await this.metricsBuilder.buildMetricsPayload("security", defaultMetrics);
 
-    const initPayload: {[key: string]: any; } = {
+    const initPayload: { [key: string]: any; } = {
       deviceId: defaultMetricsPayload.clientId,
       appId: defaultMetricsPayload.data.app.appId,
       deviceType: defaultMetricsPayload.data.device.platform,
@@ -50,7 +48,7 @@ export class AppSecurity {
       version: defaultMetricsPayload.data.app.appVersion
     };
 
-    return axios.post(`${this.internalConfig.url}/api/init`, initPayload);
+    return axios.post(this.getInitUrl(this.internalConfig.url), initPayload);
   }
 
   /**
@@ -65,5 +63,16 @@ export class AppSecurity {
    */
   public hasConfig(): boolean {
     return !!this.internalConfig;
+  }
+
+  /**
+   * Build the init URL from the base URL
+   *
+   * @param baseUrl
+   */
+  getInitUrl(baseUrl: string): string {
+    const url = new URL(baseUrl);
+    url.pathname = '/api/init';
+    return url.href;
   }
 }
