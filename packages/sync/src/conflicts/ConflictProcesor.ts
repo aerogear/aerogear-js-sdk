@@ -13,7 +13,7 @@ export class ConflictProcessor implements IResultProcessor {
     }
 
     public execute(queue: OperationQueueEntry[],
-                   entry: OperationQueueEntry, result: FetchResult): void {
+        entry: OperationQueueEntry, result: FetchResult): void {
         const { operation: { operationName } } = entry;
         if (!result || !this.state) {
             return;
@@ -23,14 +23,7 @@ export class ConflictProcessor implements IResultProcessor {
             for (const { operation: op } of queue) {
                 if (op.variables.id === entry.operation.variables.id
                     && op.operationName === entry.operation.operationName) {
-                    const opVersion = this.state.currentState(op.variables);
-                    const prevOpVersion = this.state.currentState(entry.operation.variables);
-                    // FIXME why we need this check? remove it
-                    if (opVersion === prevOpVersion) {
-                        // FIXME bug when server has more than single change next state will not work
-                        op.variables = this.state.nextState(op.variables);
-                        break;
-                    }
+                    this.state.assignServerState(op.variables, result.data[operationName])
                 }
             }
         }

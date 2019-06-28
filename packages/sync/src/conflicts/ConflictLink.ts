@@ -74,8 +74,7 @@ export class ConflictLink extends ApolloLink {
     forward: NextLink
   ): Observable<FetchResult> | null {
     if (isMutation(operation)) {
-      const currentState = this.stater.currentState(operation.variables);
-      if (currentState) {
+      if (this.stater.currentState(operation.variables) !== undefined) {
         return this.link.request(operation, forward);
       }
     }

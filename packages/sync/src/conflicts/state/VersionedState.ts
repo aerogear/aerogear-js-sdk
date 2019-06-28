@@ -22,16 +22,8 @@ export class VersionedState implements ObjectState {
     return client.version !== server.version;
   }
   public getStateFields(): string[] {
+    // Id should be removed because we don't need to compare it for conflicts
     return  ["version", "id"];
-  }
-
-  // FIXME - remove those methods after migration
-  public nextState(currentObjectState: ConflictResolutionData) {
-    if (currentObjectState.version) {
-      currentObjectState.version = currentObjectState.version + 1;
-      return currentObjectState;
-    }
-    return null;
   }
 
   public currentState(currentObjectState: ConflictResolutionData) {
