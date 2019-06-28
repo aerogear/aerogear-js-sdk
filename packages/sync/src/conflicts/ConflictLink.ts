@@ -6,6 +6,7 @@ import { isMutation } from "../utils/helpers";
 import { ObjectState, ConflictListener } from ".";
 import { ConflictResolutionStrategy } from "./strategies/ConflictResolutionStrategy";
 import { ConflictHandler } from "./handler/ConflictHandler";
+import { resolve } from "path";
 
 /**
  * Local conflict thrown when data outdates even before sending it to the server.
@@ -85,7 +86,7 @@ export class ConflictLink extends ApolloLink {
     const { response, operation, forward, graphQLErrors } = errorResponse;
     const data = this.getConflictData(graphQLErrors);
     if (data && this.strategy && operation.getContext().returnType) {
-      let resolvedConflict;
+  
       // FIXME Use offline base instead of context as this will be empty after restart
       const base = operation.getContext().base;
       // FIXME operation.getContext().strategy will be empty. We need to use id's
@@ -99,16 +100,13 @@ export class ConflictLink extends ApolloLink {
         objectState: this.config.conflictProvider as ObjectState,
         operationName: operation.operationName
       });
-      resolvedConflict = conflictHandler.executeStrategy();
-      if (!conflictHandler.conflicted) {
+      let resolvedConflict = conflictHandler.executeStrategy();
+      if(resolvedConflict){
         operation.variables = resolvedConflict;
-        if (response) {
-          // 🍴 eat error
-          response.errors = undefined;
-        }
-
+      
         return forward(operation);
       }
+
     }
   }
 

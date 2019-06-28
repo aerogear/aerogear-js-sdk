@@ -8,10 +8,11 @@ import { ConflictHandlerOptions } from "./ConflictHandlerOptions";
  * - notify listeners about merge/conflict
  */
 export class ConflictHandler {
-  public clientDiff: any = {};
-  public serverDiff: any = {};
-  public options: ConflictHandlerOptions;
-  public conflicted: boolean = false;
+
+  private clientDiff: any = {};
+  private serverDiff: any = {};
+  private options: ConflictHandlerOptions;
+  private conflicted: boolean = false;
   private ignoredKeys: string[];
 
   constructor(options: ConflictHandlerOptions) {
@@ -26,6 +27,7 @@ export class ConflictHandler {
    * @param operationName - name of operation that triggered that conflict
    */
   public executeStrategy() {
+    // TODO server wins should return undefined
     const resolvedData = this.options.strategy.resolve(this.options.base, this.serverDiff, this.clientDiff);
     this.options.objectState.assignServerState(resolvedData, this.options.server);
     if (this.options.listener) {
@@ -37,6 +39,8 @@ export class ConflictHandler {
           this.options.server, this.options.client);
       }
     }
+
+    // Filter to send only original data from client
     const filteredData: any = {};
     for (const key of Object.keys(resolvedData)) {
       if (this.options.client[key]) {
@@ -50,7 +54,9 @@ export class ConflictHandler {
     const base = this.options.base;
     const client = this.options.client;
     const server = this.options.server;
-
+    if (!base || !client || !server) {
+      return;
+    }
     // calculate client diff
     for (const key of Object.keys(client)) {
       if (base[key] && base[key] !== client[key]) {
@@ -72,5 +78,4 @@ export class ConflictHandler {
       }
     }
   }
-
 }

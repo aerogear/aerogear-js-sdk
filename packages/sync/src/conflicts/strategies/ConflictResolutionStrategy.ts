@@ -3,7 +3,7 @@ import { ConflictResolutionData } from "./ConflictResolutionData";
 /**
  * Interface for strategy that can be used to resolve conflict
  */
-export interface ConflictResolutionStrategy {
+export interface ConflictResolutionStrategy<T> {
   /**
    * Strategy id
    */
@@ -17,8 +17,11 @@ export interface ConflictResolutionStrategy {
    * @param server - server data
    * @param client - client data
    */
+  // TODO add operation name
   resolve: (base: ConflictResolutionData,
             server: ConflictResolutionData,
             client: ConflictResolutionData) => ConflictResolutionData;
+
+
 
 }

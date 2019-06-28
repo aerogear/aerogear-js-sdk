@@ -37,13 +37,13 @@ export class BaseLink extends ApolloLink {
 
   private processBaseState(operation: Operation, forward: NextLink) {
     const base = getObjectFromCache(operation, operation.variables.id);
-    if (!base) {
-      return this.createLocalConflict(base, operation.variables);
-    }
-
-    if (this.stater.hasConflict(operation.variables, base)) {
-      // 🙊 Input data is conflicted with the latest server projection
-      return this.createLocalConflict(base, operation.variables);
+    if (base && Object.keys(base).length !== 0) {
+      if (this.stater.hasConflict(operation.variables, base)) {
+        // 🙊 Input data is conflicted with the latest server projection
+        return this.createLocalConflict(base, operation.variables);
+      }
+      // TODO use conflictBase as name
+      operation.setContext({ base });
     }
     return forward(operation);
   }
