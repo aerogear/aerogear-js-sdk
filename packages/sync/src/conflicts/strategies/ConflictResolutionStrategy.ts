@@ -3,7 +3,7 @@ import { ConflictResolutionData } from "./ConflictResolutionData";
 /**
  * Interface for strategy that can be used to resolve conflict
  */
-export interface ConflictResolutionStrategy<T> {
+export interface ConflictResolutionStrategy {
   /**
    * Strategy id
    */
@@ -21,7 +21,6 @@ export interface ConflictResolutionStrategy<T> {
   resolve: (base: ConflictResolutionData,
             server: ConflictResolutionData,
             client: ConflictResolutionData) => ConflictResolutionData;
-
 
 
 }
