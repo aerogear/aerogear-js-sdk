@@ -7,6 +7,11 @@ import axios, { AxiosInstance } from "axios";
 
 declare var window: any;
 
+export interface PushRegistrationOptions {
+  alias?: string;
+  categories?: string[];
+}
+
 /**
  * AeroGear UPS registration SDK
  *
@@ -106,10 +111,9 @@ export class PushRegistration {
   /**
    * Register deviceToken for Android or IOS platforms
    *
-   * @param alias device alias used for registration
-   * @param categories array list of categories that device should be register to.
+   * @param options Push registration options
    */
-  public register(alias: string = "", categories: string[] = []): Promise<void> {
+  public register(options: PushRegistrationOptions = {}): Promise<void> {
 
     if (this.validationError) {
       return Promise.reject(new Error(this.validationError));
@@ -127,16 +131,18 @@ export class PushRegistration {
             "deviceType": window.device.model,
             "operatingSystem": window.device.platform,
             "osVersion": window.device.version,
-            "alias": alias,
-            "categories": categories
+            "alias": options.alias,
+            "categories": options.categories
           };
 
           return this.httpClient.post(PushRegistration.API_PATH, postData)
           .then(() => {
               if (isCordovaAndroid() && this.variantId) {
                 this.subscribeToFirebaseTopic(this.variantId);
-                for (const category of categories) {
-                  this.subscribeToFirebaseTopic(category);
+                if (options.categories) {
+                  for (const category of options.categories) {
+                    this.subscribeToFirebaseTopic(category);
+                  }
                 }
               }
 
@@ -191,8 +197,10 @@ export class PushRegistration {
 
           if (isCordovaAndroid() && this.variantId) {
             this.unsubscribeToFirebaseTopic(this.variantId);
-            for (const category of categories) {
-              this.unsubscribeToFirebaseTopic(category);
+            if (categories) {
+              for (const category of categories) {
+                this.unsubscribeToFirebaseTopic(category);
+              }
             }
           }
 
