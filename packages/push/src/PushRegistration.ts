@@ -117,7 +117,7 @@ export class PushRegistration {
 
     return new Promise((resolve, reject) => {
 
-      setTimeout(() => reject(), 5000);
+      setTimeout(() => reject("UPS registration timeout"), 5000);
 
       this.push.on("registration", (data: any) => {
 
