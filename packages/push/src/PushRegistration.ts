@@ -19,9 +19,9 @@ declare var window: any;
 export class PushRegistration {
 
   public static readonly TYPE: string = "push";
+  public static readonly REGISTRATION_DATA_KEY = "UPS_REGISTRATION_DATA";
 
   private static readonly API_PATH: string = "rest/registry/device";
-  private static readonly TOKEN_KEY = "UPS_DEVICE_TOKEN";
 
   private readonly validationError?: string;
   private readonly variantId?: string;
@@ -106,52 +106,54 @@ export class PushRegistration {
   /**
    * Register deviceToken for Android or IOS platforms
    *
-   * @param deviceToken token that will be sent to Unified Push server
    * @param alias device alias used for registration
    * @param categories array list of categories that device should be register to.
    */
-  public register(deviceToken: string, alias: string = "", categories: string[] = []): Promise<void> {
-
-    if (!deviceToken) {
-      return Promise.reject(new Error("Device token should not be empty"));
-    }
+  public register(alias: string = "", categories: string[] = []): Promise<void> {
 
     if (this.validationError) {
       return Promise.reject(new Error(this.validationError));
     }
 
-    const postData = {
-      "deviceToken": deviceToken,
-      "deviceType": window.device.model,
-      "operatingSystem": window.device.platform,
-      "osVersion": window.device.version,
-      "alias": alias,
-      "categories": categories
-    };
-
     return new Promise((resolve, reject) => {
-      if (this.httpClient) {
-        return this.httpClient.post(PushRegistration.API_PATH, postData)
-        .then(
-          () => {
-            const storage = window.localStorage;
-            storage.setItem(PushRegistration.TOKEN_KEY, deviceToken);
 
-            if (isCordovaAndroid() && this.variantId) {
-              this.subscribeToFirebaseTopic(this.variantId);
-              for (const category of categories) {
-                this.subscribeToFirebaseTopic(category);
+      setTimeout(() => reject("UPS registration timeout"), 5000);
+
+      this.push.on("registration", (data: any) => {
+
+        if (this.httpClient) {
+          const postData = {
+            "deviceToken": data.registrationId,
+            "deviceType": window.device.model,
+            "operatingSystem": window.device.platform,
+            "osVersion": window.device.version,
+            "alias": alias,
+            "categories": categories
+          };
+
+          return this.httpClient.post(PushRegistration.API_PATH, postData)
+          .then(() => {
+              if (isCordovaAndroid() && this.variantId) {
+                this.subscribeToFirebaseTopic(this.variantId);
+                for (const category of categories) {
+                  this.subscribeToFirebaseTopic(category);
+                }
               }
-            }
 
-            resolve();
-          }
-        )
-        .catch(reject);
-      } else {
-        // It should never happend but...
-        return Promise.reject(new Error("Push is not properly configured"));
-      }
+              const storage = window.localStorage;
+              storage.setItem(PushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(postData));
+
+              resolve();
+            }
+          )
+          .catch(reject);
+
+        } else {
+          // It should never happend but...
+          return reject(new Error("Push is not properly configured"));
+        }
+
+      });
     });
   }
 
@@ -160,26 +162,48 @@ export class PushRegistration {
    */
   public unregister(): Promise<void> {
 
+    if (this.validationError) {
+      return Promise.reject(new Error(this.validationError));
+    }
+
     const storage = window.localStorage;
-    const deviceToken = storage.getItem(PushRegistration.TOKEN_KEY);
+    const jsonCachedData = storage.getItem(PushRegistration.REGISTRATION_DATA_KEY);
+
+    let postData;
+    let deviceToken = "";
+    let categories: string[] = [];
+
+    if (jsonCachedData) {
+      postData = JSON.parse(jsonCachedData);
+      deviceToken = postData.deviceToken;
+      categories = postData.categories;
+    }
 
     if (!deviceToken) {
       return Promise.reject(new Error("Device token should not be empty"));
-    }
-
-    if (this.validationError) {
-      return Promise.reject(new Error(this.validationError));
     }
 
     return new Promise((resolve, reject) => {
       if (this.httpClient) {
         const endpoint = PushRegistration.API_PATH + "/" + deviceToken;
         return this.httpClient.delete(endpoint, {})
-        .then(() => resolve())
+        .then(() => {
+
+          if (isCordovaAndroid() && this.variantId) {
+            this.unsubscribeToFirebaseTopic(this.variantId);
+            for (const category of categories) {
+              this.unsubscribeToFirebaseTopic(category);
+            }
+          }
+
+          storage.removeItem(PushRegistration.REGISTRATION_DATA_KEY);
+
+          resolve();
+        })
         .catch(reject);
       } else {
         // It should never happend but...
-        return Promise.reject(new Error("Push is not properly configured"));
+        return reject(new Error("Push is not properly configured"));
       }
     });
   }
@@ -189,6 +213,18 @@ export class PushRegistration {
       topic,
       () => {
         console.warn("FCM topic: " + topic + " subscribed");
+      },
+      (e: any) => {
+        console.warn("error:", e);
+      }
+    );
+  }
+
+  private unsubscribeToFirebaseTopic(topic: string) {
+    this.push.unsubscribe(
+      topic,
+      () => {
+        console.warn("FCM topic: " + topic + " unsubscribed");
       },
       (e: any) => {
         console.warn("error:", e);

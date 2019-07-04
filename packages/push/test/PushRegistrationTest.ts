@@ -6,9 +6,40 @@ declare var window: any;
 declare var global: any;
 
 global.window = { btoa: () => "dGVzdA==" };
-global.window.PushNotification = { init: () => "" };
-global.window.localStorage = { setItem: () => "" };
+global.window.PushNotification = pushMock();
+window.localStorage = storageMock();
 window.device = { platform: "iOS" };
+
+function pushMock() {
+  return {
+    init() {
+      return {
+        on(key: string, callback: (registrationId: string) => void) {
+          callback("dummyDeviceToken");
+        }
+      };
+    }
+  };
+}
+
+function storageMock() {
+  const storage: any = {};
+
+  return {
+    setItem(key: string, value: string) {
+      storage[key] = value || "";
+    },
+    getItem(key: string) {
+      return key in storage ? storage[key] : null;
+    },
+    removeItem(key: string) {
+      delete storage[key];
+    },
+    get length() {
+      return Object.keys(storage).length;
+    }
+  };
+}
 
 describe("Registration tests", () => {
   const pushConfig = {
@@ -35,7 +66,7 @@ describe("Registration tests", () => {
   describe("#register", async () => {
     it("should fail to register in push server", async () => {
       try {
-        await registration.register(undefined as unknown as string, "cordova", ["Test"]);
+        await registration.register("cordova", ["Test"]);
         assert.fail();
       } catch (_) {
         return "ok";
@@ -47,7 +78,19 @@ describe("Registration tests", () => {
       // increase timeout to 10s
       this.timeout(10000);
       try {
-        await registration.register("token", "cordova", ["Test"]);
+        await registration.register("cordova", ["Test"]);
+      } catch (error) {
+        assert.fail(error);
+      }
+    });
+
+    it("should store the registration data on register", async function() {
+      // in CI environment this test sometimes fails because of the default timeout 2s
+      // increase timeout to 10s
+      this.timeout(10000);
+      try {
+        await registration.register("cordova", ["Test"]);
+        assert.equal(window.localStorage.length, 1);
       } catch (error) {
         assert.fail(error);
       }
@@ -55,7 +98,7 @@ describe("Registration tests", () => {
   });
 
   describe("#unregister", async () => {
-    it("should fail to unregister in push server", async () => {
+    it("should fail to unregister in push server when deviceToken does not exists", async () => {
       try {
         await registration.unregister();
         assert.fail();
@@ -69,8 +112,31 @@ describe("Registration tests", () => {
       // increase timeout to 10s
       this.timeout(10000);
       try {
-        global.window.localStorage = { getItem: () => "deviceToken" };
+        const registrationData = {
+          "deviceToken": "dummyDeviceToken",
+          "alias": "unitTest",
+          "categories": ["test"]
+        };
+        window.localStorage.setItem(PushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(registrationData));
         await registration.unregister();
+      } catch (error) {
+        assert.fail(error);
+      }
+    });
+
+    it("should remove stored registration data on unregister", async function() {
+      // in CI environment this test sometimes fails because of the default timeout 2s
+      // increase timeout to 10s
+      this.timeout(10000);
+      try {
+        const registrationData = {
+          "deviceToken": "dummyDeviceToken",
+          "alias": "unitTest",
+          "categories": ["test"]
+        };
+        window.localStorage.setItem(PushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(registrationData));
+        await registration.unregister();
+        assert.equal(window.localStorage.length, 0);
       } catch (error) {
         assert.fail(error);
       }
