@@ -10,6 +10,7 @@ declare var window: any;
 export interface PushRegistrationOptions {
   alias?: string;
   categories?: string[];
+  timeout?: number;
 }
 
 /**
@@ -26,6 +27,7 @@ export class PushRegistration {
   public static readonly TYPE: string = "push";
   public static readonly REGISTRATION_DATA_KEY = "UPS_REGISTRATION_DATA";
 
+  private static readonly REGISTRATION_TIMEOUT = 5000;
   private static readonly API_PATH: string = "rest/registry/device";
 
   private readonly validationError?: string;
@@ -115,13 +117,18 @@ export class PushRegistration {
    */
   public register(options: PushRegistrationOptions = {}): Promise<void> {
 
+    const {alias, categories, timeout} = options;
+
     if (this.validationError) {
       return Promise.reject(new Error(this.validationError));
     }
 
     return new Promise((resolve, reject) => {
 
-      setTimeout(() => reject("UPS registration timeout"), 5000);
+      setTimeout(
+        () => reject("UnifiedPush registration timeout"),
+        (timeout) ? timeout : PushRegistration.REGISTRATION_TIMEOUT
+      );
 
       this.push.on("registration", (data: any) => {
 
@@ -131,8 +138,8 @@ export class PushRegistration {
             "deviceType": window.device.model,
             "operatingSystem": window.device.platform,
             "osVersion": window.device.version,
-            "alias": options.alias,
-            "categories": options.categories
+            "alias": alias,
+            "categories": categories
           };
 
           return this.httpClient.post(PushRegistration.API_PATH, postData)
