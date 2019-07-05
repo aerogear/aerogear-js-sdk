@@ -7,6 +7,8 @@ import axios, { AxiosInstance } from "axios";
 
 declare var window: any;
 
+export type OnMessageReceivedCallback = (notification: any) => void;
+
 export interface PushRegistrationOptions {
   alias?: string;
   categories?: string[];
@@ -27,8 +29,13 @@ export class PushRegistration {
   public static readonly TYPE: string = "push";
   public static readonly REGISTRATION_DATA_KEY = "UPS_REGISTRATION_DATA";
 
+  public static onMessageReceived(onMessageReceivedCallback: OnMessageReceivedCallback) {
+    PushRegistration.onMessageReceivedCallback = onMessageReceivedCallback;
+  }
+
   private static readonly REGISTRATION_TIMEOUT = 5000;
   private static readonly API_PATH: string = "rest/registry/device";
+  private static onMessageReceivedCallback: OnMessageReceivedCallback;
 
   private readonly validationError?: string;
   private readonly variantId?: string;
@@ -155,6 +162,13 @@ export class PushRegistration {
 
               const storage = window.localStorage;
               storage.setItem(PushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(postData));
+
+              this.push
+              .on("notification", (notification: any) => {
+                if (PushRegistration.onMessageReceivedCallback) {
+                  PushRegistration.onMessageReceivedCallback(notification);
+                }
+              });
 
               resolve();
             }
