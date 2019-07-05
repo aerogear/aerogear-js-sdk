@@ -66,7 +66,7 @@ describe("Registration tests", () => {
   describe("#register", async () => {
     it("should fail to register in push server", async () => {
       try {
-        await registration.register("cordova", ["Test"]);
+        await registration.register({alias: "cordova", categories: ["Test"]});
         assert.fail();
       } catch (_) {
         return "ok";
@@ -78,7 +78,7 @@ describe("Registration tests", () => {
       // increase timeout to 10s
       this.timeout(10000);
       try {
-        await registration.register("cordova", ["Test"]);
+        await registration.register({alias: "cordova", categories: ["Test"]});
       } catch (error) {
         assert.fail(error);
       }
@@ -89,7 +89,7 @@ describe("Registration tests", () => {
       // increase timeout to 10s
       this.timeout(10000);
       try {
-        await registration.register("cordova", ["Test"]);
+        await registration.register({alias: "cordova", categories: ["Test"]});
         assert.equal(window.localStorage.length, 1);
       } catch (error) {
         assert.fail(error);
