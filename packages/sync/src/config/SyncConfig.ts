@@ -50,7 +50,6 @@ export class SyncConfig implements DataSyncConfig {
     }
   };
 
-
   constructor(clientOptions?: DataSyncConfig) {
     if (clientOptions && clientOptions.storage) {
       this.cacheStorage = clientOptions.storage;
