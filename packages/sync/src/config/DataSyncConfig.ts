@@ -1,14 +1,9 @@
-import { ConflictResolutionStrategies } from "../conflicts/ConflictResolutionStrategy";
-import { PersistedData, PersistentStore } from "../offline/storage/PersistentStore";
-import { NetworkStatus } from "../offline";
-import { OfflineQueueListener } from "../offline/events/OfflineQueueListener";
-import { AuthContextProvider } from "../auth/AuthContextProvider";
-import { ObjectState } from "../conflicts/ObjectState";
-import { ConflictListener } from "../conflicts/ConflictListener";
+
 import { ConfigurationService } from "@aerogear/core";
 import { CacheUpdates } from "offix-cache";
 import { RetryLink } from "apollo-link-retry";
-
+import { NetworkStatus, PersistentStore, PersistedData, OfflineQueueListener, ObjectState, ConflictListener, ConflictResolutionStrategy } from "offix-offline";
+import { AuthContextProvider } from ".";
 /**
  * Contains all configuration options required to initialize Voyager Client
  * Options marked with [Modifier] flag are used to modify behavior of client.
@@ -76,9 +71,9 @@ export interface DataSyncConfig {
    * Interface that defines how object state is progressed
    * This interface needs to match state provider supplied on server.
    */
-  conflictStateProvider?: ObjectState;
+  conflictProvider?: ObjectState;
 
-  /**
+ /**
    * Interface that can be implemented to receive information about the data conflict
    *
    * @deprecated see OfflineClient.registerOfflineEventListener
@@ -96,7 +91,7 @@ export interface DataSyncConfig {
    *
    * The conflict resolution strategy your client should use. By default it takes client version.
    */
-  conflictStrategy?: ConflictResolutionStrategies;
+  conflictStrategy?: ConflictResolutionStrategy;
 
   /**
    * [Modifier]

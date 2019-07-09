@@ -1,23 +1,23 @@
 import { ApolloClient } from "apollo-client";
 import { DataSyncConfig } from "./config";
 import { SyncConfig } from "./config/SyncConfig";
-import { createDefaultLink, createOfflineLink } from "./links/LinksBuilder";
-import { OfflineStore, OfflineQueueListener } from "./offline";
-import { OfflineLink } from "./offline/OfflineLink";
-import { OfflineMutationsHandler } from "./offline/OfflineMutationsHandler";
-import { CompositeQueueListener } from "./offline/events/CompositeQueueListener";
-import { ListenerProvider } from "./offline/events/ListenerProvider";
-import { ApolloOfflineClient } from "./OfflineApolloClient";
-import { buildCachePersistence } from "./offline/storage/defaultStorage";
+import { createDefaultLink, createOfflineLink, createConflictLink } from "./links/LinksBuilder";
+import { OfflineStore, OfflineQueueListener } from "offix-offline";
+import { OfflineLink } from "offix-offline";
+import { OfflineMutationsHandler } from "offix-offline";
+import { CompositeQueueListener } from "offix-offline";
+import { ListenerProvider } from "offix-offline";
+import { ApolloOfflineClient } from "./ApolloOfflineClient";
 import { MutationHelperOptions, createMutationOptions } from "offix-cache";
 import { FetchResult } from "apollo-link";
+import { buildCachePersistence } from "./cache";
 
 /**
 * Factory for creating Apollo Offline Client
 *
 * @param userConfig options object used to build client
 * @deprecated use OfflineClient class directly:
-* ```javascript
+*  ```javascript
 *  const offlineClient = new OfflineClient(config);
 *  await offlineClient.init();
 *  ```
@@ -50,7 +50,7 @@ export class OfflineClient implements ListenerProvider {
 
   constructor(userConfig: DataSyncConfig) {
     this.config = new SyncConfig(userConfig);
-    this.store = new OfflineStore(this.config);
+    this.store = new OfflineStore(this.config.offlineStorage);
     this.setupEventListeners();
   }
 
@@ -61,11 +61,13 @@ export class OfflineClient implements ListenerProvider {
     await this.store.init();
     const cache = await buildCachePersistence(this.config.cacheStorage);
     const offlineLink = await createOfflineLink(this.config, this.store);
-    const link = await createDefaultLink(this.config, offlineLink);
+    const conflictLink = await createConflictLink(this.config);
+    const link = await createDefaultLink(this.config, offlineLink, conflictLink, cache);
 
     const client = new ApolloClient({
       link,
       cache
+
     }) as any;
     this.apolloClient = this.decorateApolloClient(client);
     await this.restoreOfflineOperations(offlineLink);
