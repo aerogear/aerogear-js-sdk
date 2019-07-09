@@ -1,9 +1,8 @@
-import { createClient, OfflineClient } from "../src";
+import { createClient, OfflineClient, CompositeQueueListener } from "../src";
 import { expect, should } from "chai";
 import { mock } from "fetch-mock";
 import { storage } from "./mock/Storage";
 import { networkStatus } from "./mock/NetworkState";
-import { CompositeQueueListener } from "../src/offline/events/CompositeQueueListener";
 
 const url = "http://test";
 
