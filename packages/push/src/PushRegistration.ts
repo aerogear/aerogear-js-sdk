@@ -7,6 +7,14 @@ import axios, { AxiosInstance } from "axios";
 
 declare var window: any;
 
+export type OnMessageReceivedCallback = (notification: any) => void;
+
+export interface PushRegistrationOptions {
+  alias?: string;
+  categories?: string[];
+  timeout?: number;
+}
+
 /**
  * AeroGear UPS registration SDK
  *
@@ -21,7 +29,13 @@ export class PushRegistration {
   public static readonly TYPE: string = "push";
   public static readonly REGISTRATION_DATA_KEY = "UPS_REGISTRATION_DATA";
 
+  public static onMessageReceived(onMessageReceivedCallback: OnMessageReceivedCallback) {
+    PushRegistration.onMessageReceivedCallback = onMessageReceivedCallback;
+  }
+
+  private static readonly REGISTRATION_TIMEOUT = 5000;
   private static readonly API_PATH: string = "rest/registry/device";
+  private static onMessageReceivedCallback: OnMessageReceivedCallback;
 
   private readonly validationError?: string;
   private readonly variantId?: string;
@@ -106,10 +120,11 @@ export class PushRegistration {
   /**
    * Register deviceToken for Android or IOS platforms
    *
-   * @param alias device alias used for registration
-   * @param categories array list of categories that device should be register to.
+   * @param options Push registration options
    */
-  public register(alias: string = "", categories: string[] = []): Promise<void> {
+  public register(options: PushRegistrationOptions = {}): Promise<void> {
+
+    const {alias, categories, timeout} = options;
 
     if (this.validationError) {
       return Promise.reject(new Error(this.validationError));
@@ -117,7 +132,10 @@ export class PushRegistration {
 
     return new Promise((resolve, reject) => {
 
-      setTimeout(() => reject("UPS registration timeout"), 5000);
+      setTimeout(
+        () => reject("UnifiedPush registration timeout"),
+        (timeout) ? timeout : PushRegistration.REGISTRATION_TIMEOUT
+      );
 
       this.push.on("registration", (data: any) => {
 
@@ -135,13 +153,22 @@ export class PushRegistration {
           .then(() => {
               if (isCordovaAndroid() && this.variantId) {
                 this.subscribeToFirebaseTopic(this.variantId);
-                for (const category of categories) {
-                  this.subscribeToFirebaseTopic(category);
+                if (options.categories) {
+                  for (const category of options.categories) {
+                    this.subscribeToFirebaseTopic(category);
+                  }
                 }
               }
 
               const storage = window.localStorage;
               storage.setItem(PushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(postData));
+
+              this.push
+              .on("notification", (notification: any) => {
+                if (PushRegistration.onMessageReceivedCallback) {
+                  PushRegistration.onMessageReceivedCallback(notification);
+                }
+              });
 
               resolve();
             }
@@ -191,8 +218,10 @@ export class PushRegistration {
 
           if (isCordovaAndroid() && this.variantId) {
             this.unsubscribeToFirebaseTopic(this.variantId);
-            for (const category of categories) {
-              this.unsubscribeToFirebaseTopic(category);
+            if (categories) {
+              for (const category of categories) {
+                this.unsubscribeToFirebaseTopic(category);
+              }
             }
           }
 
