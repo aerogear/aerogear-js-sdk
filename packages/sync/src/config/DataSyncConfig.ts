@@ -2,7 +2,12 @@
 import { ConfigurationService } from "@aerogear/core";
 import { CacheUpdates } from "offix-cache";
 import { RetryLink } from "apollo-link-retry";
-import { NetworkStatus, PersistentStore, PersistedData, OfflineQueueListener, ObjectState, ConflictListener, ConflictResolutionStrategy } from "offix-offline";
+import {
+  NetworkStatus, PersistentStore,
+  PersistedData, OfflineQueueListener,
+  ObjectState, ConflictListener,
+  ConflictResolutionStrategy
+} from "offix-offline";
 import { AuthContextProvider } from ".";
 /**
  * Contains all configuration options required to initialize Voyager Client
@@ -73,11 +78,11 @@ export interface DataSyncConfig {
    */
   conflictProvider?: ObjectState;
 
- /**
-   * Interface that can be implemented to receive information about the data conflict
-   *
-   * @deprecated see OfflineClient.registerOfflineEventListener
-   */
+  /**
+    * Interface that can be implemented to receive information about the data conflict
+    *
+    * @deprecated see OfflineClient.registerOfflineEventListener
+    */
   conflictListener?: ConflictListener;
 
   /**
