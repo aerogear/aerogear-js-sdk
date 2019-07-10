@@ -41,6 +41,7 @@
     "chai": "4.2.0",
     "del": "4.1.1",
     "fetch-mock": "7.3.3",
+    "graphql": "14.4.2",
     "mocha": "6.1.4",
     "ts-node": "8.2.0",
     "typescript": "3.4.5"
@@ -48,16 +49,13 @@
   "dependencies": {
     "@aerogear/core": "2.5.0",
     "apollo-cache-inmemory": "1.5.1",
-    "apollo-cache-persist": "^0.1.1",
-    "apollo-client": "2.5.1",
-    "debug": "4.1.1",
-    "graphql": "14.3.1",
-    "graphql-tag": "2.10.1",
-    "graphql-tools": "4.0.4",
+    "apollo-cache-persist": "0.1.1",
     "idb-localstorage": "0.2.0",
     "offix-cache": "0.7.0-rc.1",
     "offix-offline": "0.7.0-rc.1",
-    "subscriptions-transport-ws": "0.9.16",
     "util": "0.12.0"
+  },
+  "peerDependencies": {
+    "graphql": "^0.12.0 || ^0.13.0 || ^14.0.0"
   }
 }
