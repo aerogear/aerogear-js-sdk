@@ -1,8 +1,13 @@
 {
   "extends": [
     "config:base",
-    ":pinVersions",
-    ":assignee(wtrocki)"
+    ":pinVersions"
   ],
-  "groupName":"all"
+  "groupName":"all",
+  "packageRules": [
+    {
+      "packageNames": ["graphql"],
+      "versionStrategy": "widen"
+    }
+  ]
 }
