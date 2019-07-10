@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@aerogear/core": "2.5.0",
-    "apollo-cache-inmemory": "1.5.1",
+    "apollo-cache-inmemory": "1.6.2",
     "apollo-cache-persist": "0.1.1",
     "idb-localstorage": "0.2.0",
     "offix-cache": "0.7.0-rc.1",
