@@ -34,3 +34,44 @@ Please refer to documentation for more details.
 Please review if your configuration still conforms to the new interface.
 
 ### Push
+
+#### Registration:
+
+A bug was fixed with the registration process which made the sdk unable to receive notifications from UPS without using the alias criteria. That problem was fixed and now devices are able to receive notifications using all criteria provided by UPS (variant, alias, category)
+
+The new registration process doesn’t use the [phonegap-push-plugin](https://github.com/phonegap/phonegap-plugin-push)/[Ionic Push](https://ionicframework.com/docs/native/push) anymore. Now all the steps needed to receive push notification are handled by the push JS SDK itself.
+
+```javascript
+import { PushRegistration } from "@aerogear/push";
+
+new PushRegistration(new ConfigurationService(config)).register()
+.then(() => {
+  console.log('Push registration successful');
+}).catch((err) => {
+  console.error('Push registration unsuccessful ', err);
+});
+```
+
+#### Unregistration:
+
+We have added an unregister method to the SDK to unregister devices from UPS
+
+```javascript
+new PushRegistration(new ConfigurationService(config))
+.unregister()
+.then(() => {
+  console.log('Successfully unregistered');
+}).catch((err) => {
+  console.error('Error unregistering', err);
+});
+```
+
+#### Handle notification:
+
+We replaced the Cordova/Ionic notification handler APIs with APIs provided by the push JS SDK:
+
+```javascript
+PushRegistration.onMessageReceived((notification: any) => {
+  console.log('Received a push notification', notification);
+});
+```
