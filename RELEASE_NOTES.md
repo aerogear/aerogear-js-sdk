@@ -31,7 +31,6 @@ Please refer to documentation for more details.
 #### Breaking changes
 
 `DataSyncConfig` interface changes can cause build to fail. 
-Please review 
 Please review if your configuration still conforms to the new interface.
 
 ### Push
