@@ -9,7 +9,7 @@ import {
   createDefaultOfflineStorage,
   CordovaNetworkStatus,
   WebNetworkStatus,
-  clientWins,
+  UseClient,
   ConflictResolutionStrategy,
   NetworkStatus
 } from "offix-offline";
@@ -64,7 +64,7 @@ export class SyncConfig implements DataSyncConfig {
     if (clientOptions && clientOptions.conflictStrategy) {
       this.conflictStrategy = clientOptions.conflictStrategy;
     } else {
-      this.conflictStrategy = clientWins;
+      this.conflictStrategy = UseClient;
     }
     this.init(clientOptions);
   }
