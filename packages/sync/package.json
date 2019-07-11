@@ -51,8 +51,8 @@
     "@aerogear/core": "2.5.0",
     "apollo-cache-inmemory": "1.5.1",
     "apollo-cache-persist": "0.1.1",
-    "apollo-client": "2.5.1",
-    "apollo-link": "1.2.11",
+    "apollo-client": "2.6.3",
+    "apollo-link": "1.2.12",
     "apollo-link-context": "1.0.17",
     "apollo-link-http": "1.5.14",
     "apollo-link-retry": "2.2.13",
@@ -60,8 +60,8 @@
     "apollo-upload-client": "11.0.0",
     "debug": "4.1.1",
     "idb-localstorage": "0.2.0",
-    "offix-cache": "0.7.0-rc.1",
-    "offix-offline": "0.7.0-dev.1",
+    "offix-cache": "0.7.0-rc.2",
+    "offix-offline": "0.7.0-rc.2",
     "subscriptions-transport-ws": "0.9.16"
   },
   "peerDependencies": {
