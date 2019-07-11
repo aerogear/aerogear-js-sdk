@@ -30,7 +30,7 @@
     "chai": "4.2.0",
     "mocha": "6.1.4",
     "mockttp": "0.15.0",
-    "nyc": "13.3.0",
+    "nyc": "14.1.1",
     "typescript": "3.5.3"
   },
   "dependencies": {
