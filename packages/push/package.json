@@ -31,7 +31,7 @@
     "@types/chai": "4.1.7",
     "chai": "4.2.0",
     "mocha": "6.1.4",
-    "typescript": "3.4.5"
+    "typescript": "3.5.3"
   },
   "dependencies": {
     "@aerogear/core": "2.5.0",
