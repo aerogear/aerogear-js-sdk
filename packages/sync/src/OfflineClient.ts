@@ -1,4 +1,4 @@
-import { ApolloClient } from "apollo-client";
+import { ApolloClient, OperationVariables } from "apollo-client";
 import { DataSyncConfig } from "./config";
 import { SyncConfig } from "./config/SyncConfig";
 import { createDefaultLink, createOfflineLink, createConflictLink } from "./links/LinksBuilder";
@@ -96,13 +96,14 @@ export class OfflineClient implements ListenerProvider {
    * this offline friendly function to handle the optimistic UI and cache updates.
    * @param options the MutationHelperOptions to create the mutation
    */
-  public offlineMutation<T>(options: MutationHelperOptions): Promise<FetchResult<T>> {
+  public offlineMutation<T = any, TVariables = OperationVariables>(
+    options: MutationHelperOptions<T, TVariables>): Promise<FetchResult<T>> {
     if (!this.apolloClient) {
       throw new Error("Apollo offline client not initialised before mutation called.");
     } else {
-        return this.apolloClient.mutate<T>(
-          createMutationOptions(options)
-        );
+      return this.apolloClient.mutate<T, TVariables>(
+        createMutationOptions<T, TVariables>(options)
+      );
     }
   }
 
