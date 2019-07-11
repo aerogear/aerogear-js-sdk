@@ -52,12 +52,14 @@ export class PushRegistration {
         const errorMessage = "@aerogear/cordova-plugin-aerogear-push plugin not installed.";
         this.validationError = errorMessage;
         console.warn(errorMessage);
+        return;
       }
 
       if (!pushConfig || !pushConfig.config) {
         const errorMessage = "UnifiedPush server configuration not found";
         this.validationError = errorMessage;
         console.warn(errorMessage);
+        return;
       }
 
       const unifiedPushServerURL = pushConfig.url;
@@ -65,6 +67,7 @@ export class PushRegistration {
         const errorMessage = "UnifiedPush server URL not found";
         this.validationError = errorMessage;
         console.warn(errorMessage);
+        return;
       }
 
       let platformConfig;
@@ -76,6 +79,7 @@ export class PushRegistration {
         const errorMessage = "Platform is not supported by UnifiedPush";
         this.validationError = errorMessage;
         console.warn(errorMessage);
+        return;
       }
 
       this.variantId = platformConfig.variantId || platformConfig.variantID;
@@ -83,6 +87,7 @@ export class PushRegistration {
         const errorMessage = "UnifiedPush VariantId is not defined";
         this.validationError = errorMessage;
         console.warn(errorMessage);
+        return;
       }
 
       const variantSecret = platformConfig.variantSecret;
@@ -90,6 +95,7 @@ export class PushRegistration {
         const errorMessage = "UnifiedPush VariantSecret is not defined";
         this.validationError = errorMessage;
         console.warn(errorMessage);
+        return;
       }
 
       if (!this.validationError) {
@@ -113,7 +119,9 @@ export class PushRegistration {
       }
 
     } else {
-      console.warn("Push configuration is missing. UPS server registration will not work.");
+      const errorMessage = "Push configuration is missing. UPS server registration will not work.";
+      console.warn(errorMessage);
+      this.validationError = errorMessage;
     }
   }
 
