@@ -1,10 +1,21 @@
-version: 2
+version: 2.1
+commands:
+  publish:
+    parameters:
+      tag:
+        type: string
+    steps:
+        # Allows us to authenticate with the npm registry
+      - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+      - run: CI=true npm run release:prep
+      - run: TAG=<< parameters.tag >> npm run release:validate
+      - run: TAG=<< parameters.tag >> npm run publish
+
 jobs:
   build:
     working_directory: ~/aerogear
     docker:
-      # Node 8 LTS
-      - image: circleci/node:lts-browsers
+      - image: circleci/node:lts
     steps:
       - checkout
       - run:
@@ -49,15 +60,22 @@ jobs:
   npm_publish:
     working_directory: ~/aerogear
     docker:
-      # Node 8 LTS
       - image: circleci/node:lts
     steps:
       - checkout
-        # Allows us to authenticate with the npm registry
-      - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-      - run: CI=true npm run release:prep
-      - run: TAG=$CIRCLE_TAG npm run release:validate
-      - run: TAG=$CIRCLE_TAG npm run publish
+      - publish:
+          tag: "$CIRCLE_TAG"
+  npm_publish_master:
+    working_directory: ~/aerogear
+    docker:
+      - image: circleci/node:lts
+    steps:
+      - checkout
+      - run:
+          name: version packages
+          command: npx lerna version prerelease --no-push --yes --preid "master.$(git rev-list HEAD --count).$(git rev-parse --short HEAD)"
+      - publish:
+          tag: "$(node -e \"console.log(require('./lerna.json').version);\")"
 
 workflows:
   version: 2
@@ -75,3 +93,10 @@ workflows:
               only: /.*/ # allow anything because tag syntax is validated as part of validate-release.sh
             branches:
               ignore: /.*/
+      - npm_publish_master:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+            
