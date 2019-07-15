@@ -23,7 +23,8 @@
     "clean:dependencies": "lerna clean --yes",
     "update:check": "lerna exec --concurrency 1 -- ncu",
     "update:run": "lerna exec -- ncu -a --removeRange -x 'fh-js-sdk'",
-    "generate:docs": "./scripts/docs.sh"
+    "generate:docs": "./scripts/docs.sh",
+    "version:master": "./scripts/versionMaster.sh"
   },
   "devDependencies": {
     "coveralls": "3.0.4",
