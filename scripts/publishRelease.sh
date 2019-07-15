@@ -19,7 +19,7 @@ if [[ "$(echo $TAG | grep -E $RELEASE_SYNTAX)" == "$TAG" ]]; then
   lerna exec npm publish
 elif [[ "$(echo $TAG | grep -E $MASTER_PRERELEASE_SYNTAX)" == "$TAG" ]]; then
   echo "publishing a new master pre release: $TAG"
-  lerna exec "npm publish --tag master"
+  lerna exec "npm publish --tag dev"
 elif [[ "$(echo $TAG | grep -E $PRERELEASE_SYNTAX)" == "$TAG" ]]; then
   echo "publishing a new pre release: $TAG"
   lerna exec "npm publish --tag next"
