@@ -73,7 +73,7 @@ jobs:
       - checkout
       - run:
           name: version packages
-          command: npx lerna version prerelease --no-push --yes --preid "master.$(git rev-list HEAD --count).$(git rev-parse --short HEAD)"
+          command: npm run version:master
       - publish:
           tag: "$(node -e \"console.log(require('./lerna.json').version);\")"
 
