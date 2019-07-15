@@ -4,7 +4,7 @@
 TAG=$TAG
 
 RELEASE_SYNTAX='^[0-9]+\.[0-9]+\.[0-9]+$'
-MASTER_PRERELEASE_SYNTAX='^[0-9]+\.[0-9]+\.[0-9]+-master\..+$'
+MASTER_PRERELEASE_SYNTAX='^[0-9]+\.[0-9]+\.[0-9]+-dev\..+$'
 PRERELEASE_SYNTAX='^[0-9]+\.[0-9]+\.[0-9]+(-.+)+$'
 
 if [ ! "$CI" = true ]; then
