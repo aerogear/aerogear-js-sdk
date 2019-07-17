@@ -4,7 +4,6 @@
 export interface AuthContext {
   header: any;
   token: string;
-  clientId: string;
 }
 
 /**
