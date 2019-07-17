@@ -72,6 +72,12 @@ jobs:
     steps:
       - checkout
       - run:
+          name: configure git user.email
+          command: git config --global user.email "test@example.com"
+      - run:
+          name: configure git user.name
+          command: git config --global user.name "test"
+      - run:
           name: version packages
           command: npm run version:master
       - publish:
