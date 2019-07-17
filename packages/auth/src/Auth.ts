@@ -129,8 +129,7 @@ export class Auth {
               header: {
                 "Authorization": "Bearer " + this.auth.token
               },
-              token: this.auth.token,
-              clientId: this.internalConfig.clientId
+              token: this.auth.token
             });
           } else {
             reject("No keycloak token available");
@@ -147,5 +146,4 @@ export class Auth {
 export interface AuthContext {
   header: any;
   token: string;
-  clientId: string;
 }
