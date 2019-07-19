@@ -1,9 +1,11 @@
 /**
- * Contains header and auth token information that can be supplied to graphql requests
+ * Contains header information that can be provided in GraphQL requests
+ * and in connectionParams for websocket connections
  */
 export interface AuthContext {
-  header: any;
-  token: string;
+  headers: {
+    [headerName: string]: any
+  };
 }
 
 /**

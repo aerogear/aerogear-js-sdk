@@ -126,10 +126,9 @@ export class Auth {
         tokenUpdate.success(() => {
           if (this.auth.token) {
             resolve({
-              header: {
+              headers: {
                 "Authorization": "Bearer " + this.auth.token
-              },
-              token: this.auth.token
+              }
             });
           } else {
             reject("No keycloak token available");
@@ -143,7 +142,9 @@ export class Auth {
   }
 
 }
+
 export interface AuthContext {
-  header: any;
-  token: string;
+  headers: {
+    [headerName: string]: any
+  };
 }

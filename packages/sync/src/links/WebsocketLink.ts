@@ -9,8 +9,8 @@ export const defaultWebSocketLink = (userOptions: DataSyncConfig, config: WebSoc
       // Params that can be used to send authentication token etc.
       connectionParams: async () => {
         if (userOptions.authContextProvider) {
-          const { header } = await userOptions.authContextProvider();
-          return { ...header };
+          const { headers } = await userOptions.authContextProvider();
+          return headers;
         }
       },
       connectionCallback: options.connectionCallback,
