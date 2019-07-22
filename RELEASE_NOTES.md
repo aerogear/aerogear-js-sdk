@@ -1,5 +1,3 @@
-# Release Notes 
-
 ## JS-SDK 2.6.0
 
 ### DataSync
@@ -34,8 +32,10 @@ Please refer to documentation for more details.
 
 #### Breaking changes
 
-`DataSyncConfig` interface changes can cause build to fail. 
+* `DataSyncConfig` interface changes can cause build to fail. 
 Please review if your configuration still conforms to the new interface.
+
+* Refactored the `AuthContext` interfaces defined in the `auth` and `sync packages` to accept a map of headers. `token` is no longer required.
 
 ### Push
 
