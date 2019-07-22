@@ -10,7 +10,6 @@ declare var global: any;
 global.window = {};
 
 describe("OnOffLink", () => {
-
   const userConfig = {
     httpUrl: "test",
     storage,
@@ -24,7 +23,7 @@ describe("OnOffLink", () => {
     httpUrl: "test",
     storage,
     conflictStrategy: {
-      resolve: (base: ConflictResolutionData, server: ConflictResolutionData, client: ConflictResolutionData) => server
+      resolve: ({ base, server, client }) => server
     }
   };
 
@@ -64,5 +63,4 @@ describe("OnOffLink", () => {
       expect(mergedConfig.conflictStrategy.resolve).to.be.a("Function");
     }
   });
-
 });
