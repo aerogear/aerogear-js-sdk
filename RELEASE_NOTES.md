@@ -32,10 +32,6 @@ Please refer to documentation for more details.
 
 #### Breaking changes
 
-##### DataSync Config renamed 
-`DataSyncConfig` interface was renamed to `OffixClientConfig`.
-Please review if your configuration still conforms to the new interface.
-
 ##### Cache Helper Interface 
 
 Cache Helper interface now will now accept object instead of individual parameters:
