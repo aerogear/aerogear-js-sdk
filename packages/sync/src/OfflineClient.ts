@@ -96,7 +96,7 @@ export class OfflineClient implements ListenerProvider {
    * this offline friendly function to handle the optimistic UI and cache updates.
    * @param options the MutationHelperOptions to create the mutation
    */
-  public offlineMutation<T = any, TVariables = OperationVariables>(
+  public offlineMutate<T = any, TVariables = OperationVariables>(
     options: MutationHelperOptions<T, TVariables>): Promise<FetchResult<T>> {
     if (!this.apolloClient) {
       throw new Error("Apollo offline client not initialised before mutation called.");
@@ -110,7 +110,7 @@ export class OfflineClient implements ListenerProvider {
   protected decorateApolloClient(apolloClient: any): ApolloOfflineClient {
     apolloClient.offlineStore = this.offlineStore;
     apolloClient.registerOfflineEventListener = this.registerOfflineEventListener.bind(this);
-    apolloClient.offlineMutation = this.offlineMutation.bind(this);
+    apolloClient.offlineMutate = this.offlineMutate.bind(this);
     return apolloClient;
   }
 
