@@ -48,8 +48,9 @@ Cache Helper interface now will now accept object instead of individual paramete
             updateQuery
  });
 ```
+##### AuthContext Interface 
 
-* Refactored the `AuthContext` interfaces defined in the `auth` and `sync packages` to accept a map of headers. `token` is no longer required.
+Refactored the `` interfaces defined in the `auth` and `sync packages` to accept a map of headers. `token` is no longer required.
 
 ### Push
 
