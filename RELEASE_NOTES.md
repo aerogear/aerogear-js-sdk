@@ -32,8 +32,22 @@ Please refer to documentation for more details.
 
 #### Breaking changes
 
-* `DataSyncConfig` interface changes can cause build to fail. 
+##### DataSync Config renamed 
+`DataSyncConfig` interface was renamed to `OffixClientConfig`.
 Please review if your configuration still conforms to the new interface.
+
+##### Cache Helper Interface 
+
+Cache Helper interface now will now accept object instead of individual parameters:
+
+```javascript
+ const updateFunction = getUpdateFunction({
+            mutationName,
+            idField,
+            operationType,
+            updateQuery
+ });
+```
 
 * Refactored the `AuthContext` interfaces defined in the `auth` and `sync packages` to accept a map of headers. `token` is no longer required.
 
