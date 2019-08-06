@@ -27,7 +27,7 @@ export class AppSecurity {
     const configuration = config.getConfigByType(AppSecurity.TYPE);
     if (configuration && configuration.length > 0) {
       const serviceConfiguration: ServiceConfiguration = configuration[0];
-      this.internalConfig = serviceConfiguration.config;
+      this.internalConfig = serviceConfiguration;
       // use the configuration url in the from the incoming config file
       this.internalConfig.url = serviceConfiguration.url;
     } else {
