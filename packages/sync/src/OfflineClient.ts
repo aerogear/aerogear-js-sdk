@@ -104,7 +104,7 @@ export class OfflineClient implements ListenerProvider {
       const mutationOptions = createMutationOptions<T, TVariables>(options);
       mutationOptions.context.updateFunction = mutationOptions.update;
       return this.apolloClient.mutate<T, TVariables>(
-        createMutationOptions<T, TVariables>(options)
+        mutationOptions
       );
     }
   }
