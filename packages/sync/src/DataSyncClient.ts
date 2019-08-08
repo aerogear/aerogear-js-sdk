@@ -8,7 +8,6 @@ import { OfflineClient, ApolloOfflineClient } from "offix-client";
 *
 * @param userConfig options object used to build client
 * @deprecated use OfflineClient class directly:
-
 *  ```javascript
 *  const offlineClient = new OfflineClient(config);
 *  await offlineClient.init();
