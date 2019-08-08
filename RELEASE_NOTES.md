@@ -1,3 +1,14 @@
+## JS-SDK 2.6.1
+
+### DataSync
+
+Fixed problem with client conflicting with it's own changes
+
+#### Mobile Security Service 
+
+Fixed problem with obtaining service url
+
+
 ## JS-SDK 2.6.0
 
 ### DataSync
