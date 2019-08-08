@@ -16,8 +16,7 @@ npm run build &&
 cd ../aerogear-js-sdk/packages/sync &&
 npm run clean &&
 npm install &&
-npm link offix-cache &&
-npm link offix-offline &&
+npm link offix-client
 npm run build
 
 echo "Repository is in development state"

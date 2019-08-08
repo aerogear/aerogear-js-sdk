@@ -1,13 +1,13 @@
 
 import { ConfigurationService } from "@aerogear/core";
-import { CacheUpdates } from "offix-cache";
+import { CacheUpdates } from "offix-client";
 import { RetryLink } from "apollo-link-retry";
 import {
   NetworkStatus, PersistentStore,
   PersistedData, OfflineQueueListener,
   ObjectState, ConflictListener,
   ConflictResolutionStrategy
-} from "offix-offline";
+} from "offix-client";
 import { AuthContextProvider } from ".";
 /**
  * Contains all configuration options required to initialize Voyager Client

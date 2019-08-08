@@ -12,7 +12,7 @@ import {
   UseClient,
   ConflictResolutionStrategy,
   NetworkStatus
-} from "offix-offline";
+} from "offix-client";
 import { createDefaultCacheStorage } from "../cache";
 
 declare var window: any;
