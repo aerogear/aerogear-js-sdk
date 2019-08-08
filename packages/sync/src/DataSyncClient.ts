@@ -1,4 +1,4 @@
-import { DataSyncConfig } from "./config";;
+import { DataSyncConfig } from "./config";
 import { createDefaultLink } from "./links/LinksBuilder";
 
 import { OfflineClient, ApolloOfflineClient } from "offix-client";

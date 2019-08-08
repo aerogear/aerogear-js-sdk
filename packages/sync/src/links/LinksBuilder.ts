@@ -40,7 +40,7 @@ export const createDefaultLink = async (
  * - Audit logging
  */
 export const defaultHttpLinks = async (
-  config: DataSyncConfig,
+  config: DataSyncConfig
 ): Promise<ApolloLink> => {
   const links: ApolloLink[] = [];
   if (config.auditLogging) {
