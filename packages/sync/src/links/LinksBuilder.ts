@@ -1,21 +1,13 @@
-import { ApolloLink, Operation } from "apollo-link";
+import { ApolloLink } from "apollo-link";
 import { HttpLink } from "apollo-link-http";
-import { RetryLink } from "apollo-link-retry";
-import { ConflictLink, ObjectState } from "offix-offline";
 import { DataSyncConfig } from "../config";
 import { createAuthLink } from "./AuthLink";
 import { AuditLoggingLink } from "./AuditLoggingLink";
 import { DefaultMetricsBuilder, MetricsBuilder } from "@aerogear/core";
-import { LocalDirectiveFilterLink } from "offix-offline";
+import { LocalDirectiveFilterLink } from "offix-client";
 import { createUploadLink } from "apollo-upload-client";
-import { isMutation, isOnlineOnly, isSubscription } from "offix-offline";
+import { isSubscription } from "offix-client";
 import { defaultWebSocketLink } from "./WebsocketLink";
-import { OfflineLink } from "offix-offline";
-import { NetworkStatus, OfflineMutationsHandler, OfflineStore } from "offix-offline";
-import { IDProcessor } from "offix-offline";
-import { IResultProcessor } from "offix-offline";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { BaseLink } from "offix-offline";
 
 /**
  * Method for creating "uber" composite Apollo Link implementation including:
@@ -28,40 +20,14 @@ import { BaseLink } from "offix-offline";
  * - File uploads
  */
 export const createDefaultLink = async (
-  config: DataSyncConfig,
-  offlineLink: ApolloLink,
-  conflictLink: ApolloLink,
-  cache: InMemoryCache
+  config: DataSyncConfig
 ) => {
-  let link = await defaultHttpLinks(config, offlineLink, conflictLink, cache);
+  let link = await defaultHttpLinks(config);
   if (config.wsUrl) {
     const wsLink = defaultWebSocketLink(config, { uri: config.wsUrl });
     link = ApolloLink.split(isSubscription, wsLink, link);
   }
   return link;
-};
-
-/**
- * Create offline link
- */
-export const createOfflineLink = async (config: DataSyncConfig, store: OfflineStore) => {
-  const resultProcessors: IResultProcessor[] = [new IDProcessor()];
-  return new OfflineLink(store, {
-    listener: config.offlineQueueListener,
-    networkStatus: config.networkStatus as NetworkStatus,
-    resultProcessors
-  });
-};
-
-/**
- * Create conflict link
- */
-export const createConflictLink = async (config: DataSyncConfig) => {
-  return new ConflictLink({
-    conflictProvider: config.conflictProvider as ObjectState,
-    conflictListener: config.conflictListener,
-    conflictStrategy: config.conflictStrategy
-  });
 };
 
 /**
@@ -75,20 +41,8 @@ export const createConflictLink = async (config: DataSyncConfig) => {
  */
 export const defaultHttpLinks = async (
   config: DataSyncConfig,
-  offlineLink: ApolloLink,
-  conflictLink: ApolloLink,
-  cache: InMemoryCache
 ): Promise<ApolloLink> => {
-  // Enable offline link only for mutations and onlineOnly
-  const mutationOfflineLink = ApolloLink.split((op: Operation) => {
-    return isMutation(op) && !isOnlineOnly(op);
-  }, offlineLink);
-  const baseLink = new BaseLink(config.conflictProvider as ObjectState);
-  const links: ApolloLink[] = [baseLink, mutationOfflineLink];
-  links.push(conflictLink);
-  const retryLink = ApolloLink.split(OfflineMutationsHandler.isMarkedOffline, new RetryLink(config.retryOptions));
-  links.push(retryLink);
-
+  const links: ApolloLink[] = [];
   if (config.auditLogging) {
     links.push(await createAuditLoggingLink());
   }
