@@ -1,13 +1,8 @@
 import { assert } from "chai";
 import mocha from "mocha";
 import * as mockttp from "mockttp";
-import uuid from "uuid/v1";
-import { ServiceConfiguration } from "../../../src/config";
 import {
-  Metrics,
   MetricsPayload,
-  MetricsPublisher,
-  MetricsService,
   NetworkMetricsPublisher
 } from "../../../src/metrics";
 import testAerogearConfig from "../../mobile-config.json";
@@ -25,9 +20,9 @@ describe("NetworkMetricsPublisher", () => {
 
   before(async () => {
     await mockServer.start();
-    await mockServer.post("/").thenReply(204);
+    await mockServer.post("/test").thenReply(204);
 
-    publisher = new NetworkMetricsPublisher(mockServer.url);
+    publisher = new NetworkMetricsPublisher(mockServer.url + "/test");
   });
 
   after(() => {
