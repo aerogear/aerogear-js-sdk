@@ -1,4 +1,4 @@
-import { ApolloLink, NextLink, Operation } from "apollo-link";
+import { ApolloLink, NextLink, Operation, Observable, FetchResult } from "apollo-link";
 
 export class AuditLoggingLink extends ApolloLink {
 
@@ -11,7 +11,7 @@ export class AuditLoggingLink extends ApolloLink {
     this.metricsPayload = metricsPayload;
   }
 
-  public request(operation: Operation, forward?: NextLink) {
+  public request(operation: Operation, forward?: NextLink): Observable<FetchResult> | null {
     if (!operation.extensions) {
       operation.extensions = {};
     }
