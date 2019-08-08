@@ -15,9 +15,10 @@ import { OfflineClient, ApolloOfflineClient } from "offix-client";
 *  ```
 */
 export const createClient = async (userConfig: DataSyncConfig):
-  Promise<ApolloOfflineClient> => {
+  Promise<OfflineClient> => {
   const offlineClient = new OfflineClient(userConfig);
   const terminatingLink = await createDefaultLink(offlineClient.config);
   offlineClient.config.terminatingLink = terminatingLink;
-  return offlineClient.init();
+  await offlineClient.init();
+  return offlineClient;
 };
