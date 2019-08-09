@@ -1,3 +1,9 @@
+## JS-SDK 2.6.2
+
+### DataSync
+
+Dependency package updates
+
 ## JS-SDK 2.6.1
 
 ### DataSync
