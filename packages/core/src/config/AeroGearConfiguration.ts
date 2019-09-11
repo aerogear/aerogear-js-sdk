@@ -5,8 +5,8 @@ import { ServiceConfiguration } from "./";
  */
 export interface AeroGearConfiguration {
 
-  readonly version: number;
-  readonly clusterName: string;
+  readonly version?: number;
+  readonly clusterName?: string;
   readonly namespace: string;
   readonly services?: ServiceConfiguration[];
 
