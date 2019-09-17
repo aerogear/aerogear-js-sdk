@@ -1,6 +1,7 @@
 import { assert, expect } from "chai";
 import { PushRegistration } from "../src";
 import { ConfigurationService } from "@aerogear/core";
+import {AbstractPushRegistration} from "../src/AbstractPushRegistration";
 
 declare var window: any;
 declare var global: any;
@@ -50,6 +51,10 @@ describe("Push", () => {
       "url": "http://www.mocky.io/v2/5a5e4bc53300003b291923eb",
       "config": {
         "ios": {
+          "variantId": "f85015b4-a762-49a7-a36f-34a451f819a4",
+          "variantSecret": "978b35d6-7058-43b4-8c37-4dc30022ebda"
+        },
+        "web_push": {
           "variantId": "f85015b4-a762-49a7-a36f-34a451f819a4",
           "variantSecret": "978b35d6-7058-43b4-8c37-4dc30022ebda"
         }
@@ -112,7 +117,7 @@ describe("Push", () => {
         const registration = new PushRegistration(config);
         await registration.register({ alias: "cordova", categories: ["Test"] });
 
-        const storageData = await window.localStorage.getItem(PushRegistration.REGISTRATION_DATA_KEY);
+        const storageData = await window.localStorage.getItem(AbstractPushRegistration.REGISTRATION_DATA_KEY);
         const jsonData = JSON.parse(storageData);
 
         assert.equal(window.localStorage.length, 1);
@@ -228,7 +233,7 @@ describe("Push", () => {
           "alias": "unitTest",
           "categories": ["test"]
         };
-        window.localStorage.setItem(PushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(registrationData));
+        window.localStorage.setItem(AbstractPushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(registrationData));
         const registration = new PushRegistration(config);
         await registration.unregister();
       } catch (error) {
@@ -243,7 +248,7 @@ describe("Push", () => {
           "alias": "unitTest",
           "categories": ["test"]
         };
-        window.localStorage.setItem(PushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(registrationData));
+        window.localStorage.setItem(AbstractPushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(registrationData));
         const registration = new PushRegistration(config);
         await registration.unregister();
         assert.equal(window.localStorage.length, 0);
