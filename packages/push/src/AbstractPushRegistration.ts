@@ -9,12 +9,13 @@ export abstract class AbstractPushRegistration implements PushRegistrationInterf
   public static readonly TYPE: string = "push";
   public static readonly REGISTRATION_DATA_KEY = "UPS_REGISTRATION_DATA";
 
-  protected static readonly REGISTRATION_TIMEOUT = 5000;
+  protected static readonly REGISTRATION_TIMEOUT = 10000;
   protected static readonly API_PATH: string = "rest/registry/device";
 
   protected readonly variantId?: string;
   protected readonly validationError?: string;
   protected readonly httpClient?: AxiosInstance;
+  protected readonly platformConfig: any;
 
   constructor(config: ConfigurationService) {
     const configuration = config.getConfigByType(AbstractPushRegistration.TYPE);
@@ -32,9 +33,9 @@ export abstract class AbstractPushRegistration implements PushRegistrationInterf
 
     // configuration is valid
     const pushConfig = configuration[0];
-    const platformConfig = this.getPlatformConfig(pushConfig);
-    this.variantId = platformConfig.variantId || platformConfig[0].variantID;
-    const token = window.btoa(`${this.variantId}:${platformConfig.variantSecret}`);
+    this.platformConfig = this.getPlatformConfig(pushConfig);
+    this.variantId = this.platformConfig.variantId || this.platformConfig.variantID;
+    const token = window.btoa(`${this.variantId}:${this.platformConfig.variantSecret}`);
     this.httpClient = axios.create({
       baseURL: pushConfig.url,
       timeout: 5000,

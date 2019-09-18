@@ -7,6 +7,7 @@ declare var window: any;
 export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
   constructor(config: ConfigurationService) {
     super(config);
+    // The config is valid
   }
 
   public async register(options: PushRegistrationOptions): Promise<void> {
@@ -17,8 +18,7 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
     }
 
     if (this.httpClient) {
-
-      const subscription = await this.subscribeToWebPush('appserverkey');
+      const subscription = await this.subscribeToWebPush(this.platformConfig.appServerKey);
 
       const postData = {
         "deviceToken": JSON.stringify(subscription),
@@ -45,8 +45,35 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
     return pushConfig.config.web_push;
   }
 
-  private async subscribeToWebPush(appServerKey: string): Promise<any> {
+  private waitForServiceWorkerToBeReady(reg: ServiceWorkerRegistration) {
+    let serviceWorker: ServiceWorker | undefined;
 
+    if (reg.installing) {
+      serviceWorker = reg.installing;
+      // console.log('Service worker installing');
+    } else if (reg.waiting) {
+      serviceWorker = reg.waiting;
+      // console.log('Service worker installed & waiting');
+    } else if (reg.active) {
+      serviceWorker = reg.active;
+      // console.log('Service worker active');
+    }
+
+    return new Promise(resolve => {
+      if (serviceWorker) {
+        if (serviceWorker.state === "activated") {
+          resolve();
+        }
+        serviceWorker.addEventListener("statechange", (e: any) => {
+          if (e.target.state === "activated") {
+            resolve();
+          }
+        });
+      }
+    });
+  }
+
+  private async subscribeToWebPush(appServerKey: string): Promise<any> {
     if ("serviceWorker" in navigator) {
       const permission = await window.Notification.requestPermission();
       if (permission !== "granted") {
@@ -54,12 +81,15 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
         return;
       }
       const registration = await navigator.serviceWorker.register("/service-worker.js");
+      await this.waitForServiceWorkerToBeReady(registration);
+
       const subscribeOptions = {
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(appServerKey)
       };
 
       const pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
+
       const subscription = {
         endpoint: pushSubscription.endpoint,
         keys: {

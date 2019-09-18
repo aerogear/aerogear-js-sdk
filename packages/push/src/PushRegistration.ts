@@ -18,7 +18,6 @@ export class PushRegistration implements PushRegistrationInterface {
   private readonly impl: AbstractPushRegistration;
 
   constructor(config: ConfigurationService) {
-    console.warn('constructor');
     if (!isNative()) {
       // impl must be a non cordova impl
       this.impl = new PushRegistrationWebpushImpl(config);
