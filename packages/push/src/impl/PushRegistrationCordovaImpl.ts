@@ -98,52 +98,28 @@ export class PushRegistrationCordovaImpl extends AbstractPushRegistration {
    * Unregister device for Android or IOS platforms
    */
   public unregister(): Promise<void> {
-
-    if (this.validationError) {
-      return Promise.reject(new Error(this.validationError));
-    }
-
     const storage = window.localStorage;
     const jsonCachedData = storage.getItem(AbstractPushRegistration.REGISTRATION_DATA_KEY);
 
-    let postData;
-    let deviceToken = "";
-    let categories: string[] = [];
-
-    if (jsonCachedData) {
-      postData = JSON.parse(jsonCachedData);
-      deviceToken = postData.deviceToken;
-      categories = postData.categories;
-    }
-
-    if (!deviceToken) {
-      return Promise.reject(new Error("Device token should not be empty"));
-    }
-
     return new Promise((resolve, reject) => {
-      if (this.httpClient) {
-        const endpoint = AbstractPushRegistration.API_PATH + "/" + deviceToken;
-        return this.httpClient.delete(endpoint, {})
-          .then(() => {
+      super.unregister().then(() => {
+        let postData;
+        let categories;
+        if (jsonCachedData) {
+          postData = JSON.parse(jsonCachedData);
+          categories = postData.categories;
+        }
 
-            if (isCordovaAndroid() && this.variantId) {
-              this.unsubscribeToFirebaseTopic(this.variantId);
-              if (categories) {
-                for (const category of categories) {
-                  this.unsubscribeToFirebaseTopic(category);
-                }
-              }
+        if (isCordovaAndroid() && this.variantId) {
+          this.unsubscribeToFirebaseTopic(this.variantId);
+          if (categories) {
+            for (const category of categories) {
+              this.unsubscribeToFirebaseTopic(category);
             }
-
-            storage.removeItem(AbstractPushRegistration.REGISTRATION_DATA_KEY);
-
-            resolve();
-          })
-          .catch(reject);
-      } else {
-        // It should never happend but...
-        return reject(new Error("Push is not properly configured"));
-      }
+          }
+        }
+        resolve();
+      }).catch(reject);
     });
   }
 

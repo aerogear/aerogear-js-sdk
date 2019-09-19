@@ -57,7 +57,35 @@ export abstract class AbstractPushRegistration implements PushRegistrationInterf
   /**
    * Unregister an application form the UPS.
    */
-  public async abstract unregister(): Promise<void>;
+  public async unregister(): Promise<void> {
+    if (this.validationError) {
+      throw new Error(this.validationError);
+    }
+
+    const storage = window.localStorage;
+    const jsonCachedData = storage.getItem(AbstractPushRegistration.REGISTRATION_DATA_KEY);
+
+    let postData;
+    let deviceToken = "";
+
+    if (jsonCachedData) {
+      postData = JSON.parse(jsonCachedData);
+      deviceToken = postData.deviceToken;
+    }
+
+    if (!deviceToken) {
+      throw new Error("Device token should not be empty");
+    }
+
+    if (this.httpClient) {
+      const endpoint = AbstractPushRegistration.API_PATH + "/" + deviceToken;
+      await this.httpClient.delete(endpoint, {});
+      storage.removeItem(AbstractPushRegistration.REGISTRATION_DATA_KEY);
+    } else {
+      // It should never happend but...
+      throw new Error("Push is not properly configured");
+    }
+  }
 
   /**
    * Extracts the platform configuration from the current push configuration object.

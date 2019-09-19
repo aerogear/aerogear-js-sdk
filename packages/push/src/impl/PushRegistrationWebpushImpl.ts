@@ -49,6 +49,13 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
   // TODO: implement
   // tslint:disable-next-line: no-empty
   public async unregister(): Promise<void> {
+    await super.unregister();
+    if ("serviceWorker" in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      for (const registration of registrations) {
+        await registration.unregister();
+      }
+    }
   }
 
   public getPlatformConfig(pushConfig: ServiceConfiguration): any {
