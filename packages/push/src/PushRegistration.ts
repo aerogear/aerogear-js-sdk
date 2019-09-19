@@ -14,26 +14,38 @@ export interface PushRegistrationOptions {
   timeout?: number;
 }
 
+/**
+ * AeroGear UPS registration SDK
+ *
+ * Usage:
+ * // Initialize SDK first
+ * app.init(config);
+ * let registration = new PushRegistration();
+ * registration.register("myAppleOrFirebaseToken");
+ */
 export class PushRegistration implements PushRegistrationInterface {
-  private readonly impl: AbstractPushRegistration;
+  private readonly delegate: AbstractPushRegistration;
 
   constructor(config: ConfigurationService) {
     if (!isNative()) {
-      // impl must be a non cordova impl
-      this.impl = new PushRegistrationWebpushImpl(config);
+      this.delegate = new PushRegistrationWebpushImpl(config);
     } else {
-      this.impl = new PushRegistrationCordovaImpl(config);
+      this.delegate = new PushRegistrationCordovaImpl(config);
     }
   }
 
+  /**
+   * Register the application to the UPS.
+   * @param options
+   */
   public async register(options: PushRegistrationOptions = {}): Promise<void> {
-    await this.impl.register(options);
+    await this.delegate.register(options);
   }
+
+  /**
+   * Unregister the application from the UPS.
+   */
   public async unregister(): Promise<void> {
-    this.impl.unregister();
+    this.delegate.unregister();
   }
 }
-
-
-
-

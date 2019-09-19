@@ -4,6 +4,9 @@ import { PushRegistrationInterface } from "./PushRegistrationInterface";
 import {AxiosInstance} from "axios";
 import axios from "axios";
 
+/**
+ * Base class for push registration managers.
+ */
 export abstract class AbstractPushRegistration implements PushRegistrationInterface {
 
   public static readonly TYPE: string = "push";
@@ -45,17 +48,45 @@ export abstract class AbstractPushRegistration implements PushRegistrationInterf
     this.init();
   }
 
+  /**
+   * Registers an application to the UPS.
+   * @param options
+   */
   public async abstract register(options: PushRegistrationOptions): Promise<void>;
+
+  /**
+   * Unregister an application form the UPS.
+   */
   public async abstract unregister(): Promise<void>;
 
+  /**
+   * Extracts the platform configuration from the current push configuration object.
+   * @param pushConfig The push configuration object.
+   */
   public abstract getPlatformConfig(pushConfig: ServiceConfiguration): any;
 
+  /**
+   * Performs custom validations to the configuration.
+   * If this method is overridden it gets automatically called before the standard validations are executed.
+   * @param pushConfig The push configuration
+   * @return undefined if no errors has been found, a string containing the detail of the error otherwise.
+   */
   protected validateConfig(pushConfig: ServiceConfiguration): string | undefined {
     return undefined;
   }
 
+  /**
+   * This method is immediately called after all validations has been successfully concluded.
+   * Subclasses should override this to perform custom initializations.
+   */
+  // tslint:disable-next-line: no-empty
   protected init(): void { }
 
+  /**
+   * Performs general validation checks on the configuration.
+   * @param pushConfig the configuration
+   * @private
+   */
   private _validateConfig(pushConfig: ServiceConfiguration): string | undefined {
     const ret = this.validateConfig(pushConfig);
     if (ret) {

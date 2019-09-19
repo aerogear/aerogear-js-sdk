@@ -4,6 +4,15 @@ import {PushRegistrationOptions} from "../PushRegistration";
 
 declare var window: any;
 
+/**
+ * AeroGear UPS registration SDK - Webpush implementation
+ *
+ * Usage:
+ * // Initialize SDK first
+ * app.init(config);
+ * let registration = new PushRegistration();
+ * registration.register("myAppleOrFirebaseToken");
+ */
 export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
   constructor(config: ConfigurationService) {
     super(config);
@@ -19,12 +28,11 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
 
     if (this.httpClient) {
       const subscription = await this.subscribeToWebPush(this.platformConfig.appServerKey);
-
       const postData = {
         "deviceToken": JSON.stringify(subscription),
-        "deviceType": "ChromeBrowser", //window.device.model,
+        "deviceType": "ChromeBrowser",
         "operatingSystem": "WebPush",
-        "osVersion": "6.1.2", //window.device.version,
+        "osVersion": "6.1.2",
         "alias": alias,
         "categories": categories
       };
@@ -38,6 +46,8 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
     }
   }
 
+  // TODO: implement
+  // tslint:disable-next-line: no-empty
   public async unregister(): Promise<void> {
   }
 
@@ -50,13 +60,10 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
 
     if (reg.installing) {
       serviceWorker = reg.installing;
-      // console.log('Service worker installing');
     } else if (reg.waiting) {
       serviceWorker = reg.waiting;
-      // console.log('Service worker installed & waiting');
     } else if (reg.active) {
       serviceWorker = reg.active;
-      // console.log('Service worker active');
     }
 
     return new Promise(resolve => {

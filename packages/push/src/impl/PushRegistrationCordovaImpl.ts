@@ -5,7 +5,7 @@ import {ConfigurationService, isCordovaAndroid, isCordovaIOS, ServiceConfigurati
 declare var window: any;
 
 /**
- * AeroGear UPS registration SDK
+ * AeroGear UPS registration SDK - Cordova based implementation
  *
  * Usage:
  * // Initialize SDK first
@@ -176,35 +176,6 @@ export class PushRegistrationCordovaImpl extends AbstractPushRegistration {
     );
   }
 
-  private async subscribeToWebPush(appServerKey: string) {
-
-    if ("serviceWorker" in navigator) {
-      const permission = await window.Notification.requestPermission();
-      if (permission !== "granted") {
-        console.warn("Unable to subscribe to WebPush: no permissions");
-        return;
-      }
-      const registration = await navigator.serviceWorker.register("/service-worker.js");
-      const subscribeOptions = {
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(appServerKey)
-      };
-
-      const pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
-      const subscription = {
-        endpoint: pushSubscription.endpoint,
-        keys: {
-          p256dh: btoa(String.fromCharCode.apply(null,
-            Array.from(new Uint8Array(pushSubscription.getKey("p256dh") as ArrayBuffer)))),
-          auth: btoa(String.fromCharCode.apply(null,
-            Array.from(new Uint8Array(pushSubscription.getKey("auth") as ArrayBuffer))))
-        }
-      };
-
-      return subscription;
-    }
-  }
-
   private subscribeToFirebaseTopic(topic: string) {
     this.push.subscribe(
       topic,
@@ -228,24 +199,4 @@ export class PushRegistrationCordovaImpl extends AbstractPushRegistration {
       }
     );
   }
-}
-
-/**
- * urlBase64ToUint8Array
- *
- * @param {string} base64String a public vavid key
- */
-function urlBase64ToUint8Array(base64String: string) {
-  const padding = "=".repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding)
-    .replace(/\-/g, "+")
-    .replace(/_/g, "/");
-
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
 }
