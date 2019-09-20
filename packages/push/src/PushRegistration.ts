@@ -3,16 +3,12 @@ import {
   isNative
 } from "@aerogear/core";
 import { AbstractPushRegistration } from "./AbstractPushRegistration";
-import {PushRegistrationInterface} from "./PushRegistrationInterface";
+import { PushRegistrationInterface, PushRegistrationOptions, PushRegistrationWebpushOptions } from "./PushRegistrationInterface";
 import { PushRegistrationWebpushImpl, PushRegistrationCordovaImpl } from "./impl";
 
 export type OnMessageReceivedCallback = (notification: any) => void;
 
-export interface PushRegistrationOptions {
-  alias?: string;
-  categories?: string[];
-  timeout?: number;
-}
+export { PushRegistrationOptions, PushRegistrationWebpushOptions } from "./PushRegistrationInterface";
 
 /**
  * AeroGear UPS registration SDK
@@ -25,6 +21,10 @@ export interface PushRegistrationOptions {
  */
 export class PushRegistration implements PushRegistrationInterface {
 
+  /**
+   * Calls to this method are ignored if webpush are used.
+   * @param onMessageReceivedCallback
+   */
   public static onMessageReceived(onMessageReceivedCallback: OnMessageReceivedCallback) {
     PushRegistrationCordovaImpl.onMessageReceived(onMessageReceivedCallback);
   }
@@ -43,7 +43,7 @@ export class PushRegistration implements PushRegistrationInterface {
    * Register the application to the UPS.
    * @param options
    */
-  public async register(options: PushRegistrationOptions = {}): Promise<void> {
+  public async register(options: PushRegistrationOptions | PushRegistrationWebpushOptions = {}): Promise<void> {
     await this.delegate.register(options);
   }
 

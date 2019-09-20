@@ -1,8 +1,10 @@
 import {AbstractPushRegistration} from "../AbstractPushRegistration";
 import {ConfigurationService, ServiceConfiguration} from "@aerogear/core";
-import {PushRegistrationOptions} from "../PushRegistration";
+import {PushRegistrationOptions, PushRegistrationWebpushOptions} from "../PushRegistration";
 
 declare var window: any;
+
+const DEFAULT_SERVICE_WORKER: string = "/service-worker.js";
 
 /**
  * AeroGear UPS registration SDK - Webpush implementation
@@ -19,15 +21,15 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
     // The config is valid
   }
 
-  public async register(options: PushRegistrationOptions): Promise<void> {
-    const {alias, categories, timeout} = options;
+  public async register(options: PushRegistrationWebpushOptions): Promise<void> {
+    const {alias, categories, serviceWorker} = options;
 
     if (this.validationError) {
       throw new Error(this.validationError);
     }
 
     if (this.httpClient) {
-      const subscription = await this.subscribeToWebPush(this.platformConfig.appServerKey);
+      const subscription = await this.subscribeToWebPush(this.platformConfig.appServerKey, serviceWorker);
       const postData = {
         "deviceToken": JSON.stringify(subscription),
         "deviceType": "ChromeBrowser",
@@ -46,7 +48,6 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
     }
   }
 
-  // TODO: implement
   // tslint:disable-next-line: no-empty
   public async unregister(): Promise<void> {
     await super.unregister();
@@ -87,14 +88,14 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
     });
   }
 
-  private async subscribeToWebPush(appServerKey: string): Promise<any> {
+  private async subscribeToWebPush(appServerKey: string, serviceWorker: string = DEFAULT_SERVICE_WORKER): Promise<any> {
     if ("serviceWorker" in navigator) {
       const permission = await window.Notification.requestPermission();
       if (permission !== "granted") {
         console.warn("Unable to subscribe to WebPush: no permissions");
         return;
       }
-      const registration = await navigator.serviceWorker.register("/service-worker.js");
+      const registration = await navigator.serviceWorker.register(serviceWorker);
       await this.waitForServiceWorkerToBeReady(registration);
 
       const subscribeOptions = {
