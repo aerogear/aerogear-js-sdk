@@ -3,7 +3,10 @@ import {
   isNative
 } from "@aerogear/core";
 import { AbstractPushRegistration } from "./AbstractPushRegistration";
-import { PushRegistrationInterface, PushRegistrationOptions, PushRegistrationWebpushOptions } from "./PushRegistrationInterface";
+import {
+  PushRegistrationInterface,
+  PushRegistrationOptions,
+  PushRegistrationWebpushOptions } from "./PushRegistrationInterface";
 import { PushRegistrationWebpushImpl, PushRegistrationCordovaImpl } from "./impl";
 
 export type OnMessageReceivedCallback = (notification: any) => void;

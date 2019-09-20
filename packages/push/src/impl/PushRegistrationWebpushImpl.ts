@@ -21,7 +21,7 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
     // The config is valid
   }
 
-  public async register(options: PushRegistrationWebpushOptions): Promise<void> {
+  public async register(options: PushRegistrationWebpushOptions = {}): Promise<void> {
     const {alias, categories, serviceWorker} = options;
 
     if (this.validationError) {

@@ -16,13 +16,13 @@ export abstract class AbstractPushRegistration implements PushRegistrationInterf
   protected static readonly API_PATH: string = "rest/registry/device";
 
   protected readonly variantId?: string;
-  protected readonly validationError?: string;
+  protected readonly validationError?: string | undefined;
   protected readonly httpClient?: AxiosInstance;
   protected readonly platformConfig: any;
 
   constructor(config: ConfigurationService) {
     const configuration = config.getConfigByType(AbstractPushRegistration.TYPE);
-    if (configuration && configuration.length > 0) {
+    if (configuration && configuration.length > 0 && configuration[0]) {
       this.validationError = this._validateConfig(configuration[0]);
       if (this.validationError) {
         console.warn(this.validationError);
