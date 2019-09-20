@@ -24,6 +24,11 @@ export interface PushRegistrationOptions {
  * registration.register("myAppleOrFirebaseToken");
  */
 export class PushRegistration implements PushRegistrationInterface {
+
+  public static onMessageReceived(onMessageReceivedCallback: OnMessageReceivedCallback) {
+    PushRegistrationCordovaImpl.onMessageReceived(onMessageReceivedCallback);
+  }
+
   private readonly delegate: AbstractPushRegistration;
 
   constructor(config: ConfigurationService) {
