@@ -1,3 +1,9 @@
+## JS-SDK 2.6.3
+
+### Push
+
+Support iOS 13
+
 ## JS-SDK 2.6.2
 
 ### DataSync
