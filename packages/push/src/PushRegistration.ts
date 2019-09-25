@@ -2,7 +2,6 @@ import {
   ConfigurationService,
   isNative
 } from "@aerogear/core";
-import { AbstractPushRegistration } from "./AbstractPushRegistration";
 import {
   PushRegistrationInterface,
   PushRegistrationOptions,

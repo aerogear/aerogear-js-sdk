@@ -1,6 +1,8 @@
 import { AbstractPushRegistration } from "../AbstractPushRegistration";
 import { ConfigurationService, ServiceConfiguration } from "@aerogear/core";
 import { PushRegistrationWebpushOptions } from "../PushRegistration";
+import * as Bowser from "bowser"
+import {getPackedSettings} from "http2";
 
 declare var window: any;
 
@@ -30,11 +32,12 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
 
     if (this.httpClient) {
       const subscription = await this.subscribeToWebPush(this.platformConfig.appServerKey, serviceWorker);
+      const userAgent = Bowser.parse(window.navigator.userAgent);
       const postData = {
         "deviceToken": JSON.stringify(subscription),
-        "deviceType": "ChromeBrowser",
-        "operatingSystem": "WebPush",
-        "osVersion": "6.1.2",
+        "deviceType": userAgent.browser.name,
+        "operatingSystem": userAgent.os.name,
+        "osVersion": userAgent.os.version,
         "alias": alias,
         "categories": categories
       };
@@ -62,6 +65,12 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
     return pushConfig.config.web_push;
   }
 
+  protected validateConfig(pushConfig: ServiceConfiguration): string | undefined {
+    if (!this.getPlatformConfig(pushConfig).appServerKey) {
+      return "No appServerKey found in service configuration";
+    }
+  }
+
   private waitForServiceWorkerToBeReady(reg: ServiceWorkerRegistration): Promise<ServiceWorkerRegistration> {
     let serviceWorker: ServiceWorker | undefined;
     if (reg.installing) {
@@ -83,10 +92,6 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
         });
       }
     });
-  }
-
-  private async aa(): Promise<ServiceWorkerRegistration> {
-    return navigator.serviceWorker.ready;
   }
 
   private async subscribeToWebPush(appServerKey: string, serviceWorker: string = DEFAULT_SERVICE_WORKER): Promise<any> {

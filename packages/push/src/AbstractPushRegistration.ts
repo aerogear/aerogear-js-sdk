@@ -116,11 +116,6 @@ export abstract class AbstractPushRegistration implements PushRegistrationInterf
    * @private
    */
   private _validateConfig(pushConfig: ServiceConfiguration): string | undefined {
-    const ret = this.validateConfig(pushConfig);
-    if (ret) {
-      return ret;
-    }
-
     if (!pushConfig || !pushConfig.config) {
       return "UnifiedPush server configuration not found";
     }
@@ -143,6 +138,6 @@ export abstract class AbstractPushRegistration implements PushRegistrationInterf
     if (!variantSecret) {
       return "UnifiedPush VariantSecret is not defined";
     }
-    return undefined;
+    return this.validateConfig(pushConfig);
   }
 }
