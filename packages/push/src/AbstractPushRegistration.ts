@@ -1,7 +1,7 @@
-import {ConfigurationService, ServiceConfiguration} from "@aerogear/core";
-import {PushRegistrationOptions} from "./PushRegistration";
+import { ConfigurationService, ServiceConfiguration } from "@aerogear/core";
+import { PushRegistrationOptions } from "./PushRegistration";
 import { PushRegistrationInterface } from "./PushRegistrationInterface";
-import {AxiosInstance} from "axios";
+import { AxiosInstance} from "axios";
 import axios from "axios";
 
 /**
@@ -20,7 +20,7 @@ export abstract class AbstractPushRegistration implements PushRegistrationInterf
   protected readonly httpClient?: AxiosInstance;
   protected readonly platformConfig: any;
 
-  constructor(config: ConfigurationService) {
+  protected constructor(config: ConfigurationService) {
     const configuration = config.getConfigByType(AbstractPushRegistration.TYPE);
     if (configuration && configuration.length > 0 && configuration[0]) {
       this.validationError = this._validateConfig(configuration[0]);

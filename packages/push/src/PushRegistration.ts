@@ -29,10 +29,14 @@ export class PushRegistration implements PushRegistrationInterface {
    * @param onMessageReceivedCallback
    */
   public static onMessageReceived(onMessageReceivedCallback: OnMessageReceivedCallback) {
-    PushRegistrationCordovaImpl.onMessageReceived(onMessageReceivedCallback);
+    if (!isNative()) {
+      console.warn("Calls to PushRegistration.onMessageReceived will be ignored for webpush");
+    } else {
+      PushRegistrationCordovaImpl.onMessageReceived(onMessageReceivedCallback);
+    }
   }
 
-  private readonly delegate: AbstractPushRegistration;
+  private readonly delegate: PushRegistrationInterface;
 
   constructor(config: ConfigurationService) {
     if (!isNative()) {
@@ -54,6 +58,6 @@ export class PushRegistration implements PushRegistrationInterface {
    * Unregister the application from the UPS.
    */
   public async unregister(): Promise<void> {
-    this.delegate.unregister();
+    await this.delegate.unregister();
   }
 }

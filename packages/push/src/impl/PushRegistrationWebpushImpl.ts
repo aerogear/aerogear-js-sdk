@@ -1,6 +1,6 @@
-import {AbstractPushRegistration} from "../AbstractPushRegistration";
-import {ConfigurationService, ServiceConfiguration} from "@aerogear/core";
-import {PushRegistrationOptions, PushRegistrationWebpushOptions} from "../PushRegistration";
+import { AbstractPushRegistration } from "../AbstractPushRegistration";
+import { ConfigurationService, ServiceConfiguration } from "@aerogear/core";
+import { PushRegistrationWebpushOptions } from "../PushRegistration";
 
 declare var window: any;
 
@@ -48,7 +48,6 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
     }
   }
 
-  // tslint:disable-next-line: no-empty
   public async unregister(): Promise<void> {
     await super.unregister();
     if ("serviceWorker" in navigator) {
@@ -63,9 +62,8 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
     return pushConfig.config.web_push;
   }
 
-  private waitForServiceWorkerToBeReady(reg: ServiceWorkerRegistration) {
+  private waitForServiceWorkerToBeReady(reg: ServiceWorkerRegistration): Promise<ServiceWorkerRegistration> {
     let serviceWorker: ServiceWorker | undefined;
-
     if (reg.installing) {
       serviceWorker = reg.installing;
     } else if (reg.waiting) {
@@ -73,19 +71,22 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
     } else if (reg.active) {
       serviceWorker = reg.active;
     }
-
-    return new Promise(resolve => {
+    return new Promise<ServiceWorkerRegistration>(resolve => {
       if (serviceWorker) {
         if (serviceWorker.state === "activated") {
-          resolve();
+          resolve(reg);
         }
         serviceWorker.addEventListener("statechange", (e: any) => {
           if (e.target.state === "activated") {
-            resolve();
+            resolve(reg);
           }
         });
       }
     });
+  }
+
+  private async aa(): Promise<ServiceWorkerRegistration> {
+    return navigator.serviceWorker.ready;
   }
 
   private async subscribeToWebPush(appServerKey: string, serviceWorker: string = DEFAULT_SERVICE_WORKER): Promise<any> {
@@ -95,17 +96,15 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
         console.warn("Unable to subscribe to WebPush: no permissions");
         return;
       }
-      const registration = await navigator.serviceWorker.register(serviceWorker);
-      await this.waitForServiceWorkerToBeReady(registration);
+      let registration = await navigator.serviceWorker.register(serviceWorker);
+      registration = await this.waitForServiceWorkerToBeReady(registration);
 
       const subscribeOptions = {
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(appServerKey)
       };
-
       const pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
-
-      const subscription = {
+      return {
         endpoint: pushSubscription.endpoint,
         keys: {
           p256dh: btoa(String.fromCharCode.apply(null,
@@ -114,8 +113,6 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
             Array.from(new Uint8Array(pushSubscription.getKey("auth") as ArrayBuffer))))
         }
       };
-
-      return subscription;
     }
   }
 }
