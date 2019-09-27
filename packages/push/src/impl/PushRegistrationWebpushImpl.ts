@@ -1,8 +1,7 @@
 import { AbstractPushRegistration } from "../AbstractPushRegistration";
 import { ConfigurationService, ServiceConfiguration } from "@aerogear/core";
-import { PushRegistrationWebpushOptions } from "../PushRegistration";
-import * as Bowser from "bowser"
-import {getPackedSettings} from "http2";
+import {OnMessageReceivedCallback, PushRegistrationWebpushOptions} from "../PushRegistration";
+import * as Bowser from "bowser";
 
 declare var window: any;
 
@@ -18,6 +17,13 @@ const DEFAULT_SERVICE_WORKER: string = "/service-worker.js";
  * registration.register("myAppleOrFirebaseToken");
  */
 export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
+
+  public static onMessageReceived(onMessageReceivedCallback: OnMessageReceivedCallback) {
+    PushRegistrationWebpushImpl.onMessageReceivedCallback = onMessageReceivedCallback;
+  }
+
+  private static onMessageReceivedCallback: OnMessageReceivedCallback;
+
   constructor(config: ConfigurationService) {
     super(config);
     // The config is valid
@@ -45,6 +51,12 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
       await this.httpClient.post(AbstractPushRegistration.API_PATH, postData);
       const storage = window.localStorage;
       storage.setItem(AbstractPushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(postData));
+
+      navigator.serviceWorker.addEventListener("message", event => {
+        if (PushRegistrationWebpushImpl.onMessageReceivedCallback) {
+          PushRegistrationWebpushImpl.onMessageReceivedCallback(event.data);
+        }
+      });
     } else {
       // It should never happend but...
       throw new Error("Push is not properly configured");
@@ -80,8 +92,10 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
     } else if (reg.active) {
       serviceWorker = reg.active;
     }
+
     return new Promise<ServiceWorkerRegistration>(resolve => {
       if (serviceWorker) {
+
         if (serviceWorker.state === "activated") {
           resolve(reg);
         }

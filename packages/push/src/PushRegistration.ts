@@ -29,7 +29,7 @@ export class PushRegistration implements PushRegistrationInterface {
    */
   public static onMessageReceived(onMessageReceivedCallback: OnMessageReceivedCallback) {
     if (!isNative()) {
-      console.warn("Calls to PushRegistration.onMessageReceived will be ignored for webpush");
+      PushRegistrationWebpushImpl.onMessageReceived(onMessageReceivedCallback);
     } else {
       PushRegistrationCordovaImpl.onMessageReceived(onMessageReceivedCallback);
     }
