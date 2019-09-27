@@ -24,7 +24,7 @@ export { PushRegistrationOptions, PushRegistrationWebpushOptions } from "./PushR
 export class PushRegistration implements PushRegistrationInterface {
 
   /**
-   * Calls to this method are ignored if webpush are used.
+   * Register the callback that will receive the push message
    * @param onMessageReceivedCallback
    */
   public static onMessageReceived(onMessageReceivedCallback: OnMessageReceivedCallback) {

@@ -52,11 +52,11 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
       const storage = window.localStorage;
       storage.setItem(AbstractPushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(postData));
 
-      navigator.serviceWorker.addEventListener("message", event => {
+      navigator.serviceWorker.onmessage = event => {
         if (PushRegistrationWebpushImpl.onMessageReceivedCallback) {
           PushRegistrationWebpushImpl.onMessageReceivedCallback(event.data);
         }
-      });
+      };
     } else {
       // It should never happend but...
       throw new Error("Push is not properly configured");
