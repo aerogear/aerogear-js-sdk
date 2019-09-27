@@ -77,6 +77,10 @@ describe("Push", () => {
     window.Notification = {
       requestPermission: () => "granted"
     };
+    window.navigator = {
+      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) " +
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36"
+    };
 
     global.navigator = {
       agent: "Windows",
@@ -153,9 +157,9 @@ describe("Push", () => {
               "keys": {"p256dh": "dGVzdA==", "auth": "dGVzdA=="}}));
         assert.equal(jsonData.alias, "cordova");
         assert.equal(jsonData.categories.length, 1);
-        assert.equal(jsonData.deviceType, "ChromeBrowser");
-        assert.equal(jsonData.operatingSystem, "WebPush");
-        assert.equal(jsonData.osVersion, "6.1.2");
+        assert.equal(jsonData.deviceType, "Chrome");
+        assert.equal(jsonData.operatingSystem, "macOS");
+        assert.equal(jsonData.osVersion, "10.14.6");
 
         expect(jsonData.categories).to.eql(["Test"]);
       } catch (error) {
