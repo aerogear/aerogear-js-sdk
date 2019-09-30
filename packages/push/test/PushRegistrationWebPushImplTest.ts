@@ -151,10 +151,7 @@ describe("Push", () => {
         const jsonData = JSON.parse(storageData);
 
         assert.equal(window.localStorage.length, 1);
-        assert.equal(jsonData.deviceToken,
-          JSON.stringify({
-              "endpoint": "http://localhost/push",
-              "keys": {"p256dh": "dGVzdA==", "auth": "dGVzdA=="}}));
+        assert.equal(jsonData.deviceToken, "dGVzdA==");
         assert.equal(jsonData.alias, "cordova");
         assert.equal(jsonData.categories.length, 1);
         assert.equal(jsonData.deviceType, "Chrome");

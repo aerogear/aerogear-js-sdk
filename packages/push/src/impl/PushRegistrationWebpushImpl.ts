@@ -40,7 +40,7 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
       const subscription = await this.subscribeToWebPush(this.platformConfig.appServerKey, serviceWorker);
       const userAgent = Bowser.parse(window.navigator.userAgent);
       const postData = {
-        "deviceToken": JSON.stringify(subscription),
+        "deviceToken": window.btoa(JSON.stringify(subscription)),
         "deviceType": userAgent.browser.name,
         "operatingSystem": userAgent.os.name,
         "osVersion": userAgent.os.version,
