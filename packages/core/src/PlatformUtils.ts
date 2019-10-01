@@ -23,9 +23,9 @@ export const isMobileCordova = () => (
 export const isNative = () => isMobileCordova();
 
 export const isCordovaAndroid = () => (
-  window.device.platform === "Android"
+  window.device && window.device.platform === "Android"
 );
 
 export const isCordovaIOS = () => (
-  window.device.platform === "iOS"
+  window.device && window.device.platform === "iOS"
 );

@@ -1,6 +1,7 @@
 import { assert, expect } from "chai";
-import { PushRegistration } from "../src";
+import { PushRegistrationCordovaImpl } from "../src/impl";
 import { ConfigurationService } from "@aerogear/core";
+import { AbstractPushRegistration } from "../src/AbstractPushRegistration";
 
 declare var window: any;
 declare var global: any;
@@ -73,7 +74,7 @@ describe("Push", () => {
   describe("#register", async () => {
     it("should register in push server without any parameter", async () => {
       try {
-        const registration = new PushRegistration(config);
+        const registration = new PushRegistrationCordovaImpl(config);
         await registration.register();
       } catch (error) {
         assert.fail(error);
@@ -82,7 +83,7 @@ describe("Push", () => {
 
     it("should register in push server with alias", async () => {
       try {
-        const registration = new PushRegistration(config);
+        const registration = new PushRegistrationCordovaImpl(config);
         await registration.register({ alias: "Test" });
       } catch (error) {
         assert.fail(error);
@@ -91,7 +92,7 @@ describe("Push", () => {
 
     it("should register in push server with categories", async () => {
       try {
-        const registration = new PushRegistration(config);
+        const registration = new PushRegistrationCordovaImpl(config);
         await registration.register({ categories: ["Cordova", "Ionic"] });
       } catch (error) {
         assert.fail(error);
@@ -100,7 +101,7 @@ describe("Push", () => {
 
     it("should register in push server with alias and categories", async () => {
       try {
-        const registration = new PushRegistration(config);
+        const registration = new PushRegistrationCordovaImpl(config);
         await registration.register({ alias: "Test", categories: ["Cordova", "Ionic"] });
       } catch (error) {
         assert.fail(error);
@@ -109,10 +110,10 @@ describe("Push", () => {
 
     it("should store the registration data on register", async () => {
       try {
-        const registration = new PushRegistration(config);
+        const registration = new PushRegistrationCordovaImpl(config);
         await registration.register({ alias: "cordova", categories: ["Test"] });
 
-        const storageData = await window.localStorage.getItem(PushRegistration.REGISTRATION_DATA_KEY);
+        const storageData = await window.localStorage.getItem(AbstractPushRegistration.REGISTRATION_DATA_KEY);
         const jsonData = JSON.parse(storageData);
 
         assert.equal(window.localStorage.length, 1);
@@ -134,7 +135,7 @@ describe("Push", () => {
       global.window.PushNotification = undefined;
 
       try {
-        const registration = new PushRegistration(config);
+        const registration = new PushRegistrationCordovaImpl(config);
         await registration.register({alias: "cordova", categories: ["Test"]});
       } catch (_) {
         return;
@@ -152,7 +153,7 @@ describe("Push", () => {
       };
 
       try {
-        const registration = new PushRegistration(new ConfigurationService(missPushServiceConfig));
+        const registration = new PushRegistrationCordovaImpl(new ConfigurationService(missPushServiceConfig));
         await registration.register();
       } catch (_) {
         return;
@@ -181,7 +182,7 @@ describe("Push", () => {
       };
 
       try {
-        const registration = new PushRegistration(new ConfigurationService(missVariantIdConfig));
+        const registration = new PushRegistrationCordovaImpl(new ConfigurationService(missVariantIdConfig));
         await registration.register();
       } catch (_) {
         return;
@@ -210,7 +211,7 @@ describe("Push", () => {
       };
 
       try {
-        const registration = new PushRegistration(new ConfigurationService(missVariantIdConfig));
+        const registration = new PushRegistrationCordovaImpl(new ConfigurationService(missVariantIdConfig));
         await registration.register();
       } catch (_) {
         return;
@@ -228,8 +229,8 @@ describe("Push", () => {
           "alias": "unitTest",
           "categories": ["test"]
         };
-        window.localStorage.setItem(PushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(registrationData));
-        const registration = new PushRegistration(config);
+        window.localStorage.setItem(AbstractPushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(registrationData));
+        const registration = new PushRegistrationCordovaImpl(config);
         await registration.unregister();
       } catch (error) {
         assert.fail(error);
@@ -243,8 +244,8 @@ describe("Push", () => {
           "alias": "unitTest",
           "categories": ["test"]
         };
-        window.localStorage.setItem(PushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(registrationData));
-        const registration = new PushRegistration(config);
+        window.localStorage.setItem(AbstractPushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(registrationData));
+        const registration = new PushRegistrationCordovaImpl(config);
         await registration.unregister();
         assert.equal(window.localStorage.length, 0);
       } catch (error) {
@@ -254,7 +255,7 @@ describe("Push", () => {
 
     it("should fail to unregister in push server when deviceToken does not exists", async () => {
       try {
-        const registration = new PushRegistration(config);
+        const registration = new PushRegistrationCordovaImpl(config);
         await registration.unregister();
       } catch (_) {
         return;
