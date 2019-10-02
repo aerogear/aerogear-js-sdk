@@ -2,7 +2,11 @@
 
 ### Push
 
-Support WebPush
+#### Support WebPush
+* WebPush Variants in mobile-services.json are now supported
+* Compatible browsers such as Chrome can register for and receive webpush push messages sent from UPS
+* Framework for connecting custom service-workers to notification APIs
+* Permissions for Notifications are handled by JS-SDK
 
 ## JS-SDK 2.6.3
 
