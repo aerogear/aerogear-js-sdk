@@ -1,3 +1,9 @@
+## JS-SDK 2.7.0
+
+### Push
+
+Support WebPush
+
 ## JS-SDK 2.6.3
 
 ### Push
