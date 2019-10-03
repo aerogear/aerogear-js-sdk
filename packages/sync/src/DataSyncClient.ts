@@ -1,7 +1,7 @@
 import { DataSyncConfig } from "./config";
 import { createDefaultLink } from "./links/LinksBuilder";
 
-import { OfflineClient, ApolloOfflineClient } from "offix-client";
+import { OfflineClient } from "offix-client";
 
 /**
 * Factory for creating Apollo Offline Client
