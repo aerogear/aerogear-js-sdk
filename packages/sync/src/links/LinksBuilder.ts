@@ -4,7 +4,6 @@ import { DataSyncConfig } from "../config";
 import { createAuthLink } from "./AuthLink";
 import { AuditLoggingLink } from "./AuditLoggingLink";
 import { DefaultMetricsBuilder, MetricsBuilder } from "@aerogear/core";
-import { LocalDirectiveFilterLink } from "offix-client";
 import { createUploadLink } from "apollo-upload-client";
 import { isSubscription } from "offix-client";
 import { defaultWebSocketLink } from "./WebsocketLink";
@@ -40,7 +39,7 @@ export const createDefaultLink = async (
  * - Audit logging
  */
 export const defaultHttpLinks = async (
-  config: DataSyncConfig,
+  config: DataSyncConfig
 ): Promise<ApolloLink> => {
   const links: ApolloLink[] = [];
   if (config.auditLogging) {
@@ -50,8 +49,6 @@ export const defaultHttpLinks = async (
   if (config.authContextProvider) {
     links.push(createAuthLink(config));
   }
-  const localFilterLink = new LocalDirectiveFilterLink();
-  links.push(localFilterLink);
 
   if (config.fileUpload) {
     links.push(

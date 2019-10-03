@@ -13,6 +13,7 @@ import {
   ConflictResolutionStrategy,
   NetworkStatus
 } from "offix-client";
+import { MutationOptions } from "apollo-client";
 import { createDefaultCacheStorage } from "../cache";
 
 declare var window: any;
@@ -27,7 +28,7 @@ const TYPE: string = "sync-app";
 export class SyncConfig implements DataSyncConfig {
   public wsUrl?: string;
   public httpUrl?: string;
-  public offlineQueueListener?: OfflineQueueListener;
+  public offlineQueueListener?: OfflineQueueListener<MutationOptions>;
   public authContextProvider?: AuthContextProvider;
   public fileUpload?: boolean;
   public openShiftConfig?: ConfigurationService;
@@ -37,7 +38,7 @@ export class SyncConfig implements DataSyncConfig {
   public networkStatus: NetworkStatus;
 
   public cacheStorage: PersistentStore<PersistedData>;
-  public offlineStorage: PersistentStore<PersistedData>;
+  public offlineStorage?: PersistentStore<PersistedData>;
 
   public retryOptions = {
     delay: {
