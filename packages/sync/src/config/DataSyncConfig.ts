@@ -9,6 +9,7 @@ import {
   ConflictResolutionStrategy
 } from "offix-client";
 import { AuthContextProvider } from ".";
+import { MutationOptions } from "apollo-client";
 /**
  * Contains all configuration options required to initialize Voyager Client
  * Options marked with [Modifier] flag are used to modify behavior of client.
@@ -48,7 +49,7 @@ export interface DataSyncConfig {
    * User provided listener that contains set of methods that can be used to detect
    * when operations were added to queue
    */
-  offlineQueueListener?: OfflineQueueListener;
+  offlineQueueListener?: OfflineQueueListener<MutationOptions>;
 
   /**
    * [Modifier]
