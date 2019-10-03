@@ -41,7 +41,7 @@
     "chai-as-promised": "7.1.1",
     "del-cli": "2.0.0",
     "mocha": "6.2.0",
-    "mockttp": "0.16.1",
+    "mockttp": "0.18.1",
     "sinon": "7.4.1",
     "source-map-support": "0.5.13",
     "ts-node": "8.3.0",
