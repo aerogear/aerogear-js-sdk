@@ -1,4 +1,4 @@
-import { createClient, OfflineClient, CompositeQueueListener } from "../src";
+import { createClient, OfflineClient } from "../src";
 import { expect, should } from "chai";
 import { mock } from "fetch-mock";
 import { storage } from "./mock/Storage";
@@ -27,7 +27,6 @@ describe("Top level api tests", () => {
   it("Apply listener", async () => {
     const client = new OfflineClient({ httpUrl: url, storage, networkStatus });
     const initClient = await client.init();
-    initClient.registerOfflineEventListener(
-      new CompositeQueueListener({ queueListeners: [] }));
+    initClient.registerOfflineEventListener({});
   });
 });
