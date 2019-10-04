@@ -81,6 +81,7 @@ describe("Push", () => {
       userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) " +
         "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36"
     };
+    window.PushManager = {};
 
     global.navigator = {
       agent: "Windows",
@@ -111,6 +112,7 @@ describe("Push", () => {
       try {
         global.navigator = {};
         window.navigator = {};
+        window.PushManager = undefined;
         const registration = new PushRegistrationWebpushImpl(config);
         await registration.register();
         assert.fail("This test should fail");
