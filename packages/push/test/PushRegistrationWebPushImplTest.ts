@@ -81,6 +81,7 @@ describe("Push", () => {
       userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) " +
         "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36"
     };
+    window.PushManager = {};
 
     global.navigator = {
       agent: "Windows",
@@ -106,6 +107,20 @@ describe("Push", () => {
   });
 
   describe("#register", async () => {
+
+    it("should fail because push is not supported", async () => {
+      try {
+        global.navigator = {};
+        window.navigator = {};
+        window.PushManager = undefined;
+        const registration = new PushRegistrationWebpushImpl(config);
+        await registration.register();
+        assert.fail("This test should fail");
+      } catch (error) {
+        expect(error.message).equal("Push messages are not supported on the current platform");
+      }
+    });
+
     it("should register in push server without any parameter", async () => {
       try {
         const registration = new PushRegistrationWebpushImpl(config);
