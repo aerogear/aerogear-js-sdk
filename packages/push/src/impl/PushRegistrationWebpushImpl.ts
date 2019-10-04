@@ -109,11 +109,10 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
   }
 
   private async subscribeToWebPush(appServerKey: string, serviceWorker: string = DEFAULT_SERVICE_WORKER): Promise<any> {
-    if ("serviceWorker" in navigator) {
+    if ("serviceWorker" in navigator && "PushManager" in window) {
       const permission = await window.Notification.requestPermission();
       if (permission !== "granted") {
-        console.warn("Unable to subscribe to WebPush: no permissions");
-        return;
+        throw new Error("Unable to subscribe to WebPush: no permissions");
       }
       let registration = await navigator.serviceWorker.register(serviceWorker);
       registration = await this.waitForServiceWorkerToBeReady(registration);
@@ -132,6 +131,8 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
             Array.from(new Uint8Array(pushSubscription.getKey("auth") as ArrayBuffer))))
         }
       };
+    } else {
+      throw new Error("Push messages are not supported on the current platform");
     }
   }
 }
@@ -139,7 +140,7 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
 /**
  * urlBase64ToUint8Array
  *
- * @param {string} base64String a public vavid key
+ * @param {string} base64String a public vapid key
  */
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - base64String.length % 4) % 4);
