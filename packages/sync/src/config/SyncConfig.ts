@@ -15,6 +15,7 @@ import {
 } from "offix-client";
 import { MutationOptions } from "apollo-client";
 import { createDefaultCacheStorage } from "../cache";
+import { ApolloLink } from "apollo-link";
 
 declare var window: any;
 
@@ -39,6 +40,7 @@ export class SyncConfig implements DataSyncConfig {
 
   public cacheStorage: PersistentStore<PersistedData>;
   public offlineStorage?: PersistentStore<PersistedData>;
+  public terminatingLink?: ApolloLink;
 
   public retryOptions = {
     delay: {

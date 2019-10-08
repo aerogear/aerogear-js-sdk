@@ -2,6 +2,7 @@ import { DataSyncConfig } from "./config";
 import { createDefaultLink } from "./links/LinksBuilder";
 
 import { OfflineClient } from "offix-client";
+import { SyncConfig } from "./config/SyncConfig";
 
 /**
 * Factory for creating Apollo Offline Client
@@ -15,9 +16,9 @@ import { OfflineClient } from "offix-client";
 */
 export const createClient = async (userConfig: DataSyncConfig):
   Promise<OfflineClient> => {
-  const offlineClient = new OfflineClient(userConfig);
-  const terminatingLink = await createDefaultLink(offlineClient.config);
-  offlineClient.config.terminatingLink = terminatingLink;
+  const config = new SyncConfig(userConfig);
+  config.terminatingLink = await createDefaultLink(config);
+  const offlineClient = new OfflineClient(config);
   await offlineClient.init();
   return offlineClient;
 };
