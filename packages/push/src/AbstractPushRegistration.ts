@@ -1,8 +1,8 @@
-import { ConfigurationService, ServiceConfiguration } from "@aerogear/core";
 import { PushRegistrationOptions } from "./PushRegistration";
 import { PushRegistrationInterface } from "./PushRegistrationInterface";
 import { AxiosInstance} from "axios";
 import axios from "axios";
+import { ServiceConfiguration } from "@aerogear/core";
 
 /**
  * Base class for push registration managers.
@@ -20,10 +20,9 @@ export abstract class AbstractPushRegistration implements PushRegistrationInterf
   protected readonly httpClient?: AxiosInstance;
   protected readonly platformConfig: any;
 
-  protected constructor(config: ConfigurationService) {
-    const configuration = config.getConfigByType(AbstractPushRegistration.TYPE);
-    if (configuration && configuration.length > 0 && configuration[0]) {
-      this.validationError = this._validateConfig(configuration[0]);
+  protected constructor(configuration: ServiceConfiguration) {
+    if (configuration) {
+      this.validationError = this._validateConfig(configuration);
       if (this.validationError) {
         console.warn(this.validationError);
         return;
@@ -35,7 +34,7 @@ export abstract class AbstractPushRegistration implements PushRegistrationInterf
     }
 
     // configuration is valid
-    const pushConfig = configuration[0];
+    const pushConfig = configuration;
     this.platformConfig = this.getPlatformConfig(pushConfig);
     this.variantId = this.platformConfig.variantId || this.platformConfig.variantID;
     const token = window.btoa(`${this.variantId}:${this.platformConfig.variantSecret}`);
