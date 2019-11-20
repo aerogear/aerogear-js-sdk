@@ -1,6 +1,6 @@
-import {AbstractPushRegistration} from "../AbstractPushRegistration";
-import {OnMessageReceivedCallback, PushRegistrationOptions} from "../PushRegistration";
-import {ConfigurationService, isCordovaAndroid, isCordovaIOS, ServiceConfiguration} from "@aerogear/core";
+import { AbstractPushRegistration } from "../AbstractPushRegistration";
+import { OnMessageReceivedCallback, PushRegistrationOptions } from "../PushRegistration";
+import { isCordovaAndroid, isCordovaIOS, ServiceConfiguration } from "@aerogear/core";
 
 declare var window: any;
 
@@ -8,9 +8,8 @@ declare var window: any;
  * AeroGear UPS registration SDK - Cordova based implementation
  *
  * Usage:
- * // Initialize SDK first
- * app.init(config);
- * let registration = new PushRegistration();
+
+ * let registration = new PushRegistrationCordovaImpl(config);
  * registration.register("myAppleOrFirebaseToken");
  */
 export class PushRegistrationCordovaImpl extends AbstractPushRegistration {
@@ -23,7 +22,7 @@ export class PushRegistrationCordovaImpl extends AbstractPushRegistration {
 
   private push?: any;
 
-  constructor(config: ConfigurationService) {
+  constructor(config: ServiceConfiguration) {
     super(config);
   }
 
@@ -34,7 +33,7 @@ export class PushRegistrationCordovaImpl extends AbstractPushRegistration {
    */
   public register(options: PushRegistrationOptions = {}): Promise<void> {
 
-    const {alias, categories, timeout} = options;
+    const { alias, categories, timeout } = options;
 
     if (this.validationError) {
       return Promise.reject(new Error(this.validationError));
@@ -61,27 +60,27 @@ export class PushRegistrationCordovaImpl extends AbstractPushRegistration {
 
           return this.httpClient.post(AbstractPushRegistration.API_PATH, postData)
             .then(() => {
-                if (isCordovaAndroid() && this.variantId) {
-                  this.subscribeToFirebaseTopic(this.variantId);
-                  if (options.categories) {
-                    for (const category of options.categories) {
-                      this.subscribeToFirebaseTopic(category);
-                    }
+              if (isCordovaAndroid() && this.variantId) {
+                this.subscribeToFirebaseTopic(this.variantId);
+                if (options.categories) {
+                  for (const category of options.categories) {
+                    this.subscribeToFirebaseTopic(category);
                   }
                 }
-
-                const storage = window.localStorage;
-                storage.setItem(AbstractPushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(postData));
-
-                this.push
-                  .on("notification", (notification: any) => {
-                    if (PushRegistrationCordovaImpl.onMessageReceivedCallback) {
-                      PushRegistrationCordovaImpl.onMessageReceivedCallback(notification);
-                    }
-                  });
-
-                resolve();
               }
+
+              const storage = window.localStorage;
+              storage.setItem(AbstractPushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(postData));
+
+              this.push
+                .on("notification", (notification: any) => {
+                  if (PushRegistrationCordovaImpl.onMessageReceivedCallback) {
+                    PushRegistrationCordovaImpl.onMessageReceivedCallback(notification);
+                  }
+                });
+
+              resolve();
+            }
             )
             .catch(reject);
 

@@ -1,4 +1,4 @@
-import { isMobileCordova, ServiceConfiguration, ConfigurationService } from "@aerogear/core";
+import { isMobileCordova } from "@aerogear/core";
 import { ConfigError } from "./ConfigError";
 import { DataSyncConfig } from "./DataSyncConfig";
 
@@ -32,7 +32,6 @@ export class SyncConfig implements DataSyncConfig {
   public offlineQueueListener?: OfflineQueueListener<MutationOptions>;
   public authContextProvider?: AuthContextProvider;
   public fileUpload?: boolean;
-  public openShiftConfig?: ConfigurationService;
   public auditLogging = false;
   public conflictStrategy: ConflictResolutionStrategy;
   public conflictProvider = new VersionedState();
@@ -74,24 +73,7 @@ export class SyncConfig implements DataSyncConfig {
 
   private init(clientOptions?: DataSyncConfig) {
     Object.assign(this, clientOptions);
-    this.applyPlatformConfig();
     this.validate();
-  }
-
-  /**
-  * Platform configuration that is generated and supplied by OpenShift
-  *
-  * @param config user supplied configuration
-  */
-  private applyPlatformConfig() {
-    if (this.openShiftConfig) {
-      const configuration = this.openShiftConfig.getConfigByType(TYPE);
-      if (configuration && configuration.length > 0) {
-        const serviceConfiguration: ServiceConfiguration = configuration[0];
-        this.httpUrl = serviceConfiguration.url;
-        this.wsUrl = serviceConfiguration.config.websocketUrl;
-      }
-    }
   }
 
   private validate() {

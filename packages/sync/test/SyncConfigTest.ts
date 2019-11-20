@@ -1,6 +1,5 @@
 import { SyncConfig } from "../src/config/SyncConfig";
 import { expect } from "chai";
-import { ConfigurationService } from "@aerogear/core";
 import { DataSyncConfig } from "../src/config/DataSyncConfig";
 import { storage } from "./mock/Storage";
 import { ConflictResolutionData } from "../src";
@@ -36,25 +35,6 @@ describe("OnOffLink", () => {
   it("validates config", () => {
     const badConstructor = () => new SyncConfig({ storage });
     expect(badConstructor).to.throw();
-  });
-
-  it("applyPlatformConfig", () => {
-    const app = new ConfigurationService({
-      clusterName: "",
-      version: 1,
-      namespace: "Test",
-      services: [
-        {
-          id: "sync",
-          name: "sync",
-          type: "sync-app",
-          url: userConfig.httpUrl,
-          config: {}
-        }
-      ]
-    });
-    const mergedConfig = new SyncConfig({ openShiftConfig: app, storage });
-    expect(mergedConfig.httpUrl).eq(userConfig.httpUrl);
   });
 
   it("conflict strategy is a function", () => {

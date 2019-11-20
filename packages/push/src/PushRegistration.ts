@@ -1,6 +1,5 @@
 import {
-  ConfigurationService,
-  isNative
+  isNative, ServiceConfiguration
 } from "@aerogear/core";
 import {
   PushRegistrationInterface,
@@ -37,7 +36,7 @@ export class PushRegistration implements PushRegistrationInterface {
 
   private readonly delegate: PushRegistrationInterface;
 
-  constructor(config: ConfigurationService) {
+  constructor(config: ServiceConfiguration) {
     if (!isNative()) {
       this.delegate = new PushRegistrationWebpushImpl(config);
     } else {

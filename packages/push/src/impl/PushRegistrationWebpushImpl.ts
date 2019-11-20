@@ -1,6 +1,6 @@
 import { AbstractPushRegistration } from "../AbstractPushRegistration";
-import { ConfigurationService, ServiceConfiguration } from "@aerogear/core";
-import {OnMessageReceivedCallback, PushRegistrationWebpushOptions} from "../PushRegistration";
+import { ServiceConfiguration } from "@aerogear/core";
+import { OnMessageReceivedCallback, PushRegistrationWebpushOptions } from "../PushRegistration";
 import * as Bowser from "bowser";
 
 declare var window: any;
@@ -24,13 +24,13 @@ export class PushRegistrationWebpushImpl extends AbstractPushRegistration {
 
   private static onMessageReceivedCallback: OnMessageReceivedCallback;
 
-  constructor(config: ConfigurationService) {
+  constructor(config: ServiceConfiguration) {
     super(config);
     // The config is valid
   }
 
   public async register(options: PushRegistrationWebpushOptions = {}): Promise<void> {
-    const {alias, categories, serviceWorker} = options;
+    const { alias, categories, serviceWorker } = options;
 
     if (this.validationError) {
       throw new Error(this.validationError);

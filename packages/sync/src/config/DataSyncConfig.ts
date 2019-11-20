@@ -1,5 +1,3 @@
-
-import { ConfigurationService } from "@aerogear/core";
 import { CacheUpdates } from "offix-client";
 import { RetryLink } from "apollo-link-retry";
 import {
@@ -85,12 +83,6 @@ export interface DataSyncConfig {
     * @deprecated see OfflineClient.registerOfflineEventListener
     */
   conflictListener?: ConflictListener;
-
-  /**
-   * OpenShift specific configuration that provides alternative way to setup
-   * http and websocket urls.
-   */
-  openShiftConfig?: ConfigurationService;
 
   /**
    * [Modifier]

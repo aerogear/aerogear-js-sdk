@@ -1,7 +1,7 @@
 import Keycloak from "keycloak-js";
 import console from "loglevel";
 import { KeycloakInitOptions, KeycloakInstance, KeycloakProfile } from "keycloak-js";
-import { ServiceConfiguration, ConfigurationService } from "@aerogear/core";
+import { ServiceConfiguration } from "@aerogear/core";
 
 /**
  * AeroGear Auth SDK.
@@ -14,20 +14,14 @@ export class Auth {
   private auth: KeycloakInstance;
   private internalConfig: any;
 
-  constructor(config: ConfigurationService) {
-    const configuration = config.getConfigByType(Auth.TYPE);
-    if (configuration && configuration.length > 0) {
-      const serviceConfiguration: ServiceConfiguration = configuration[0];
-      this.internalConfig = serviceConfiguration.config;
-      // create a resource field containing the clientID. The keycloak JS adapter expects a clientId.
-      if (!this.internalConfig.clientId) {
-        this.internalConfig.clientId = this.internalConfig.resource;
-      }
-      // use the top level keycloak url in the mobile services json
-      this.internalConfig.url = serviceConfiguration.url;
-    } else {
-      console.warn("Keycloak configuration is missing. Authentication will not work properly.");
+  constructor(serviceConfiguration: ServiceConfiguration) {
+    this.internalConfig = serviceConfiguration.config;
+    // create a resource field containing the clientID. The keycloak JS adapter expects a clientId.
+    if (!this.internalConfig.clientId) {
+      this.internalConfig.clientId = this.internalConfig.resource;
     }
+    // use the top level keycloak url in the mobile services json
+    this.internalConfig.url = serviceConfiguration.url;
     this.auth = Keycloak(this.internalConfig);
   }
 

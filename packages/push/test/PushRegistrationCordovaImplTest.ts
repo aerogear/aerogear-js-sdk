@@ -1,6 +1,5 @@
 import { assert, expect } from "chai";
 import { PushRegistrationCordovaImpl } from "../src/impl";
-import { ConfigurationService } from "@aerogear/core";
 import { AbstractPushRegistration } from "../src/AbstractPushRegistration";
 
 declare var window: any;
@@ -39,28 +38,17 @@ function storageMock() {
 
 describe("Push", () => {
 
-  const validConfig = {
-    "version": 1,
-    "clusterName": "192.168.64.74:8443",
-    "namespace": "myproject",
-    "clientId": "example_client_id",
-    services: [{
-      "id": "push",
-      "name": "push",
-      "type": "push",
-      "url": "http://www.mocky.io/v2/5a5e4bc53300003b291923eb",
-      "config": {
-        "ios": {
-          "variantId": "f85015b4-a762-49a7-a36f-34a451f819a4",
-          "variantSecret": "978b35d6-7058-43b4-8c37-4dc30022ebda"
-        }
+  const config = {
+    "url": "http://www.mocky.io/v2/5a5e4bc53300003b291923eb",
+    "config": {
+      "ios": {
+        "variantId": "f85015b4-a762-49a7-a36f-34a451f819a4",
+        "variantSecret": "978b35d6-7058-43b4-8c37-4dc30022ebda"
       }
-    }]
+    }
   };
 
-  const config = new ConfigurationService(validConfig);
-
-  beforeEach(() =>  {
+  beforeEach(() => {
     global.window = { btoa: () => "dGVzdA==" };
     global.window.PushNotification = pushMock();
     window.localStorage = storageMock();
@@ -136,7 +124,7 @@ describe("Push", () => {
 
       try {
         const registration = new PushRegistrationCordovaImpl(config);
-        await registration.register({alias: "cordova", categories: ["Test"]});
+        await registration.register({ alias: "cordova", categories: ["Test"] });
       } catch (_) {
         return;
       }
@@ -144,124 +132,48 @@ describe("Push", () => {
       expect.fail("should fail because cordova push plugin is miss");
     });
 
-    it("should fail because miss push configuration", async () => {
-      const missPushServiceConfig = {
-        "version": 1,
-        "clusterName": "192.168.64.74:8443",
-        "namespace": "myproject",
-        "clientId": "example_client_id"
-      };
+    describe("#unregister", async () => {
+      it("should unregister in push server", async () => {
+        try {
+          const registrationData = {
+            "deviceToken": "dummyDeviceToken",
+            "alias": "unitTest",
+            "categories": ["test"]
+          };
+          window.localStorage.setItem(AbstractPushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(registrationData));
+          const registration = new PushRegistrationCordovaImpl(config);
+          await registration.unregister();
+        } catch (error) {
+          assert.fail(error);
+        }
+      });
 
-      try {
-        const registration = new PushRegistrationCordovaImpl(new ConfigurationService(missPushServiceConfig));
-        await registration.register();
-      } catch (_) {
-        return;
-      }
+      it("should remove stored registration data on unregister", async () => {
+        try {
+          const registrationData = {
+            "deviceToken": "dummyDeviceToken",
+            "alias": "unitTest",
+            "categories": ["test"]
+          };
+          window.localStorage.setItem(AbstractPushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(registrationData));
+          const registration = new PushRegistrationCordovaImpl(config);
+          await registration.unregister();
+          assert.equal(window.localStorage.length, 0);
+        } catch (error) {
+          assert.fail(error);
+        }
+      });
 
-      expect.fail("should fail because miss push configuration");
-    });
+      it("should fail to unregister in push server when deviceToken does not exists", async () => {
+        try {
+          const registration = new PushRegistrationCordovaImpl(config);
+          await registration.unregister();
+        } catch (_) {
+          return;
+        }
 
-    it("should fail because miss variantId", async () => {
-      const missVariantIdConfig = {
-        "version": 1,
-        "clusterName": "192.168.64.74:8443",
-        "namespace": "myproject",
-        "clientId": "example_client_id",
-        services: [{
-          "id": "push",
-          "name": "push",
-          "type": "push",
-          "url": "http://www.mocky.io/v2/5a5e4bc53300003b291923eb",
-          "config": {
-            "ios": {
-              "variantSecret": "978b35d6-7058-43b4-8c37-4dc30022ebda"
-            }
-          }
-        }]
-      };
-
-      try {
-        const registration = new PushRegistrationCordovaImpl(new ConfigurationService(missVariantIdConfig));
-        await registration.register();
-      } catch (_) {
-        return;
-      }
-
-      expect.fail("should fail because miss variantId");
-    });
-
-    it("should fail because miss variantSecret", async () => {
-      const missVariantIdConfig = {
-        "version": 1,
-        "clusterName": "192.168.64.74:8443",
-        "namespace": "myproject",
-        "clientId": "example_client_id",
-        services: [{
-          "id": "push",
-          "name": "push",
-          "type": "push",
-          "url": "http://www.mocky.io/v2/5a5e4bc53300003b291923eb",
-          "config": {
-            "ios": {
-              "variantId": "f85015b4-a762-49a7-a36f-34a451f819a4"
-            }
-          }
-        }]
-      };
-
-      try {
-        const registration = new PushRegistrationCordovaImpl(new ConfigurationService(missVariantIdConfig));
-        await registration.register();
-      } catch (_) {
-        return;
-      }
-
-      expect.fail("should fail because miss variantId");
-    });
-  });
-
-  describe("#unregister", async () => {
-    it("should unregister in push server", async () => {
-      try {
-        const registrationData = {
-          "deviceToken": "dummyDeviceToken",
-          "alias": "unitTest",
-          "categories": ["test"]
-        };
-        window.localStorage.setItem(AbstractPushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(registrationData));
-        const registration = new PushRegistrationCordovaImpl(config);
-        await registration.unregister();
-      } catch (error) {
-        assert.fail(error);
-      }
-    });
-
-    it("should remove stored registration data on unregister", async () => {
-      try {
-        const registrationData = {
-          "deviceToken": "dummyDeviceToken",
-          "alias": "unitTest",
-          "categories": ["test"]
-        };
-        window.localStorage.setItem(AbstractPushRegistration.REGISTRATION_DATA_KEY, JSON.stringify(registrationData));
-        const registration = new PushRegistrationCordovaImpl(config);
-        await registration.unregister();
-        assert.equal(window.localStorage.length, 0);
-      } catch (error) {
-        assert.fail(error);
-      }
-    });
-
-    it("should fail to unregister in push server when deviceToken does not exists", async () => {
-      try {
-        const registration = new PushRegistrationCordovaImpl(config);
-        await registration.unregister();
-      } catch (_) {
-        return;
-      }
-
-      expect.fail("should fail to unregister in push server when deviceToken does not exists");
+        expect.fail("should fail to unregister in push server when deviceToken does not exists");
+      });
     });
   });
 });

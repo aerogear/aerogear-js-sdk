@@ -3,7 +3,6 @@ import { HttpLink } from "apollo-link-http";
 import { DataSyncConfig } from "../config";
 import { createAuthLink } from "./AuthLink";
 import { AuditLoggingLink } from "./AuditLoggingLink";
-import { DefaultMetricsBuilder, MetricsBuilder } from "@aerogear/core";
 import { createUploadLink } from "apollo-upload-client";
 import { isSubscription } from "offix-client";
 import { defaultWebSocketLink } from "./WebsocketLink";
@@ -42,9 +41,6 @@ export const defaultHttpLinks = async (
   config: DataSyncConfig
 ): Promise<ApolloLink> => {
   const links: ApolloLink[] = [];
-  if (config.auditLogging) {
-    links.push(await createAuditLoggingLink());
-  }
 
   if (config.authContextProvider) {
     links.push(createAuthLink(config));
@@ -66,16 +62,4 @@ export const defaultHttpLinks = async (
   }
 
   return ApolloLink.from(links);
-};
-
-const createAuditLoggingLink = async (): Promise<AuditLoggingLink> => {
-  const metricsBuilder: MetricsBuilder = new DefaultMetricsBuilder();
-  const metricsPayload: {
-    [key: string]: any;
-  } = {};
-  const metrics = metricsBuilder.buildDefaultMetrics();
-  for (const metric of metrics) {
-    metricsPayload[metric.identifier] = await metric.collect();
-  }
-  return new AuditLoggingLink(metricsBuilder.getClientId(), metricsPayload);
 };
