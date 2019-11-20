@@ -21,7 +21,7 @@
     "clean": "del coverage src/**/*.js src/**/*.map test/**/*.js test/**/*.map dist types",
     "build": "tsc",
     "watch": "tsc --watch",
-    "test": "mocha"
+    "test": "echo No tests"
   },
   "publishConfig": {
     "access": "public"
