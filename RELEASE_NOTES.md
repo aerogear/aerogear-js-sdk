@@ -1,3 +1,25 @@
+## JS-SDK 2.8.0
+
+**Note** This is the final release of the aerogear-js-sdk. Moving forward there will be several changes.
+
+The following packages are being moved.
+
+* @aerogear/push will continue to be published but will be found at a new repo.
+* @aerogear/voyager-client will be deprecated in favour of a new package under the [Offix](https://offix.dev) project.
+
+The following packages will be deprecated.
+
+* @aerogear/security will be deprecated
+* @aerogear/app will be deprecated
+* @aerogear/metrics will be deprecated
+* @aerogear/core will be deprecated
+
+**Note:** version `2.8.0` of these packages will be available on npm, but they will no longer be maintained.
+
+## Changes to Sync.
+
+This release updates the version of `offix-client` within `@aerogear/voyager-client` to version `0.9.0`. Go to the [`Offix` releases page to learn more](https://github.com/aerogear/offix/releases/tag/0.9.0).
+
 ## JS-SDK 2.7.0
 
 ### Push
