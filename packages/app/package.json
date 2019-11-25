@@ -1,6 +1,6 @@
 {
   "name": "@aerogear/app",
-  "version": "2.8.0-rc1",
+  "version": "2.8.0",
   "description": "Aero Gear SDK application module",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -31,6 +31,6 @@
     "typescript": "3.7.2"
   },
   "dependencies": {
-    "@aerogear/core": "2.8.0-rc1"
+    "@aerogear/core": "2.8.0"
   }
 }
